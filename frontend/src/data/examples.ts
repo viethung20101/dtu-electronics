@@ -6,6 +6,7 @@
 
 import { circuitExamples } from './examples-circuits';
 import { analogExamples } from './examples-analog';
+import { digitalExamples } from './examples-digital';
 import { hundredDaysExamples } from './examples-100-days';
 import { picowWifiExamples } from './examples-picow-wifi';
 import { epaperExamples } from './examples-displays-epaper';
@@ -7223,6 +7224,7 @@ export const exampleProjects: ExampleProject[] = [
   ...legacyExamples,
   ...circuitExamples,
   ...analogExamples,
+  ...digitalExamples,
   ...hundredDaysExamples,
   ...picowWifiExamples,
   ...epaperExamples,

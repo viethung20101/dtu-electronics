@@ -37,13 +37,25 @@ interface ElectricalState {
    */
   timeWaveforms?: TimeWaveforms;
 
+  /**
+   * When `true`, `triggerSolve()` is a no-op — the SPICE engine still holds
+   * the last result so LEDs stay lit, but switch / property changes do NOT
+   * cause a re-solve. Used by the editor's Run / Stop buttons in board-less
+   * digital circuits so the user can freeze the canvas state.
+   *
+   * Defaults to `false` — every circuit is live the moment it loads, like
+   * the existing analog gallery.
+   */
+  paused: boolean;
+  setPaused: (paused: boolean) => void;
+
   triggerSolve: (input: BuildNetlistInput) => void;
   solveNow: (input: BuildNetlistInput) => Promise<ElectricalSolveResult>;
   setDebounceMs: (ms: number) => void;
   reset: () => void;
 }
 
-export const useElectricalStore = create<ElectricalState>((set) => {
+export const useElectricalStore = create<ElectricalState>((set, get) => {
   // Eagerly preload the SPICE engine at app start so the first solve pays
   // no WASM-loading latency (~39 MB bundle).
   import('../simulation/spice/SpiceEngine.lazy').then(async (mod) => {
@@ -81,7 +93,21 @@ export const useElectricalStore = create<ElectricalState>((set) => {
     analysisMode: 'op' as const,
     timeWaveforms: undefined,
 
+    paused: false,
+    setPaused(paused) {
+      set({ paused });
+      // On resume, flush the queued solve so the canvas catches up to any
+      // switch toggles that happened while paused.
+      if (!paused) circuitScheduler.flushQueued();
+    },
+
     triggerSolve(input) {
+      if (get().paused) {
+        // Remember the input — when the user un-pauses we want the canvas
+        // to reflect the latest switch state, not a stale snapshot.
+        circuitScheduler.stashWhilePaused(input);
+        return;
+      }
       circuitScheduler.requestSolve(input);
     },
 

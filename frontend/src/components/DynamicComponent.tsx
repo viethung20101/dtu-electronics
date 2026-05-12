@@ -208,7 +208,25 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
     const logic = PartSimulationRegistry.get(metadata.id || id.split('-')[0]);
 
     let cleanupSimulationEvents: (() => void) | undefined;
-    if (logic && logic.attachEvents && simulator) {
+    if (logic && logic.attachEvents) {
+      // Board-less circuits (analog/digital SPICE examples) have no MCU
+      // simulator, but input parts (switches, buttons, DIP switches) still
+      // need their `change`/`button-press` events to fire `emitPropertyChange`
+      // so the SPICE solver re-runs. Every part already guards its
+      // `simulator.setPinState` / `pinManager.onPinChange` calls behind a
+      // null pin lookup (`getArduinoPin` returns null when there's no board),
+      // so the stub below is enough — it satisfies the type signature without
+      // doing anything when called.
+      const stubSimulator =
+        simulator ??
+        ({
+          setPinState: () => {},
+          isRunning: () => false,
+          pinManager: {
+            onPinChange: () => () => {},
+            triggerPinChange: () => {},
+          } as any,
+        } as any);
       // Helper to find Arduino pin connected to a component pin.
       // Traces through electrically-transparent passive components so that a
       // circuit like  LED-cathode → resistor → GND  returns -1 (GND) instead
@@ -314,7 +332,7 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
         return trace(id, componentPinName, 0);
       };
 
-      cleanupSimulationEvents = logic.attachEvents(el, simulator, getArduinoPin, id);
+      cleanupSimulationEvents = logic.attachEvents(el, stubSimulator, getArduinoPin, id);
     }
 
     return () => {

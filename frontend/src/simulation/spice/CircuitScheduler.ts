@@ -24,6 +24,12 @@ const DEFAULT_DEBOUNCE_MS = 50;
 
 class CircuitScheduler {
   private pending: QueuedRequest | null = null;
+  /**
+   * Latest request received while the user paused the simulation. Held aside
+   * so that resuming flushes the most-recent state (rather than whatever was
+   * queued before pause).
+   */
+  private stashed: QueuedRequest | null = null;
   private inFlight = false;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private listeners = new Set<Listener>();
@@ -46,6 +52,22 @@ class CircuitScheduler {
     this.pending = { input };
     if (this.debounceTimer) clearTimeout(this.debounceTimer);
     this.debounceTimer = setTimeout(() => this.drain(), this.debounceMs);
+  }
+
+  /**
+   * Caller is paused — remember the latest input but don't trigger a solve.
+   * `flushQueued()` will pick it up on resume.
+   */
+  stashWhilePaused(input: BuildNetlistInput): void {
+    this.stashed = { input };
+  }
+
+  /** Resume after pause: re-submit the stashed request, if any. */
+  flushQueued(): void {
+    if (!this.stashed) return;
+    const input = this.stashed.input;
+    this.stashed = null;
+    this.requestSolve(input);
   }
 
   /** Force an immediate solve (bypass debounce). Returns when done. */

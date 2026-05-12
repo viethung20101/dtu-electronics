@@ -7,6 +7,7 @@ import type { ExampleProject } from '../data/examples';
 import type { BoardKind } from '../types/board';
 import { useEditorStore } from '../store/useEditorStore';
 import { useSimulatorStore, DEFAULT_BOARD_POSITION } from '../store/useSimulatorStore';
+import { useElectricalStore } from '../store/useElectricalStore';
 import { useVfsStore } from '../store/useVfsStore';
 import { isBoardComponent } from './boardPinMapping';
 import { getInstalledLibraries, installLibrary } from '../services/libraryService';
@@ -55,6 +56,10 @@ export async function loadExample(
   onLibraryProgress?: (progress: LibraryInstallProgress | null) => void,
 ): Promise<void> {
   trackOpenExample(example.title);
+
+  // Loading a new example always starts unpaused — otherwise the canvas
+  // would open with every LED frozen at the previous example's state.
+  useElectricalStore.getState().setPaused(false);
 
   // Auto-install required libraries
   if (example.libraries && example.libraries.length > 0) {
@@ -162,11 +167,12 @@ export async function loadExample(
     recalculateAllWirePositions();
   } else {
     // ── Single-board loading ─────────────────────────────────────────────
-    // Analog-only SPICE examples are board-less. Remove every existing board
-    // so the canvas opens with just the analog circuit (boards are now
+    // Analog-only and digital-only SPICE examples are board-less. Remove every
+    // existing board so the canvas opens with just the circuit (boards are now
     // optional — you can have 0, 1, or many at any time).
-    const isAnalogOnly = (example as any).boardFilter === 'analog';
-    if (isAnalogOnly) {
+    const filter = (example as any).boardFilter;
+    const isBoardless = filter === 'analog' || filter === 'digital';
+    if (isBoardless) {
       const currentIds = boards.map((b) => b.id);
       currentIds.forEach((id) => removeBoard(id));
     } else {

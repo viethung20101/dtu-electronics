@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useEditorStore } from '../../store/useEditorStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
+import { useElectricalStore } from '../../store/useElectricalStore';
 import type { BoardKind, LanguageMode } from '../../types/board';
 import { BOARD_KIND_FQBN, BOARD_KIND_LABELS, BOARD_SUPPORTS_MICROPYTHON } from '../../types/board';
 import { compileCode } from '../../services/compilation';
@@ -94,6 +95,15 @@ export const EditorToolbar = ({
 
   const activeBoard = boards.find((b) => b.id === activeBoardId) ?? boards[0];
   const currentProject = useProjectStore((s) => s.currentProject);
+
+  // Board-less mode: digital / analog SPICE-only circuits. The Run / Stop
+  // buttons toggle the SPICE solver's `paused` flag — pausing freezes every
+  // LED at its current brightness so the user can inspect the state, and
+  // resuming flushes the most recent switch toggle through the engine.
+  const electricalPaused = useElectricalStore((s) => s.paused);
+  const setElectricalPaused = useElectricalStore((s) => s.setPaused);
+  const isBoardless = boards.length === 0;
+  const digitalRunning = isBoardless && !electricalPaused;
 
   // Helper: report a Run event to the backend for analytics. Resolves the
   // FQBN from the board kind so the backend can group by family/fqbn.
@@ -267,6 +277,16 @@ export const EditorToolbar = ({
 
   const handleRun = async () => {
     console.log('[handleRun] click', { activeBoardId, running, codeChangedSinceLastCompile });
+
+    // Board-less circuits (SPICE-only digital / analog gallery) have no MCU
+    // to start. Resuming the electrical solver replays any switch toggles
+    // captured while paused so the canvas catches up instantly.
+    if (isBoardless) {
+      setElectricalPaused(false);
+      setMessage(null);
+      return;
+    }
+
     if (activeBoardId) {
       const board = boards.find((b) => b.id === activeBoardId);
       console.log('[handleRun] active board', {
@@ -424,6 +444,13 @@ export const EditorToolbar = ({
 
   const handleStop = () => {
     trackStopSimulation();
+    if (isBoardless) {
+      // Freeze the SPICE solver — every LED stays at its current brightness
+      // and switch clicks stop re-triggering ngspice until the user hits Run.
+      setElectricalPaused(true);
+      setMessage(null);
+      return;
+    }
     if (activeBoardId) stopBoard(activeBoardId);
     else stopSimulation();
     setMessage(null);
@@ -754,14 +781,22 @@ export const EditorToolbar = ({
             {/* Run */}
             <button
               onClick={handleRun}
-              disabled={running || compiling || !activeBoard}
+              disabled={
+                isBoardless
+                  ? digitalRunning
+                  : running || compiling || !activeBoard
+              }
               className="tb-btn tb-btn-run"
               title={
-                !activeBoard
-                  ? t('editor.toolbar.run.addBoard')
-                  : activeBoard?.languageMode === 'micropython'
-                    ? t('editor.toolbar.run.runMicropython')
-                    : t('editor.toolbar.run.run')
+                isBoardless
+                  ? digitalRunning
+                    ? 'Digital simulation running'
+                    : 'Resume digital simulation'
+                  : !activeBoard
+                    ? t('editor.toolbar.run.addBoard')
+                    : activeBoard?.languageMode === 'micropython'
+                      ? t('editor.toolbar.run.runMicropython')
+                      : t('editor.toolbar.run.run')
               }
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
@@ -772,9 +807,9 @@ export const EditorToolbar = ({
             {/* Stop */}
             <button
               onClick={handleStop}
-              disabled={!running}
+              disabled={isBoardless ? !digitalRunning : !running}
               className="tb-btn tb-btn-stop"
-              title={t('editor.toolbar.stop')}
+              title={isBoardless ? 'Freeze digital simulation' : t('editor.toolbar.stop')}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                 <rect x="3" y="3" width="18" height="18" rx="2" />

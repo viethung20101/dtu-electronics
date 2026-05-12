@@ -36,6 +36,7 @@ const BOARD_TABS: BoardTab[] = [
   { id: 'attiny85', label: 'ATtiny85', color: '#ffffff', bg: '#5d4037' },
   { id: 'multi', label: 'Multi-Board', color: '#ffffff', bg: '#7b2d8b' },
   { id: 'analog', label: 'Analog', color: '#ffffff', bg: '#0ea5a5' },
+  { id: 'digital', label: 'Digital', color: '#ffffff', bg: '#6366f1' },
 ];
 
 function getBoardFilter(example: ExampleProject): string {

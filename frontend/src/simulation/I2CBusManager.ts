@@ -1,9 +1,18 @@
 /**
- * I2C Bus Manager — virtual I2C devices that attach to avr8js AVRTWI
+ * I2C Bus Manager — virtual I2C bus shared between an MCU peripheral
+ * (avr8js AVRTWI or rp2040js RPI2C) and a set of JavaScript virtual
+ * devices, with optional cross-board bridging for multi-board sims.
  *
  * Each device registers at a 7-bit I2C address. When the Arduino sketch
  * does Wire.beginTransmission(addr) / Wire.requestFrom(addr, ...), the
- * TWI event handler routes events to the matching virtual device.
+ * MCU peripheral's event handler routes events to the matching virtual
+ * device on the LOCAL bus, OR — if a bridge to another board's bus is
+ * installed and the address is registered THERE — to the remote device.
+ *
+ * Bridges are installed by Interconnect when both SDA and SCL of two
+ * boards are wired together.  This lets two physical-style boards
+ * exchange I2C transactions without requiring slave-mode emulation
+ * inside avr8js / rp2040js (neither library supports it natively).
  */
 
 import type { AVRTWI, TWIEventHandler } from 'avr8js';
@@ -21,15 +30,74 @@ export interface I2CDevice {
   stop?(): void;
 }
 
-// ── I2C Bus Manager (TWIEventHandler for avr8js) ───────────────────────────
+/**
+ * Minimal contract the I2C bus needs from the MCU peripheral that is
+ * driving it as master.  Both avr8js AVRTWI and rp2040js RPI2C
+ * implement this shape verbatim.
+ */
+export interface I2CMaster {
+  completeStart(): void;
+  completeStop(): void;
+  completeConnect(ack: boolean): void;
+  completeWrite(ack: boolean): void;
+  completeRead(value: number): void;
+}
+
+// ── I2C Bus Manager (implements TWIEventHandler for avr8js) ────────────────
 
 export class I2CBusManager implements TWIEventHandler {
   private devices: Map<number, I2CDevice> = new Map();
   private activeDevice: I2CDevice | null = null;
   private writeMode = true;
 
-  constructor(private twi: AVRTWI) {
-    twi.eventHandler = this;
+  /** Peer buses that this bus can forward transactions to when the requested address is not local. */
+  private bridges: I2CBusManager[] = [];
+  /** When the master-side transaction was routed to a peer, this holds it. */
+  private activeExternal: I2CBusManager | null = null;
+  /** When this bus is acting as the target of an external peer's master, this holds the addressed device. */
+  private externalActiveDevice: I2CDevice | null = null;
+
+  /**
+   * Construct a bus bound to an `I2CMaster`.  For backward
+   * compatibility, if the master has a settable `eventHandler`
+   * property (the AVRTWI shape), it is wired to `this` automatically
+   * so existing AVRSimulator code continues to work unchanged.  For
+   * peripherals with per-callback wiring (RPI2C), the caller is
+   * responsible for routing each master event into the bus's methods.
+   */
+  constructor(private master: I2CMaster) {
+    this.bindEventHandler(master);
+  }
+
+  private bindEventHandler(master: I2CMaster): void {
+    if (
+      master !== null &&
+      typeof master === 'object' &&
+      'eventHandler' in (master as object)
+    ) {
+      try {
+        (master as { eventHandler: TWIEventHandler }).eventHandler = this;
+      } catch {
+        /* setter rejected — caller will wire events manually */
+      }
+    }
+  }
+
+  /**
+   * Swap the master peripheral this bus drives.  Used when the
+   * I2CBusManager is constructed early (so cross-board bridges and
+   * device registration can happen before firmware loads) and the
+   * real MCU peripheral becomes available later (e.g. after loadHex).
+   * Local devices and bridges are preserved.
+   */
+  attachMaster(master: I2CMaster): void {
+    this.master = master;
+    this.bindEventHandler(master);
+  }
+
+  /** Backward-compat accessor for the underlying AVRTWI, when constructed from one. */
+  get twi(): AVRTWI {
+    return this.master as AVRTWI;
   }
 
   /** Register a virtual I2C device on the bus */
@@ -42,47 +110,167 @@ export class I2CBusManager implements TWIEventHandler {
     this.devices.delete(address);
   }
 
-  // ── TWIEventHandler implementation ──────────────────────────────────────
+  // ── Cross-board bridging ────────────────────────────────────────────────
+
+  /**
+   * Install a peer bus that this bus will forward unresolved master
+   * transactions to.  The pair is one-directional — to make traffic
+   * flow in both directions, call attachBridge symmetrically on both
+   * buses.  Idempotent.
+   */
+  attachBridge(peer: I2CBusManager): void {
+    if (peer === this) return;
+    if (!this.bridges.includes(peer)) this.bridges.push(peer);
+  }
+
+  /** Detach a previously-installed peer bus. */
+  detachBridge(peer: I2CBusManager): void {
+    this.bridges = this.bridges.filter((b) => b !== peer);
+    if (this.activeExternal === peer) this.activeExternal = null;
+  }
+
+  /**
+   * Whether this bus is currently acting as a slave to an external
+   * master.  Exposed for diagnostics + tests.
+   */
+  isHandlingExternal(): boolean {
+    return this.externalActiveDevice !== null;
+  }
+
+  // ── TWIEventHandler implementation (master-side events from the local MCU) ──
 
   start(_repeated: boolean): void {
-    this.twi.completeStart();
+    this.master.completeStart();
   }
 
   stop(): void {
-    if (this.activeDevice?.stop) this.activeDevice.stop();
+    if (this.activeExternal) {
+      this.activeExternal.handleExternalStop();
+      this.activeExternal = null;
+    } else if (this.activeDevice?.stop) {
+      this.activeDevice.stop();
+    }
     this.activeDevice = null;
-    this.twi.completeStop();
+    this.master.completeStop();
   }
 
   connectToSlave(addr: number, write: boolean): void {
-    const device = this.devices.get(addr);
-    if (device) {
-      this.activeDevice = device;
+    // 1. Local devices win — fastest path and what single-board sketches expect.
+    const local = this.devices.get(addr);
+    if (local) {
+      this.activeDevice = local;
+      this.activeExternal = null;
       this.writeMode = write;
-      this.twi.completeConnect(true); // ACK
-    } else {
-      this.activeDevice = null;
-      this.twi.completeConnect(false); // NACK — no such address
+      this.master.completeConnect(true);
+      return;
     }
+    // 2. Try each bridged peer in registration order.
+    for (const bridge of this.bridges) {
+      if (bridge.handleExternalConnect(addr, write)) {
+        this.activeExternal = bridge;
+        this.activeDevice = null;
+        this.writeMode = write;
+        this.master.completeConnect(true);
+        return;
+      }
+    }
+    // 3. NACK — no device anywhere knows this address.
+    this.activeDevice = null;
+    this.activeExternal = null;
+    this.master.completeConnect(false);
   }
 
   writeByte(value: number): void {
     if (this.activeDevice) {
-      const ack = this.activeDevice.writeByte(value);
-      this.twi.completeWrite(ack);
+      this.master.completeWrite(this.activeDevice.writeByte(value));
+    } else if (this.activeExternal) {
+      this.master.completeWrite(this.activeExternal.handleExternalWrite(value));
     } else {
-      this.twi.completeWrite(false);
+      this.master.completeWrite(false);
     }
   }
 
   readByte(_ack: boolean): void {
     if (this.activeDevice) {
-      const value = this.activeDevice.readByte();
-      this.twi.completeRead(value);
+      this.master.completeRead(this.activeDevice.readByte());
+    } else if (this.activeExternal) {
+      this.master.completeRead(this.activeExternal.handleExternalRead());
     } else {
-      this.twi.completeRead(0xff);
+      this.master.completeRead(0xff);
     }
   }
+
+  // ── External-master inbound handlers (called by a bridged peer bus) ────
+
+  /**
+   * Attempt to address `addr` on this bus's local devices on behalf of
+   * an external master.  Returns true when this bus has a device that
+   * acknowledged the addressing phase, false otherwise (NACK).
+   */
+  handleExternalConnect(addr: number, _write: boolean): boolean {
+    const dev = this.devices.get(addr);
+    if (!dev) return false;
+    this.externalActiveDevice = dev;
+    return true;
+  }
+
+  /** External master is sending a byte to the previously-addressed device. */
+  handleExternalWrite(value: number): boolean {
+    return this.externalActiveDevice?.writeByte(value) ?? false;
+  }
+
+  /** External master is requesting the next byte from the previously-addressed device. */
+  handleExternalRead(): number {
+    return this.externalActiveDevice?.readByte() ?? 0xff;
+  }
+
+  /** External master issued STOP — release the active device and call its lifecycle hook. */
+  handleExternalStop(): void {
+    this.externalActiveDevice?.stop?.();
+    this.externalActiveDevice = null;
+  }
+}
+
+/**
+ * A no-op `I2CMaster` used as a placeholder before the real MCU
+ * peripheral has been constructed.  Lets `I2CBusManager` be created
+ * up-front so cross-board bridges and device registrations can land
+ * before firmware loads, then swapped to the real peripheral via
+ * `attachMaster()`.
+ */
+export function nullI2CMaster(): I2CMaster {
+  return {
+    completeStart() {},
+    completeStop() {},
+    completeConnect(_ack: boolean) {},
+    completeWrite(_ack: boolean) {},
+    completeRead(_value: number) {},
+  };
+}
+
+/**
+ * Wire a non-AVR I2C master (e.g. rp2040js RPI2C) into an
+ * `I2CBusManager`.  Returns the bus, with the master peripheral's
+ * `onStart` / `onConnect` / `onWriteByte` / `onReadByte` / `onStop`
+ * callbacks routed to `bus.start` etc.  Matches the per-callback
+ * pattern RPI2C uses (it does not have a single `eventHandler`).
+ */
+export function wireRpI2cToBus(
+  master: I2CMaster & {
+    onStart?: () => void;
+    onConnect?: (address: number, mode?: number) => void;
+    onWriteByte?: (value: number) => void;
+    onReadByte?: (ack?: boolean) => void;
+    onStop?: () => void;
+  },
+  bus: I2CBusManager,
+): void {
+  master.onStart = () => bus.start(false);
+  master.onConnect = (addr: number, mode?: number) =>
+    bus.connectToSlave(addr, mode === undefined ? true : mode === 0);
+  master.onWriteByte = (v: number) => bus.writeByte(v);
+  master.onReadByte = (ack?: boolean) => bus.readByte(ack ?? true);
+  master.onStop = () => bus.stop();
 }
 
 // ── Built-in virtual I2C devices ───────────────────────────────────────────

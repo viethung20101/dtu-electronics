@@ -21,6 +21,7 @@
 import { PartSimulationRegistry } from './PartSimulationRegistry';
 import { VirtualDS1307, VirtualBMP280, VirtualDS3231, VirtualPCF8574 } from '../I2CBusManager';
 import type { I2CDevice } from '../I2CBusManager';
+import { HD44780Decoder } from '../HD44780Decoder';
 import { registerSensorUpdate, unregisterSensorUpdate } from '../SensorUpdateRegistry';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 
@@ -309,43 +310,72 @@ function attachSSD1306SPI(
   };
 }
 
+/**
+ * Internal: SSD1306 attach logic, parameterised over the wire protocol.
+ * Used by the three picker entries (the generic `ssd1306` plus the two
+ * dedicated `ssd1306-i2c` / `ssd1306-spi` shortcuts).
+ */
+function attachSSD1306(
+  element: HTMLElement,
+  simulator: unknown,
+  getPin: (n: string) => number | null,
+  protocol: 'i2c' | 'spi',
+): () => void {
+  if (protocol === 'spi') {
+    return attachSSD1306SPI(element, simulator, getPin);
+  }
+  const sim = simulator as any;
+  const i2cAddr = 0x3c;
+
+  if (typeof sim.addI2CDevice === 'function') {
+    const device = new VirtualSSD1306(i2cAddr, element);
+    sim.addI2CDevice(device);
+    return () => removeI2CDevice(sim, device.address);
+  } else if (typeof sim.registerSensor === 'function') {
+    const virtualPin = 200 + i2cAddr;
+    const device = new VirtualSSD1306(i2cAddr, element);
+    sim.registerSensor('ssd1306', virtualPin, { addr: i2cAddr });
+    sim.addI2CTransactionListener(i2cAddr, (data: number[]) => {
+      data.forEach((b: number) => device.writeByte(b));
+      device.stop();
+    });
+    return () => {
+      sim.unregisterSensor(virtualPin);
+      sim.removeI2CTransactionListener(i2cAddr);
+    };
+  }
+  return () => {};
+}
+
+/**
+ * Generic `ssd1306` entry — reads the user-selectable `protocol`
+ * property (control: select, options: i2c | spi).  Keeps backward
+ * compatibility for existing projects whose components carry this id.
+ */
 PartSimulationRegistry.register('ssd1306', {
   attachEvents: (element, simulator, getPin, componentId) => {
-    // Read the protocol property from the component in the store
     const { components } = useSimulatorStore.getState();
     const comp = components.find((c) => c.id === componentId);
-    const protocol = (comp?.properties?.protocol as string) ?? 'i2c';
-
-    if (protocol === 'spi') {
-      return attachSSD1306SPI(element, simulator, getPin);
-    }
-
-    // I2C mode (default)
-    const sim = simulator as any;
-    const i2cAddr = 0x3c;
-
-    if (typeof sim.addI2CDevice === 'function') {
-      // ── AVR / RP2040 path ──────────────────────────────────────────────────
-      const device = new VirtualSSD1306(i2cAddr, element);
-      sim.addI2CDevice(device);
-      return () => removeI2CDevice(sim, device.address);
-    } else if (typeof sim.registerSensor === 'function') {
-      // ── ESP32 path: relay I2C writes via backend ───────────────────────────
-      const virtualPin = 200 + i2cAddr;
-      const device = new VirtualSSD1306(i2cAddr, element);
-      sim.registerSensor('ssd1306', virtualPin, { addr: i2cAddr });
-      sim.addI2CTransactionListener(i2cAddr, (data: number[]) => {
-        data.forEach((b: number) => device.writeByte(b));
-        device.stop();
-      });
-      return () => {
-        sim.unregisterSensor(virtualPin);
-        sim.removeI2CTransactionListener(i2cAddr);
-      };
-    }
-
-    return () => {};
+    const protocol = ((comp?.properties?.protocol as string) ?? 'i2c') as 'i2c' | 'spi';
+    return attachSSD1306(element, simulator, getPin, protocol);
   },
+});
+
+/**
+ * Picker shortcut: "SSD1306 OLED (I2C)" — same web component, but the
+ * metadata defaults protocol to 'i2c' and the part skips the property
+ * lookup.  Lets users find the I2C variant by name without having to
+ * discover the protocol property on the generic ssd1306 entry.
+ */
+PartSimulationRegistry.register('ssd1306-i2c', {
+  attachEvents: (element, simulator, getPin) =>
+    attachSSD1306(element, simulator, getPin, 'i2c'),
+});
+
+/** Picker shortcut: "SSD1306 OLED (SPI)" — counterpart to ssd1306-i2c. */
+PartSimulationRegistry.register('ssd1306-spi', {
+  attachEvents: (element, simulator, getPin) =>
+    attachSSD1306(element, simulator, getPin, 'spi'),
 });
 
 // ─── DS1307 RTC ──────────────────────────────────────────────────────────────
@@ -1214,4 +1244,122 @@ PartSimulationRegistry.register('pcf8574', {
 
     return () => {};
   },
+});
+
+// ─── LCD1602 / LCD2004 with I2C backpack (PCF8574 + HD44780) ────────────────
+
+/**
+ * Common parser for an I2C address property coming from a wokwi-element
+ * (the metadata exposes `i2cAddress` as a text control; users type
+ * "0x27", "39", or just the raw number).
+ */
+function parseI2cAddress(raw: unknown, fallback: number): number {
+  if (raw === undefined || raw === null) return fallback;
+  if (typeof raw === 'number' && !isNaN(raw)) return raw & 0x7f;
+  const s = String(raw).trim();
+  if (!s) return fallback;
+  const parsed = s.toLowerCase().startsWith('0x') ? parseInt(s, 16) : parseInt(s, 10);
+  return isNaN(parsed) ? fallback : parsed & 0x7f;
+}
+
+/**
+ * Build a part attach function for an LCD with an I2C backpack.  The
+ * same logic applies to LCD1602 (16×2) and LCD2004 (20×4); only the
+ * geometry differs.
+ *
+ * On attach:
+ *  1. Force the underlying `wokwi-lcd1602` / `wokwi-lcd2004` element
+ *     into I2C-pinout mode (`pins='i2c'`) so the user sees the
+ *     correct 4-pin backpack header.
+ *  2. Pre-fill `characters` with spaces so the screen is clean before
+ *     the sketch issues its first Clear command.
+ *  3. Create a `VirtualPCF8574` at the configured address.
+ *  4. Pipe `pcf.onWrite` → `HD44780Decoder.feedPCF8574Byte`.
+ *  5. Reflect the decoder's `characters` + `backlight` snapshots back
+ *     onto the element's reactive properties.
+ *
+ * Works on AVR, RP2040, and the ESP32 backend (same trifurcation
+ * pattern as other I2C parts above).
+ */
+function makeI2cLcdAttach(cols: number, rows: number) {
+  return (
+    element: HTMLElement,
+    simulator: unknown,
+    _getPin: (name: string) => number | null,
+  ): (() => void) => {
+    const sim = simulator as any;
+    const el = element as any;
+
+    const addr = parseI2cAddress(el.i2cAddress ?? el.address, 0x27);
+
+    // Switch the underlying LCD element to I2C pin mode + a clean
+    // characters buffer.  The host wokwi element re-renders on
+    // attribute change.
+    try {
+      el.pins = 'i2c';
+    } catch {
+      /* read-only on some implementations — ignore */
+    }
+    const blankGrid = new Uint8Array(cols * rows).fill(0x20);
+    el.characters = blankGrid;
+    if (el.backlight === undefined) el.backlight = true;
+
+    const decoder = new HD44780Decoder({ cols, rows });
+    decoder.onCharsChange = (chars) => {
+      // wokwi-lcd1602 accepts both number[] and Uint8Array.  Use Uint8Array
+      // so Lit's change detection sees a new reference.
+      el.characters = Uint8Array.from(chars);
+    };
+    decoder.onBacklightChange = (on) => {
+      el.backlight = on;
+    };
+    decoder.onCursorChange = (snap) => {
+      el.cursorX = snap.cursorCol;
+      el.cursorY = snap.cursorRow;
+      el.cursor = snap.cursorOn;
+      el.blink = snap.cursorBlink;
+    };
+
+    if (typeof sim.addI2CDevice === 'function') {
+      // ── AVR / RP2040 path ────────────────────────────────────────────
+      const pcf = new VirtualPCF8574(addr);
+      pcf.onWrite = (v: number) => decoder.feedPCF8574Byte(v);
+      sim.addI2CDevice(pcf);
+      return () => {
+        removeI2CDevice(sim, pcf.address);
+        decoder.reset();
+      };
+    } else if (typeof sim.registerSensor === 'function') {
+      // ── ESP32 backend path: the QEMU PCF8574 slave forwards the raw
+      //    bytes back to us as transaction arrays. ────────────────────
+      const virtualPin = 200 + addr;
+      sim.registerSensor('pcf8574', virtualPin, { addr });
+      sim.addI2CTransactionListener?.(addr, (data: number[]) => {
+        for (const b of data) decoder.feedPCF8574Byte(b);
+      });
+      return () => {
+        sim.unregisterSensor(virtualPin);
+        sim.removeI2CTransactionListener?.(addr);
+        decoder.reset();
+      };
+    }
+
+    return () => decoder.reset();
+  };
+}
+
+/**
+ * LCD 16×2 with PCF8574 I2C backpack — the classic "I2C LCD" you buy
+ * in a single piece on AliExpress.  Default address 0x27.
+ */
+PartSimulationRegistry.register('lcd1602-i2c', {
+  attachEvents: makeI2cLcdAttach(16, 2),
+});
+
+/**
+ * LCD 20×4 with PCF8574 I2C backpack.  Same protocol; uses the 2004
+ * DDRAM row offsets (0x00, 0x40, 0x14, 0x54).
+ */
+PartSimulationRegistry.register('lcd2004-i2c', {
+  attachEvents: makeI2cLcdAttach(20, 4),
 });

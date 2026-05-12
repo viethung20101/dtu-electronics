@@ -30,7 +30,7 @@ import {
 } from 'avr8js';
 import { PinManager } from './PinManager';
 import { hexToUint8Array } from '../utils/hexParser';
-import { I2CBusManager } from './I2CBusManager';
+import { I2CBusManager, nullI2CMaster } from './I2CBusManager';
 import type { I2CDevice } from './I2CBusManager';
 
 /**
@@ -172,7 +172,7 @@ export class AVRSimulator {
   public spi: AVRSPI | null = null;
   public usart: AVRUSART | null = null;
   public twi: AVRTWI | null = null;
-  public i2cBus: I2CBusManager | null = null;
+  public i2cBus!: I2CBusManager;
   private program: Uint16Array | null = null;
   private running = false;
   private animationFrame: number | null = null;
@@ -202,6 +202,11 @@ export class AVRSimulator {
   constructor(pinManager: PinManager, boardVariant: 'uno' | 'mega' | 'tiny85' = 'uno') {
     this.pinManager = pinManager;
     this.boardVariant = boardVariant;
+    // Create the bus up-front with a placeholder master so that
+    // Interconnect can install cross-board bridges and parts can
+    // register devices BEFORE the firmware loads.  The real AVRTWI
+    // takes over via `i2cBus.attachMaster(twi)` inside loadHex.
+    this.i2cBus = new I2CBusManager(nullI2CMaster());
   }
 
   private get pwmPins() {
@@ -301,7 +306,10 @@ export class AVRSimulator {
       };
 
       this.twi = new AVRTWI(this.cpu, activeTwiConfig, 16000000);
-      this.i2cBus = new I2CBusManager(this.twi);
+      // Attach the real AVRTWI to the bus created in the constructor;
+      // any devices already registered + bridges already installed are
+      // preserved across firmware (re)loads.
+      this.i2cBus.attachMaster(this.twi);
 
       this.peripherals = [
         new AVRTimer(this.cpu, activeTimer0Config),
@@ -607,7 +615,7 @@ export class AVRSimulator {
         };
 
         this.twi = new AVRTWI(this.cpu, twiConfig, 16000000);
-        this.i2cBus = new I2CBusManager(this.twi);
+        this.i2cBus.attachMaster(this.twi);
 
         this.peripherals = [
           new AVRTimer(this.cpu, timer0Config),
@@ -708,6 +716,25 @@ export class AVRSimulator {
     if (this.i2cBus) {
       this.i2cBus.addDevice(device);
     }
+  }
+
+  /**
+   * Remove a virtual I2C device by address.  Mirrors RP2040Simulator's
+   * `removeI2CDevice(addr, bus)` shape so Interconnect / parts can use
+   * the same uniform API across boards.
+   */
+  removeI2CDevice(address: number, _bus: 0 | 1 = 0): void {
+    this.i2cBus?.removeDevice(address);
+  }
+
+  /**
+   * Get the I2CBusManager for a given hardware I2C bus.  AVR has only
+   * one TWI so `bus` is ignored.  Available from construction time so
+   * Interconnect can install cross-board I2C bridges immediately
+   * (the bus's master peripheral is swapped in later by `loadHex`).
+   */
+  getI2CBus(_bus: 0 | 1 = 0): I2CBusManager {
+    return this.i2cBus;
   }
 
   // ── Generic sensor registration (board-agnostic API) ──────────────────────

@@ -1,6 +1,8 @@
 import { RP2040, GPIOPinState, ConsoleLogger, LogLevel, USBCDC } from 'rp2040js';
 import type { RPI2C } from 'rp2040js';
 import { PinManager } from './PinManager';
+import { I2CBusManager, wireRpI2cToBus, nullI2CMaster } from './I2CBusManager';
+import type { I2CDevice } from './I2CBusManager';
 import { bootromB1 } from './rp2040-bootrom';
 import { loadUF2, loadUserFiles, getFirmware } from './MicroPythonLoader';
 import {
@@ -37,17 +39,13 @@ const CYCLE_NANOS = 1e9 / F_CPU; // nanoseconds per cycle (~8 ns)
 const FPS = 60;
 const CYCLES_PER_FRAME = Math.floor(F_CPU / FPS); // ~2 083 333
 
-/** Virtual I2C device interface for RP2040 */
-export interface RP2040I2CDevice {
-  /** 7-bit I2C address */
-  address: number;
-  /** Called when master writes a byte */
-  writeByte(value: number): boolean; // return true for ACK
-  /** Called when master reads a byte */
-  readByte(): number;
-  /** Optional: called on STOP condition */
-  stop?(): void;
-}
+/**
+ * Backward-compatible alias for the unified `I2CDevice` shape used by
+ * both AVR and RP2040 buses now that I2CBusManager is the canonical
+ * abstraction.  Existing call sites that import `RP2040I2CDevice` keep
+ * working without changes.
+ */
+export type RP2040I2CDevice = I2CDevice;
 
 export class RP2040Simulator {
   private rp2040: RP2040 | null = null;
@@ -116,15 +114,22 @@ export class RP2040Simulator {
    */
   public onPinChangeWithTime: ((pin: number, state: boolean, timeMs: number) => void) | null = null;
 
-  /** I2C virtual devices on each bus */
-  private i2cDevices: [Map<number, RP2040I2CDevice>, Map<number, RP2040I2CDevice>] = [
-    new Map(),
-    new Map(),
-  ];
-  private activeI2CDevice: [RP2040I2CDevice | null, RP2040I2CDevice | null] = [null, null];
+  /**
+   * One `I2CBusManager` per hardware I2C controller (RP2040 has two:
+   * I2C0/Wire and I2C1/Wire1).  Constructed up-front in the
+   * simulator's constructor with a placeholder master so that cross-
+   * board bridges + device registrations can land BEFORE firmware
+   * loads.  The real RPI2C peripheral takes over in `wireI2C()` via
+   * `attachMaster` + `wireRpI2cToBus`.
+   */
+  private i2cBuses: [I2CBusManager, I2CBusManager];
 
   constructor(pinManager: PinManager) {
     this.pinManager = pinManager;
+    this.i2cBuses = [
+      new I2CBusManager(nullI2CMaster()),
+      new I2CBusManager(nullI2CMaster()),
+    ];
   }
 
   /**
@@ -475,47 +480,12 @@ export class RP2040Simulator {
   private wireI2C(bus: 0 | 1): void {
     if (!this.rp2040) return;
     const i2c: RPI2C = this.rp2040.i2c[bus];
-    const devices = this.i2cDevices[bus];
-    i2c.onStart = () => {
-      i2c.completeStart();
-    };
-
-    i2c.onConnect = (address: number) => {
-      const device = devices.get(address);
-      if (device) {
-        this.activeI2CDevice[bus] = device;
-        i2c.completeConnect(true); // ACK
-      } else {
-        this.activeI2CDevice[bus] = null;
-        i2c.completeConnect(false); // NACK
-      }
-    };
-
-    i2c.onWriteByte = (value: number) => {
-      const dev = this.activeI2CDevice[bus];
-      if (dev) {
-        const ack = dev.writeByte(value);
-        i2c.completeWrite(ack);
-      } else {
-        i2c.completeWrite(false);
-      }
-    };
-
-    i2c.onReadByte = () => {
-      const dev = this.activeI2CDevice[bus];
-      if (dev) {
-        i2c.completeRead(dev.readByte());
-      } else {
-        i2c.completeRead(0xff);
-      }
-    };
-
-    i2c.onStop = () => {
-      const dev = this.activeI2CDevice[bus];
-      if (dev?.stop) dev.stop();
-      this.activeI2CDevice[bus] = null;
-      i2c.completeStop();
-    };
+    // Swap in the real RPI2C peripheral and route its per-callback
+    // events into the existing bus manager.  Any devices + bridges
+    // registered before the firmware loaded are preserved.
+    const busManager = this.i2cBuses[bus];
+    busManager.attachMaster(i2c);
+    wireRpI2cToBus(i2c, busManager);
   }
 
   private setupGpioListeners(): void {
@@ -801,17 +771,73 @@ export class RP2040Simulator {
 
   /**
    * Register a virtual I2C device on the specified bus (0 or 1).
-   * Default bus 0 = Wire, bus 1 = Wire1.
+   * Default bus 0 = Wire, bus 1 = Wire1.  Devices are added directly
+   * to the bus manager (which exists from construction time, with a
+   * placeholder master until the real RPI2C is wired in start()).
    */
-  addI2CDevice(device: RP2040I2CDevice, bus: 0 | 1 = 0): void {
-    this.i2cDevices[bus].set(device.address, device);
+  addI2CDevice(device: I2CDevice, bus: 0 | 1 = 0): void {
+    this.i2cBuses[bus].addDevice(device);
+  }
+
+  /** Remove an I2C device by address from the given bus. */
+  removeI2CDevice(address: number, bus: 0 | 1 = 0): void {
+    this.i2cBuses[bus].removeDevice(address);
   }
 
   /**
-   * Remove an I2C device by address.
+   * Get the I2CBusManager for a given hardware bus (0 or 1).
+   * Available from construction time so Interconnect can install
+   * cross-board bridges before firmware loads.
    */
-  removeI2CDevice(address: number, bus: 0 | 1 = 0): void {
-    this.i2cDevices[bus].delete(address);
+  getI2CBus(bus: 0 | 1 = 0): I2CBusManager {
+    return this.i2cBuses[bus];
+  }
+
+  /**
+   * Execute one ARM instruction synchronously and return the number
+   * of CPU cycles it took.  Mirrors `AVRSimulator.step()` for tests
+   * that need deterministic single-stepping outside the
+   * `requestAnimationFrame` loop used in production.  No-op if the
+   * firmware has not been loaded.
+   *
+   * Does NOT advance PIO or fire scheduled pin changes — for those
+   * use the production `start()` loop or call `stepCycles(n)`.
+   */
+  step(): number {
+    if (!this.rp2040) return 0;
+    const core = this.rp2040.core;
+    const clock = this.rp2040.clock;
+    if (core.waiting) {
+      // CPU is in WFE/WFI — advance clock to the next alarm so an
+      // interrupt can wake it.  Without this, single-stepping a
+      // waiting CPU spins indefinitely.
+      const jump = clock?.nanosToNextAlarm ?? CYCLE_NANOS;
+      if (jump > 0 && clock) clock.tick(jump);
+      this.totalCycles += Math.ceil((jump || CYCLE_NANOS) / CYCLE_NANOS);
+      return Math.ceil((jump || CYCLE_NANOS) / CYCLE_NANOS);
+    }
+    const cycles: number = core.executeInstruction();
+    if (clock) clock.tick(cycles * CYCLE_NANOS);
+    this.totalCycles += cycles;
+    return cycles;
+  }
+
+  /**
+   * Drive the CPU forward by approximately `targetCycles` cycles,
+   * synchronously.  Useful for test harnesses that want bounded,
+   * deterministic execution without depending on
+   * `requestAnimationFrame`.  Returns the actual number of cycles
+   * consumed (may exceed targetCycles by at most the cost of one
+   * instruction).
+   */
+  stepCycles(targetCycles: number): number {
+    let consumed = 0;
+    while (consumed < targetCycles) {
+      const c = this.step();
+      if (c === 0) break; // firmware not loaded
+      consumed += c;
+    }
+    return consumed;
   }
 
   /**
