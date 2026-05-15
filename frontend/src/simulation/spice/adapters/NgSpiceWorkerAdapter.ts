@@ -1,0 +1,125 @@
+/**
+ * NgSpiceWorkerAdapter — production SolverPort implementation.
+ *
+ * Wraps the vendored `NgSpiceInteractive` client (which itself wraps a
+ * Web Worker that loads the ngspice-interactive WASM build).  The
+ * adapter translates between the domain `SolverPort` types and the
+ * client's message-passing semantics.
+ *
+ * Single responsibility: this file is the *only* place in the codebase
+ * that knows about Web Workers, the ngspice command syntax, or vector
+ * lookup details.  If we ever swap engines (XSpice fork, native build,
+ * Falstad-style custom engine), the work is contained here.
+ *
+ * Concurrency: the underlying worker serialises commands itself, so
+ * the adapter can fire many `readVec` calls in parallel during a
+ * solve and they queue in the worker.  The adapter awaits all of them
+ * before returning a `SolveResult`.
+ */
+import { NgSpiceInteractive } from '../wasm/NgSpiceInteractive';
+import type {
+  SolverPort,
+  SolveAnalysis,
+  SolveResult,
+  SolveOptions,
+  SolveVector,
+} from '../ports/SolverPort';
+
+/**
+ * Build the ngspice command string for a given analysis.  All formats
+ * follow chapter 17 of the ngspice manual.
+ */
+function analysisToCommand(analysis: SolveAnalysis): string {
+  switch (analysis.kind) {
+    case 'op':
+      return 'op';
+    case 'tran':
+      // ngspice tran syntax: `tran <tstep> <tstop> [<tstart> [<tmax>] [uic]]`
+      return `tran ${analysis.step} ${analysis.stop}`;
+    case 'ac':
+      // ngspice ac syntax: `ac <sweep> <points> <fstart> <fstop>`
+      return `ac ${analysis.sweep} ${analysis.points} ${analysis.fstart} ${analysis.fstop}`;
+  }
+}
+
+export class NgSpiceWorkerAdapter implements SolverPort {
+  private readonly client: NgSpiceInteractive;
+  private initialised = false;
+  private initPromise: Promise<void> | null = null;
+
+  constructor(client?: NgSpiceInteractive) {
+    this.client = client ?? new NgSpiceInteractive();
+  }
+
+  async init(): Promise<void> {
+    if (this.initialised) return;
+    if (!this.initPromise) {
+      this.initPromise = this.client.init().then(() => {
+        this.initialised = true;
+      });
+    }
+    return this.initPromise;
+  }
+
+  async loadCircuit(netlist: string): Promise<void> {
+    await this.init();
+    await this.client.loadNetlist(netlist);
+  }
+
+  async solve(analysis: SolveAnalysis, options: SolveOptions): Promise<SolveResult> {
+    await this.init();
+    const t0 = performance.now();
+
+    const cmdResult = await this.client.command(analysisToCommand(analysis));
+    // ngspice writes convergence warnings to stderr; surface them so
+    // the caller can decide to retry with relaxed options.
+    const warnings = cmdResult.stderr.filter((l) => l.length > 0);
+
+    // Parallel read of every requested vector.  The worker serialises
+    // them internally, so this still costs O(N · 100µs) wall-time, but
+    // it avoids the await-each-then-await-next ping-pong.
+    const vectors = new Map<string, SolveVector>();
+    const reads = await Promise.allSettled(
+      options.vectorsOfInterest.map(async (name) => {
+        const v = await this.client.readVec(name);
+        return { requested: name, vec: v };
+      }),
+    );
+
+    let timeAxis: Float64Array = new Float64Array(0);
+    for (const r of reads) {
+      if (r.status !== 'fulfilled') continue;
+      const { requested, vec } = r.value;
+      vectors.set(requested.toLowerCase(), {
+        name: requested.toLowerCase(),
+        real: vec.real,
+        imag: vec.imag,
+      });
+    }
+
+    // For .tran, fetch the time axis separately.  ngspice always names
+    // it `time` regardless of analysis name.
+    if (analysis.kind === 'tran') {
+      try {
+        const t = await this.client.readVec('time');
+        timeAxis = t.real;
+      } catch {
+        // No time vector — shouldn't happen but tolerate it.
+      }
+    }
+
+    const solveMs = performance.now() - t0;
+    return { analysis, vectors, timeAxis, solveMs, warnings };
+  }
+
+  async alterSource(name: string, dcValue: number): Promise<void> {
+    await this.init();
+    await this.client.alter(name, dcValue);
+  }
+
+  dispose(): void {
+    this.client.dispose();
+    this.initialised = false;
+    this.initPromise = null;
+  }
+}

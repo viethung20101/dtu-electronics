@@ -38,9 +38,13 @@ export interface SolveVector {
 }
 
 /**
- * Result of a complete solve.  Includes every vector the engine
- * computed; consumers index by lower-case name (e.g. `v(n2)` for the
- * voltage at net `n2`).
+ * Result of a complete solve.  Includes every requested vector.
+ * Consumers index by lower-case name (e.g. `v(n2)` for the voltage
+ * at net `n2`).
+ *
+ * Vectors not in the request (or that don't exist in the engine
+ * state) are simply absent from the map.  Callers must tolerate
+ * missing vectors — a disconnected pin won't produce one.
  */
 export interface SolveResult {
   analysis: SolveAnalysis;
@@ -55,6 +59,21 @@ export interface SolveResult {
   solveMs: number;
   /** Anything ngspice wrote to stderr during the solve. Empty when clean. */
   warnings: string[];
+}
+
+/**
+ * What to ask the engine for after a solve.  Listing vectors up
+ * front lets the adapter parallelise reads (a Worker round-trip per
+ * vector is O(100µs); doing them concurrently is a real win for
+ * netlists with 50+ nets).
+ */
+export interface SolveOptions {
+  /**
+   * Vector names to read.  Lower-case, ngspice-formatted
+   * (`v(node_name)` for voltages, `i(v_source_name)` for branch
+   * currents).  Empty array = no vectors read (only timing).
+   */
+  vectorsOfInterest: readonly string[];
 }
 
 /**
@@ -79,17 +98,7 @@ export interface SolveResult {
 export interface SolverPort {
   init(): Promise<void>;
   loadCircuit(netlist: string): Promise<void>;
-  solve(analysis: SolveAnalysis): Promise<SolveResult>;
+  solve(analysis: SolveAnalysis, options: SolveOptions): Promise<SolveResult>;
   alterSource(name: string, dcValue: number): Promise<void>;
   dispose(): void;
 }
-
-/**
- * The set of vector names a caller is interested in.  Adapters MAY
- * optimise by only fetching these from the engine, but they're
- * allowed to return more — the caller filters on read.
- *
- * Reserved for future optimisation: not currently honoured by any
- * adapter, but the contract leaves the door open.
- */
-export type VectorFilter = ReadonlySet<string> | undefined;
