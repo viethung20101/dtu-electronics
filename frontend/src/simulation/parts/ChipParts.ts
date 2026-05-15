@@ -159,7 +159,7 @@ function set7SegPin(element: HTMLElement, pinName: string, state: boolean) {
 // ─── 74HC595 simulation ───────────────────────────────────────────────────────
 
 PartSimulationRegistry.register('74hc595', {
-  attachEvents: (element, simulator, getArduinoPinHelper) => {
+  attachEvents: (element, simulator, getArduinoPinHelper, _componentId, getPinResolver) => {
     const pinManager = (simulator as any).pinManager;
     if (!pinManager) return () => {};
 
@@ -172,12 +172,43 @@ PartSimulationRegistry.register('74hc595', {
     let prevShcp = false;
     let prevStcp = false;
 
-    // Resolve connected Arduino pins
-    const pinDS = getArduinoPinHelper('DS');
-    const pinSHCP = getArduinoPinHelper('SHCP');
-    const pinSTCP = getArduinoPinHelper('STCP');
-    const pinMR = getArduinoPinHelper('MR');
-    const pinOE = getArduinoPinHelper('OE');
+    // Phase 5 migration: prefer PinResolver subscriptions so the 595's
+    // five control pins (DS / SHCP / STCP / MR / OE) work correctly
+    // even when driven through an active device (BJT, level shifter).
+    // The rising-edge detection on SHCP / STCP still works — resolver
+    // onChange only fires on real transitions, so `state === 'HIGH'`
+    // is the rising edge.  Output side stays untouched (still pushes
+    // visual state via the wokwi DOM elements + downstream parts).
+    const useResolver = typeof getPinResolver === 'function';
+
+    type PinSub = {
+      getInitialHigh(): boolean;
+      onHighLow(cb: (high: boolean) => void): () => void;
+    };
+
+    function pinSub(name: string): PinSub | null {
+      if (useResolver) {
+        const r = getPinResolver!(name);
+        if (!r) return null;
+        return {
+          getInitialHigh: () => r.getCurrentState() === 'HIGH',
+          onHighLow: (cb) => r.onChange((state) => cb(state === 'HIGH')),
+        };
+      }
+      const pin = getArduinoPinHelper(name);
+      if (pin === null) return null;
+      return {
+        getInitialHigh: () => false,
+        onHighLow: (cb) =>
+          pinManager.onPinChange(pin, (_: number, s: boolean) => cb(s)),
+      };
+    }
+
+    const subDS = pinSub('DS');
+    const subSHCP = pinSub('SHCP');
+    const subSTCP = pinSub('STCP');
+    const subMR = pinSub('MR');
+    const subOE = pinSub('OE');
 
     const unsubscribers: (() => void)[] = [];
 
@@ -219,11 +250,11 @@ PartSimulationRegistry.register('74hc595', {
     };
 
     // OE (active low — LOW enables outputs)
-    if (pinOE !== null) {
-      pinManager.triggerPinChange(pinOE, true); // default HIGH = disabled
+    if (subOE) {
+      oeActive = !subOE.getInitialHigh(); // OE high at start = disabled
       unsubscribers.push(
-        pinManager.onPinChange(pinOE, (_: number, state: boolean) => {
-          oeActive = !state; // OE low = active
+        subOE.onHighLow((high) => {
+          oeActive = !high; // OE low = active
           propagateOutputs();
         }),
       );
@@ -232,13 +263,12 @@ PartSimulationRegistry.register('74hc595', {
     }
 
     // MR (active low — LOW resets shift register)
-    if (pinMR !== null) {
+    if (subMR) {
+      mrActive = subMR.getInitialHigh();
       unsubscribers.push(
-        pinManager.onPinChange(pinMR, (_: number, state: boolean) => {
-          mrActive = state; // MR high = no reset, low = reset
-          if (!mrActive) {
-            shiftReg = 0;
-          }
+        subMR.onHighLow((high) => {
+          mrActive = high;
+          if (!mrActive) shiftReg = 0;
         }),
       );
     } else {
@@ -247,40 +277,34 @@ PartSimulationRegistry.register('74hc595', {
 
     // DS — latched on SHCP rising edge; just track current value
     let dsState = false;
-    if (pinDS !== null) {
-      unsubscribers.push(
-        pinManager.onPinChange(pinDS, (_: number, state: boolean) => {
-          dsState = state;
-        }),
-      );
+    if (subDS) {
+      dsState = subDS.getInitialHigh();
+      unsubscribers.push(subDS.onHighLow((high) => (dsState = high)));
     }
 
     // SHCP — rising edge shifts DS into shift register
-    if (pinSHCP !== null) {
+    if (subSHCP) {
+      prevShcp = subSHCP.getInitialHigh();
       unsubscribers.push(
-        pinManager.onPinChange(pinSHCP, (_: number, state: boolean) => {
-          if (state && !prevShcp) {
-            // Rising edge
-            if (mrActive) {
-              // Shift: MSB shifts out via Q7S, DS enters at LSB
-              shiftReg = ((shiftReg << 1) | (dsState ? 1 : 0)) & 0xff;
-            }
+        subSHCP.onHighLow((high) => {
+          if (high && !prevShcp && mrActive) {
+            shiftReg = ((shiftReg << 1) | (dsState ? 1 : 0)) & 0xff;
           }
-          prevShcp = state;
+          prevShcp = high;
         }),
       );
     }
 
     // STCP — rising edge latches shift register to storage register
-    if (pinSTCP !== null) {
+    if (subSTCP) {
+      prevStcp = subSTCP.getInitialHigh();
       unsubscribers.push(
-        pinManager.onPinChange(pinSTCP, (_: number, state: boolean) => {
-          if (state && !prevStcp) {
-            // Rising edge — latch
+        subSTCP.onHighLow((high) => {
+          if (high && !prevStcp) {
             storageReg = shiftReg;
             propagateOutputs();
           }
-          prevStcp = state;
+          prevStcp = high;
         }),
       );
     }
