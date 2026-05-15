@@ -902,18 +902,40 @@ const ili9341Simulation = {
     // In rotation 1/3 (MV set) the driver iterates X in 0..319 and Y in
     // 0..239; we swap them at the last possible moment before touching
     // the imageData buffer (which is always physically 240 wide × 320 tall).
+    //
+    // The mapping is rotation-specific because applying MX/MY/MV as three
+    // independent flags double-mirrors the output (we tried that in
+    // commit 6edc715 and the user saw "espejada" text). The four
+    // Adafruit_ILI9341 setRotation() values map cleanly to four explicit
+    // (curX, curY) → (physX, physY) formulae taken from the chip's
+    // datasheet section 8.2.29 (Memory Access Control):
+    //
+    //   rot 0  M=0x48 (MX|BGR)            : (curX, curY)              [portrait]
+    //   rot 1  M=0x28 (MV|BGR)            : (curY, (319 - curX))      [landscape]
+    //   rot 2  M=0x88 (MY|BGR)            : ((239 - curX), (319 - curY))  [portrait flipped]
+    //   rot 3  M=0xE8 (MX|MY|MV|BGR)      : ((239 - curY), curX)      [landscape flipped]
+    //
+    // The Adafruit driver computes the rotation register value, sends it
+    // once via MADCTL, then writes pixels in the rotated framebuffer's
+    // coordinate space — we mirror that on the receive side.
     const writePixel = (hi: number, lo: number) => {
       if (curX > colEnd || curY > rowEnd) return;
 
-      // Map logical → physical via MADCTL.
-      let physX = curX;
-      let physY = curY;
-      if (madMV) {
+      // Map logical → physical via the (MV, MX, MY) rotation signature.
+      let physX: number, physY: number;
+      if (!madMV) {
+        // Portrait (rotations 0 or 2)
+        physX = madMY ? (SCREEN_W - 1) - curX : curX;
+        physY = madMY ? (SCREEN_H - 1) - curY : curY;
+      } else if (!madMX && !madMY) {
+        // Landscape rotation 1: m = MV | BGR. (curY, 319 - curX)
         physX = curY;
+        physY = (SCREEN_H - 1) - curX;
+      } else {
+        // Landscape rotation 3: m = MX | MY | MV | BGR. (239 - curY, curX)
+        physX = (SCREEN_W - 1) - curY;
         physY = curX;
       }
-      if (madMX) physX = (SCREEN_W - 1) - physX;
-      if (madMY) physY = (SCREEN_H - 1) - physY;
 
       if (physX < 0 || physX >= SCREEN_W || physY < 0 || physY >= SCREEN_H) {
         curX++;
