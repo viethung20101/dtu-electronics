@@ -262,6 +262,24 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
           // NTC and photoresistor breakouts are 3-pin active modules (VCC/GND
           // + analog output); not traceable as 2-terminal passives. Their
           // analog output is already an ADC-readable pin on its own.
+          //
+          // BJTs are 3-pin actives, but the canonical "Arduino digital pin
+          // controls a load via transistor" pattern is fundamental enough
+          // that we treat them as a [collector, base] shortcut.  Tracing
+          // FROM the collector side continues through the base — i.e. the
+          // Arduino pin driving the base is reported as the controller of
+          // the collector. That makes 7-segment multiplex circuits with
+          // BJT digit drivers actually work in the simulator, since
+          // getArduinoPinHelper('COM.1') can resolve through the transistor.
+          // For NPN, Arduino HIGH at base → transistor on → collector pulled
+          // to emitter (typically GND) — and "HIGH = digit enabled" in our
+          // 7-segment driver matches this when COM is common-cathode wired
+          // through the transistor to GND.
+          'bjt-2n2222': ['C', 'B'],
+          'bjt-bc547': ['C', 'B'],
+          'bjt-2n3055': ['C', 'B'],
+          'bjt-2n3906': ['C', 'B'],
+          'bjt-bc557': ['C', 'B'],
         };
         // Preset variants of the generic passives share their parent's tag
         // and pin layout — so resistor-220, cap-1u, ind-10m, etc. trace the
