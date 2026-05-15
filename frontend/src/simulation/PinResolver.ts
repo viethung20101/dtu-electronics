@@ -122,6 +122,55 @@ export type PinTracer = (
 ) => number | null;
 
 /**
+ * Extended tracer that ALSO reports whether the path crossed an active
+ * device (BJT, MOSFET, op-amp, diode).  Used by the PinResolver factory
+ * to decide between digital fast-path (no active devices on the path)
+ * and SPICE-resolved (an active device is in series, so binary HIGH/LOW
+ * doesn't capture the real signal).
+ *
+ * `crossedActiveDevice` is set during the trace walk in DynamicComponent;
+ * the legacy `PinTracer` API (returns just the number) is preserved for
+ * backward compat.
+ */
+export interface DetailedPinTrace {
+  /** Same convention as PinTracer: >=0 pin, -1 GND, null unreached. */
+  arduinoPin: number | null;
+  /** True iff the trace passed through a BJT/MOSFET/op-amp/diode. */
+  crossedActiveDevice: boolean;
+}
+
+export type DetailedPinTracer = (
+  componentId: string,
+  componentPinName: string,
+) => DetailedPinTrace;
+
+/**
+ * Active-component metadata ids whose presence on a wire path means we
+ * should defer to the SPICE solver instead of treating the path as a
+ * direct digital connection.  Includes every BJT, MOSFET, op-amp, and
+ * diode the simulator currently models.  Logic ICs (74HC, 4000-series)
+ * are intentionally NOT in this list because they have their own
+ * dedicated handlers that pre-decode the I2C/SPI/digital protocol —
+ * SPICE-routing them would be wasteful and slower.
+ *
+ * Phase 5 will simplify this once every active component goes through
+ * the same SPICE-resolved path uniformly.
+ */
+export const ACTIVE_DEVICE_PREFIXES: readonly string[] = Object.freeze([
+  'bjt-',
+  'mosfet-',
+  'opamp-',
+  'diode',         // diode, diode-1n4148, etc.
+  'led',           // technically a diode — current sense uses SPICE
+  'relay',         // coil drive + contact behavior is electrically active
+  '7805', '7812', '7905', 'lm317',  // regulators (3-terminal active)
+]);
+
+export function isActiveDevice(metadataId: string): boolean {
+  return ACTIVE_DEVICE_PREFIXES.some((prefix) => metadataId.startsWith(prefix));
+}
+
+/**
  * Build the default PinResolver for one (component, pin) pair.
  *
  * `tracePin` is provided by the caller (DynamicComponent) — it
@@ -204,6 +253,97 @@ export function createDefaultPinResolver(
         cached = state ? 'HIGH' : 'LOW';
         cachedVoltage = state ? vcc : 0;
         cb(cached, cachedVoltage);
+      });
+    },
+  };
+}
+
+// ── SPICE-resolved variant (Phase 1b) ─────────────────────────────────
+
+/**
+ * Subscriber registry the SPICE-resolved resolver hooks into.  Lives in
+ * MixedModeScheduler so the scheduler can fan voltage updates out to
+ * all interested resolvers.
+ *
+ * We use this seam type (instead of importing MixedModeScheduler here
+ * directly) to keep PinResolver dependency-free of the scheduler.
+ * Phase 1b continued can swap in any implementation conforming to this
+ * shape, including test mocks.
+ */
+export interface SpiceVoltageSource {
+  subscribe(
+    componentId: string,
+    componentPinName: string,
+    cb: (state: PinState, voltage: number) => void,
+  ): () => void;
+  /** Current voltage on the node connecting (componentId, pinName),
+   *  if SPICE has solved at least once. Null when unknown. */
+  getCurrentVoltage(componentId: string, componentPinName: string): number | null;
+}
+
+interface SpiceResolvedConfig {
+  /** Vcc/2 by default — the threshold above which a voltage reads HIGH.
+   *  Phase 3 will replace this with per-logic-family thresholds. */
+  thresholdHigh: number;
+  /** Below this voltage reads LOW. Hysteresis between low/high prevents
+   *  oscillation; Phase 3 will refine per Schmitt-trigger inputs. */
+  thresholdLow: number;
+  /** Vcc — used to synthesise a digital voltage when the resolver
+   *  reports a logic state synchronously and SPICE hasn't yet solved. */
+  vcc: number;
+}
+
+/**
+ * SPICE-resolved PinResolver — instead of mirroring an Arduino pin's
+ * digital state, it watches a SPICE node's voltage and threshold-
+ * converts to HIGH/LOW/FLOATING.  Used on paths that pass through
+ * active devices (BJT, MOSFET, op-amp, diode) where the digital
+ * fast-path can't represent the real signal.
+ *
+ * Phase 1b scaffolding: subscribes to the provided `SpiceVoltageSource`
+ * and translates voltage events.  When the source doesn't have a
+ * voltage yet, the resolver reports `FLOATING` (NOT the legacy "tied to
+ * Arduino HIGH/LOW") — that's intentional, because the scheduler hasn't
+ * yet wired in the real SPICE engine.  After Phase 1b continued, real
+ * voltages will flow through this same surface.
+ */
+export function createSpiceResolvedPinResolver(
+  componentId: string,
+  componentPinName: string,
+  voltageSource: SpiceVoltageSource,
+  config: SpiceResolvedConfig,
+): PinResolver {
+  let cached: PinState = 'FLOATING';
+  let cachedVoltage: number | null = null;
+
+  function voltageToState(v: number | null): PinState {
+    if (v === null || !Number.isFinite(v)) return 'FLOATING';
+    if (v >= config.thresholdHigh) return 'HIGH';
+    if (v <= config.thresholdLow) return 'LOW';
+    // Voltages in the dead band stay at the last known state — this is
+    // the basic hysteresis behavior that Phase 3 will refine per-family.
+    return cached;
+  }
+
+  // Seed initial state from whatever the voltage source currently knows.
+  cachedVoltage = voltageSource.getCurrentVoltage(componentId, componentPinName);
+  cached = voltageToState(cachedVoltage);
+
+  return {
+    getCurrentState(): PinState {
+      return cached;
+    },
+    getCurrentVoltage(): number | null {
+      return cachedVoltage;
+    },
+    onChange(cb): () => void {
+      return voltageSource.subscribe(componentId, componentPinName, (_state, voltage) => {
+        cachedVoltage = voltage;
+        const next = voltageToState(voltage);
+        if (next !== cached) {
+          cached = next;
+          cb(next, voltage);
+        }
       });
     },
   };

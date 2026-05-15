@@ -17,8 +17,14 @@ import { useSimulatorStore } from '../store/useSimulatorStore';
 import { useElectricalStore } from '../store/useElectricalStore';
 import { PartSimulationRegistry } from '../simulation/parts';
 import { isBoardComponent, boardPinToNumber } from '../utils/boardPinMapping';
-import { createDefaultPinResolver, type PinResolver } from '../simulation/PinResolver';
+import {
+  createDefaultPinResolver,
+  createSpiceResolvedPinResolver,
+  isActiveDevice,
+  type PinResolver,
+} from '../simulation/PinResolver';
 import { BOARD_PIN_GROUPS } from '../simulation/spice/boardPinGroups';
+import { getMixedModeScheduler } from '../simulation/spice/MixedModeScheduler';
 
 // Side-effect imports: register every web component we'll create at runtime.
 // `@wokwi/elements` covers the upstream catalog; `../velxio-elements` adds
@@ -322,8 +328,23 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
 
         // Depth-limited BFS: trace from (fromId, fromPin) through wires,
         // traversing through passive components to reach a board pin.
+        //
+        // Phase 1b: the legacy `trace()` returns just the pin number
+        // (backward compat); a sibling `traceDetailed()` returns the
+        // same pin plus a `crossedActiveDevice` flag so the resolver
+        // factory can decide between digital fast-path and SPICE-
+        // resolved per-pin.
         const trace = (fromId: string, fromPin: string, depth: number): number | null => {
-          if (depth > 6) return null;
+          return traceDetailed(fromId, fromPin, depth).arduinoPin;
+        };
+
+        const traceDetailed = (
+          fromId: string,
+          fromPin: string,
+          depth: number,
+          activeSeen = false,
+        ): { arduinoPin: number | null; crossedActiveDevice: boolean } => {
+          if (depth > 6) return { arduinoPin: null, crossedActiveDevice: activeSeen };
 
           const wires = state.wires.filter(
             (w) =>
@@ -337,25 +358,30 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
             const otherEp = selfEp === w.start ? w.end : w.start;
 
             if (isBoardComponent(otherEp.componentId)) {
-              // Direct board connection
               const boardKind =
                 state.boards.find((b) => b.id === otherEp.componentId)?.boardKind ??
                 otherEp.componentId;
               const pin = boardPinToNumber(boardKind, otherEp.pinName);
-              if (pin !== null) return pin;
+              if (pin !== null) return { arduinoPin: pin, crossedActiveDevice: activeSeen };
             } else {
-              // Intermediate passive component — traverse through it
               const comp = state.components.find((c) => c.id === otherEp.componentId);
               const pair = comp && PASSIVE_PIN_PAIRS[comp.metadataId];
               if (pair) {
                 const [p1, p2] = pair;
                 const otherPin = otherEp.pinName === p1 ? p2 : p1;
-                const result = trace(otherEp.componentId, otherPin, depth + 1);
-                if (result !== null) return result;
+                const nowActive =
+                  activeSeen || (comp ? isActiveDevice(comp.metadataId) : false);
+                const result = traceDetailed(
+                  otherEp.componentId,
+                  otherPin,
+                  depth + 1,
+                  nowActive,
+                );
+                if (result.arduinoPin !== null) return result;
               }
             }
           }
-          return null;
+          return { arduinoPin: null, crossedActiveDevice: activeSeen };
         };
 
         return trace(id, componentPinName, 0);
@@ -380,6 +406,27 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
             getPinState?: (pin: number) => boolean | null;
           };
         }).pinManager;
+
+        // Phase 1b: detect whether the path between this component pin and
+        // an Arduino pin passes through any active device (BJT, MOSFET,
+        // op-amp, diode, regulator).  If yes → use the SPICE-resolved
+        // resolver flavor so the digital state is derived from real node
+        // voltages (handles transistor inversion, op-amp gain, diode
+        // forward-drop, etc.).  If no → use the legacy digital fast-path
+        // (zero SPICE cost, identical to Phase 0 behavior).
+        const detailed = traceDetailed(id, componentPinName, 0);
+        if (detailed.crossedActiveDevice) {
+          const scheduler = getMixedModeScheduler();
+          // Threshold = vcc/2 with no hysteresis. Phase 3 will replace
+          // this with per-logic-family Vil/Vih + Schmitt.
+          const half = ownerBoardVcc / 2;
+          return createSpiceResolvedPinResolver(id, componentPinName, scheduler, {
+            thresholdHigh: half,
+            thresholdLow: half,
+            vcc: ownerBoardVcc,
+          });
+        }
+
         return createDefaultPinResolver(
           id,
           componentPinName,
