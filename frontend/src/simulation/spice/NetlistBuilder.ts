@@ -43,13 +43,20 @@ export function buildNetlist(input: BuildNetlistInput): BuildNetlistResult {
   const uf = new UnionFind();
   const pinKey = (componentId: string, pinName: string) => `${componentId}:${pinName}`;
 
-  // Seed every pin referenced by a wire (components pins are added on demand)
+  // Seed every pin referenced by a wire (components pins are added on demand).
+  // Phase 4: when a wire has `length_cm` set, its endpoints stay in separate
+  // nets and a R_wire_<id> card is emitted later (step 7).
+  const resistiveWires: typeof wires = [];
   for (const w of wires) {
     const a = pinKey(w.start.componentId, w.start.pinName);
     const b = pinKey(w.end.componentId, w.end.pinName);
     uf.add(a);
     uf.add(b);
-    uf.union(a, b);
+    if (w.length_cm !== undefined && w.length_cm > 0) {
+      resistiveWires.push(w);
+    } else {
+      uf.union(a, b);
+    }
   }
 
   // ── 2. Canonicalize ground / VCC pins ────────────────────────────────────
@@ -110,6 +117,22 @@ export function buildNetlist(input: BuildNetlistInput): BuildNetlistResult {
   // ── 6. Vcc rail source (if any pin referenced it) ─────────────────────────
   if (hasNet(netNames, 'vcc_rail')) {
     cards.unshift(`V_VCC_RAIL vcc_rail 0 DC ${dominantVcc}`);
+  }
+
+  // ── 6.5. Wire resistance (Phase 4) ───────────────────────────────────────
+  // Wires marked with length_cm get a resistor between their endpoint nets.
+  // R = 0.01 ohm/cm — order-of-magnitude correct for AWG 22 copper hookup
+  // wire — enough to show voltage drop on long buses without dominating
+  // ordinary circuit behaviour.  Emitted before pull-down detection so the
+  // resistors count as DC paths between their endpoints.
+  for (const w of resistiveWires) {
+    const cm = w.length_cm ?? 0;
+    if (cm <= 0) continue;
+    const ohms = Math.max(0.01, 0.01 * cm);
+    const a = netLookup(w.start.componentId, w.start.pinName);
+    const b = netLookup(w.end.componentId, w.end.pinName);
+    if (!a || !b) continue;
+    cards.push(`R_wire_${w.id} ${a} ${b} ${ohms}`);
   }
 
   // ── 7. Auto pull-downs for floating nets ─────────────────────────────────
