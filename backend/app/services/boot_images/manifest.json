@@ -2,8 +2,40 @@
   "_comment": "Source of truth for QEMU boot files. Adding a new board kind means appending an entry under image_sets; the BootImageProvider picks it up via load_manifest() with no Python edits. SHA256s are verified after download; mismatches raise IntegrityError and the cache slot is not populated. See docs/BOOT_IMAGES.md for the architecture.",
   "version": 1,
   "image_sets": {
+    "raspberry-pi-3-virt": {
+      "description": "Raspberry Pi 3 simulator on QEMU -M virt + cortex-a53. Velxio-built minimal ARM64 kernel + initramfs + Alpine-based rootfs. Replaces the broken raspi3b path (pl011 RX bug in QEMU 10 + kernel 6.12 — see project/pi-emulation/decisions.md for the full trail). Used by app.services.qemu_manager.",
+      "images": [
+        {
+          "name": "velxio-kernel-arm64",
+          "asset_id": "velxio-kernel-arm64",
+          "sha256": "76652d46bee27fe46f92c21adf9e67964356774ff4f6abe4f009344aacd3acd9",
+          "size_bytes": 30697408,
+          "version": "2026.05+v6.12.88-deb13-cloud"
+        },
+        {
+          "name": "velxio-initramfs-arm64.cpio.gz",
+          "asset_id": "velxio-initramfs-arm64",
+          "sha256": "9a1ecd1c83a65207562b8395fcc57cc9218f16cf240dd4b5cf84e13ef0b34efe",
+          "size_bytes": 1032327,
+          "version": "2026.05"
+        },
+        {
+          "name": "velxio-pi-rootfs-arm64.ext4",
+          "asset_id": "velxio-pi-rootfs-arm64-zst",
+          "sha256": "d09eec3bbc023dc4798d70de87048b25d2db81e5530fe0fbe0853f745bdaf910",
+          "size_bytes": 629145600,
+          "version": "2026.05",
+          "compressed": {
+            "encoding": "zstd",
+            "sha256": "de55525e8475eea17fe7f4c26491154a998f7379ed82a651f0d10550cb9c997f",
+            "size_bytes": 24725464
+          }
+        }
+      ]
+    },
     "raspberry-pi-3": {
-      "description": "Raspberry Pi 3 Model B boot files — kernel, device tree, and Raspberry Pi OS Trixie (armhf) SD image. Targets the QEMU 'raspi3b' machine type. The SD image ships compressed (zstd -19) to cut the licence-endpoint download from ~5.3 GiB to ~1.4 GiB; the provider decompresses on the host into the named volume cache.",
+      "description": "[DEPRECATED — kept for one release to ease rollback] Original raspi3b setup. Replaced by 'raspberry-pi-3-virt' (see above). qemu_manager.py no longer references this entry; do not add new clients here.",
+      "deprecated": true,
       "images": [
         {
           "name": "kernel8.img",

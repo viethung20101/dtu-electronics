@@ -1,27 +1,32 @@
 """
-QemuManager — backend service for Raspberry Pi 3B emulation via QEMU.
+QemuManager — backend service for Raspberry Pi simulator emulation via QEMU.
 
 Architecture
 ------------
 Each Pi board instance gets:
-  - qemu-system-aarch64 process (raspi3b, ARM64)
-  - ttyAMA0 (serial0) → TCP socket on a dynamic port → user serial I/O
-  - ttyAMA1 (serial1) → TCP socket on a dynamic port → GPIO shim protocol
-  - A fresh qcow2 overlay over the base SD image (copy-on-write, discarded on stop)
+  - qemu-system-aarch64 process (-M virt -cpu cortex-a53 for Pi 3, other
+    cpu models for the rest of the family — see Phase 3 plan)
+  - Velxio-built kernel + initramfs + rootfs (not the rpi-firmware kernel
+    and not raspios; see ``project/pi-emulation/`` for why)
+  - virtio-blk root from a qcow2 overlay over the cached rootfs ext4
+  - virtio-console on chardev 0 (TCP socket) — the user shell at /dev/hvc0
+  - virtio-serial port on chardev 1 (TCP socket) — multiplexed text
+    protocol channel for GPIO/I2C/SPI/UART/PWM (Phase 2 wires it up)
 
-Boot files (kernel8.img, device tree, Raspberry Pi OS SD image) are NOT
-shipped in the repo or baked into the Docker image. They're resolved at
-runtime via :class:`app.services.boot_images.BootImageProvider`, which
-downloads + SHA256-verifies + decompresses them on first use and caches
-them under ``/var/cache/velxio/boot-images/raspberry-pi-3/``. The
-lifespan hook at the bottom of this module pre-warms the cache at
-process startup so a first-time user request doesn't pay the
-download latency.
+We were on ``-M raspi3b`` previously but QEMU 10 + kernel 6.12 had a
+pl011 RX bug that broke userspace tty open — see
+``project/pi-emulation/decisions.md`` for the full debugging trail.
+The ``raspberry-pi-3`` manifest entry remains around (marked deprecated)
+to ease rollback; ``raspberry-pi-3-virt`` is the live one.
 
-GPIO shim protocol (ttyAMA1)
-----------------------------
-  Pi → backend :  "GPIO <bcm_pin> <0|1>\\n"
-  backend → Pi  :  "SET <bcm_pin> <0|1>\\n"
+Boot files are resolved at runtime via BootImageProvider (downloads,
+verifies, caches under /var/cache/velxio/boot-images/...). The lifespan
+hook at the bottom pre-warms the cache so first-time user requests
+don't pay the download latency.
+
+Protocol channel (chardev 1) — wired by Phase 2's pi_protocol_mux
+  Pi  → backend :  "GPIO <bcm> <0|1>\\n"   (also I2C/SPI/UART/PWM lines)
+  backend → Pi  :  "SET <bcm> <0|1>\\n"    and reply frames
 """
 
 import asyncio
@@ -43,13 +48,13 @@ from app.services.boot_images import (
 logger = logging.getLogger(__name__)
 
 # Image-set id (matches a key in `boot_images/manifest.json`).
-PI3_IMAGE_SET = 'raspberry-pi-3'
+PI3_IMAGE_SET = 'raspberry-pi-3-virt'
 
 # Filenames the provider materialises (must match `name` fields in the
 # manifest entry for PI3_IMAGE_SET).
-PI3_KERNEL_NAME = 'kernel8.img'
-PI3_DTB_NAME    = 'bcm2710-rpi-3-b.dtb'
-PI3_SD_NAME     = 'raspios-trixie-armhf.img'
+PI3_KERNEL_NAME    = 'velxio-kernel-arm64'
+PI3_INITRAMFS_NAME = 'velxio-initramfs-arm64.cpio.gz'
+PI3_ROOTFS_NAME    = 'velxio-pi-rootfs-arm64.ext4'
 
 
 def _find_free_port() -> int:
@@ -71,8 +76,8 @@ class PiInstance:
         # Runtime state
         self.process:      subprocess.Popen | None = None
         self.overlay_path: str | None = None
-        self.serial_port:  int = 0   # ttyAMA0 TCP port
-        self.gpio_port:    int = 0   # ttyAMA1 TCP port
+        self.serial_port:  int = 0   # virtio-console TCP port (/dev/hvc0)
+        self.gpio_port:    int = 0   # virtio-serial protocol TCP port (/dev/vport0p2)
         self._serial_writer: asyncio.StreamWriter | None = None
         self._gpio_writer:   asyncio.StreamWriter | None = None
         self._tasks: list[asyncio.Task] = []
@@ -124,7 +129,8 @@ class QemuManager:
         if not inst._serial_writer:
             logger.warning('send_serial_bytes: %s has no serial writer (qemu not connected yet?)', client_id)
             return
-        logger.info('send_serial_bytes: %s sending %d bytes: %r', client_id, len(data), bytes(data[:32]))
+        logger.info('send_serial_bytes: %s sending %d bytes: %r',
+                    client_id, len(data), bytes(data[:32]))
         inst._serial_writer.write(data)
         try:
             await inst._serial_writer.drain()
@@ -146,86 +152,97 @@ class QemuManager:
             })
             self._instances.pop(inst.client_id, None)
             return
-        kernel_path: Path = images[PI3_KERNEL_NAME]
-        dtb_path:    Path = images[PI3_DTB_NAME]
-        sd_base:     Path = images[PI3_SD_NAME]
+        kernel_path:    Path = images[PI3_KERNEL_NAME]
+        initramfs_path: Path = images[PI3_INITRAMFS_NAME]
+        rootfs_base:    Path = images[PI3_ROOTFS_NAME]
 
-        # Allocate TCP ports for the two serial channels
+        # Allocate TCP ports for the two chardevs.
         inst.serial_port = _find_free_port()
         inst.gpio_port   = _find_free_port()
 
-        # Create overlay qcow2 so the base SD image is never modified
+        # Create overlay qcow2 backed by the velxio rootfs ext4. Each
+        # session gets its own writable layer; reads cascade down to
+        # the shared base, writes go into the per-session overlay
+        # which is deleted on stop.
         overlay = tempfile.NamedTemporaryFile(suffix='.qcow2', delete=False)
         overlay.close()
         inst.overlay_path = overlay.name
         try:
             subprocess.run(
                 ['qemu-img', 'create', '-f', 'qcow2',
-                 '-b', str(sd_base), '-F', 'raw',
+                 '-b', str(rootfs_base), '-F', 'raw',
                  inst.overlay_path],
                 check=True, capture_output=True,
             )
-            # raspi3b requires SD card size to be a power of 2; resize overlay to 8 GiB
-            subprocess.run(
-                ['qemu-img', 'resize', inst.overlay_path, '8G'],
-                check=True, capture_output=True,
-            )
         except subprocess.CalledProcessError as e:
-            await inst.emit('error', {'message': f'qemu-img create failed: {e.stderr.decode()}'})
+            await inst.emit('error',
+                            {'message': f'qemu-img create failed: '
+                                        f'{e.stderr.decode()}'})
             self._instances.pop(inst.client_id, None)
             return
 
-        # Build QEMU command
+        # Build QEMU command for -M virt + virtio devices.
+        #
+        # Why virt: see project/pi-emulation/decisions.md (D1). Short
+        # version: raspi3b pl011 RX is broken in QEMU 10 + kernel 6.12,
+        # virtio-console isn't.
+        #
+        # Why no -dtb: virt machine generates its own DTB on the fly
+        # from the runtime device list, so we don't ship one.
         cmd = [
             'qemu-system-aarch64',
-            '-M',      'raspi3b',
-            '-kernel', str(kernel_path),
-            '-dtb',    str(dtb_path),
-            '-drive',  f'file={inst.overlay_path},if=sd,format=qcow2',
-            '-m',      '1G',
+            '-M',      'virt',
+            '-cpu',    'cortex-a53',
             '-smp',    '4',
-            '-nographic',
-            # ttyAMA0 → user serial (TCP server, frontend connects)
-            '-serial', f'tcp:127.0.0.1:{inst.serial_port},server,nowait',
-            # ttyAMA1 → GPIO shim protocol
-            '-serial', f'tcp:127.0.0.1:{inst.gpio_port},server,nowait',
-            '-append',
-            # earlycon=pl011,mmio32,0x3f201000 — the BCM2837 PL011 UART
-            # MMIO address. earlycon polled-mode is what actually carries
-            # all of our serial output; QEMU's raspi3b emulation drives
-            # the PL011 correctly in this mode but the kernel's normal
-            # interrupt-based serial driver loses TX once systemd hands
-            # off (confirmed by experiment — output silently stops after
-            # ~9 s of kernel time without keep_bootcon).
-            #
-            # keep_bootcon — don't disable earlycon when the regular
-            # console driver registers. Without this, the boot goes
-            # silent at the same moment systemd takes /dev/console.
-            #
-            # console=ttyAMA1,115200 — the PL011 at 0x3f201000
-            # enumerates as ttyAMA1 (not ttyAMA0!). The mini-UART at
-            # 0x3f215040 takes ttyAMA0 and fails to probe under QEMU.
-            # console= here drives userspace output once the kernel
-            # hands off; it works in tandem with the kept-alive earlycon
-            # for full kernel printk coverage.
-            #
-            # init=/usr/local/sbin/velxio-init — skip systemd entirely.
-            # The init script (baked into the SD image by
-            # scripts/configure-pi3-autologin.sh) mounts the pseudo-
-            # filesystems systemd would, then loops a passwordless root
-            # bash on ttyAMA1. User sees the prompt in ~10 s instead of
-            # 2-3 min of Pi OS systemd graph churning inside emulation.
-            'earlycon=pl011,mmio32,0x3f201000 keep_bootcon '
-            'console=ttyAMA1,115200 '
-            'root=/dev/mmcblk0p2 rootwait rw '
-            'dwc_otg.lpm_enable=0 '
-            'init=/usr/local/sbin/velxio-init',
+            '-m',      '1G',
+            '-kernel', str(kernel_path),
+            '-initrd', str(initramfs_path),
+            # Root filesystem via virtio-blk over PCI. virt machine
+            # uses PCI as the primary virtio transport, so we use
+            # `virtio-blk-pci` (not `virtio-blk-device`, which is for
+            # mmio and silently leaves /dev/vda unregistered).
+            '-drive',  f'if=none,file={inst.overlay_path},format=qcow2,id=rootfs',
+            '-device', 'virtio-blk-pci,drive=rootfs',
+            # No default network / display / monitor / serial — we add
+            # exactly the two chardev-backed virtio-serial ports we
+            # need.  -nographic auto-binds -serial mon:stdio which
+            # collides with our explicit -chardev IDs.
+            '-nic',     'none',
+            '-display', 'none',
+            '-monitor', 'none',
+            '-serial',  'none',
+            # Console: TCP chardev → virtio-console → /dev/hvc0 inside
+            # the guest. The frontend serial WebSocket connects to this
+            # port (replaces the old ttyAMA0 path).
+            '-chardev', f'socket,id=cons,host=127.0.0.1,port={inst.serial_port},'
+                       f'server=on,wait=off',
+            '-device', 'virtio-serial-pci,id=virtio-serial0',
+            '-device', 'virtconsole,chardev=cons',
+            # Protocol channel: second virtserialport on the SAME
+            # virtio-serial controller. Inside the guest this is
+            # /dev/vport0p2. Phase 2 hooks this up to pi_protocol_mux
+            # for GPIO/I2C/SPI/UART/PWM.
+            '-chardev', f'socket,id=proto,host=127.0.0.1,port={inst.gpio_port},'
+                       f'server=on,wait=off',
+            '-device', 'virtserialport,chardev=proto,name=velxio-protocol',
+            # Kernel cmdline:
+            #   console=hvc0 — the virtio-console is the user terminal.
+            #   root=/dev/vda — the virtio-blk overlay is the rootfs.
+            #   rw — userspace can write (overlay catches writes).
+            #   quiet — suppress most printk so the user sees the shell
+            #           banner cleanly.
+            #   panic=10 — auto-reboot 10 s after a panic instead of
+            #              hanging forever (defensive against bad user
+            #              rootfs uploads in Phase 4).
+            '-append', 'console=hvc0 root=/dev/vda rw quiet panic=10',
         ]
 
-        logger.info('Launching QEMU for %s: %s', inst.client_id, ' '.join(cmd))
+        logger.info('Launching QEMU for %s: %s',
+                    inst.client_id, ' '.join(cmd))
 
-        # Use subprocess.Popen via executor — asyncio.create_subprocess_exec requires
-        # ProactorEventLoop on Windows but uvicorn may use SelectorEventLoop.
+        # Use subprocess.Popen via executor — asyncio.create_subprocess_exec
+        # requires ProactorEventLoop on Windows but uvicorn may use
+        # SelectorEventLoop.
         loop = asyncio.get_running_loop()
         try:
             inst.process = await loop.run_in_executor(
@@ -238,7 +255,8 @@ class QemuManager:
                 ),
             )
         except FileNotFoundError:
-            await inst.emit('error', {'message': 'qemu-system-aarch64 not found in PATH'})
+            await inst.emit('error',
+                            {'message': 'qemu-system-aarch64 not found in PATH'})
             self._instances.pop(inst.client_id, None)
             return
 
@@ -246,29 +264,34 @@ class QemuManager:
         await inst.emit('system', {'event': 'booting'})
 
         # Give QEMU a moment to open its TCP sockets
-        await asyncio.sleep(2.0)
+        await asyncio.sleep(1.0)
 
-        # Connect to serial TCP ports
+        # Connect to the two chardev TCP ports.
         inst._tasks.append(asyncio.create_task(self._connect_serial(inst)))
         inst._tasks.append(asyncio.create_task(self._connect_gpio(inst)))
         inst._tasks.append(asyncio.create_task(self._watch_stderr(inst)))
 
-    # ── Serial (ttyAMA0) ──────────────────────────────────────────────────────
+    # ── Console (virtio-console / /dev/hvc0) ──────────────────────────────────
 
     async def _connect_serial(self, inst: PiInstance) -> None:
         for attempt in range(10):
             try:
-                reader, writer = await asyncio.open_connection('127.0.0.1', inst.serial_port)
+                reader, writer = await asyncio.open_connection(
+                    '127.0.0.1', inst.serial_port,
+                )
                 inst._serial_writer = writer
-                logger.info('%s: serial connected on port %d', inst.client_id, inst.serial_port)
+                logger.info('%s: serial connected on port %d',
+                            inst.client_id, inst.serial_port)
                 await inst.emit('system', {'event': 'booted'})
                 await self._read_serial(inst, reader)
                 return
             except (ConnectionRefusedError, OSError):
                 await asyncio.sleep(1.0 * (attempt + 1))
-        await inst.emit('error', {'message': 'Could not connect to QEMU serial port'})
+        await inst.emit('error',
+                        {'message': 'Could not connect to QEMU console port'})
 
-    async def _read_serial(self, inst: PiInstance, reader: asyncio.StreamReader) -> None:
+    async def _read_serial(self, inst: PiInstance,
+                            reader: asyncio.StreamReader) -> None:
         buf = bytearray()
         while inst.running:
             try:
@@ -285,22 +308,36 @@ class QemuManager:
                 logger.warning('%s serial read: %s', inst.client_id, e)
                 break
 
-    # ── GPIO shim (ttyAMA1) ───────────────────────────────────────────────────
+    # ── Protocol channel (virtio-serial / /dev/vport0p2) ──────────────────────
+    # Methods keep the historical "_gpio" naming so the rest of the
+    # codebase (simulation route, GPIO event bus) doesn't have to
+    # rename. Phase 2 swaps the line parser for the full multi-protocol
+    # mux while keeping this connect/read/write plumbing identical.
 
     async def _connect_gpio(self, inst: PiInstance) -> None:
         for attempt in range(10):
             try:
-                reader, writer = await asyncio.open_connection('127.0.0.1', inst.gpio_port)
+                reader, writer = await asyncio.open_connection(
+                    '127.0.0.1', inst.gpio_port,
+                )
                 inst._gpio_writer = writer
-                logger.info('%s: GPIO shim connected on port %d', inst.client_id, inst.gpio_port)
+                logger.info('%s: protocol channel connected on port %d',
+                            inst.client_id, inst.gpio_port)
                 await self._read_gpio(inst, reader)
                 return
             except (ConnectionRefusedError, OSError):
                 await asyncio.sleep(1.0 * (attempt + 1))
-        logger.warning('%s: GPIO shim connection failed', inst.client_id)
+        logger.warning('%s: protocol channel connection failed',
+                       inst.client_id)
 
-    async def _read_gpio(self, inst: PiInstance, reader: asyncio.StreamReader) -> None:
-        """Parse "GPIO <pin> <state>\n" lines from the Pi GPIO shim."""
+    async def _read_gpio(self, inst: PiInstance,
+                          reader: asyncio.StreamReader) -> None:
+        """Parse text-protocol lines from the Pi shim layer.
+
+        Phase 1 understands GPIO only (existing protocol). Phase 2
+        extends this to dispatch I2C/SPI/UART/PWM as well via
+        pi_protocol_mux.
+        """
         linebuf = b''
         while inst.running:
             try:
@@ -310,11 +347,13 @@ class QemuManager:
                 linebuf += chunk
                 while b'\n' in linebuf:
                     line, linebuf = linebuf.split(b'\n', 1)
-                    await self._handle_gpio_line(inst, line.decode('ascii', 'ignore').strip())
+                    await self._handle_gpio_line(
+                        inst, line.decode('ascii', 'ignore').strip(),
+                    )
             except asyncio.TimeoutError:
                 continue
             except Exception as e:
-                logger.warning('%s GPIO read: %s', inst.client_id, e)
+                logger.warning('%s protocol read: %s', inst.client_id, e)
                 break
 
     async def _handle_gpio_line(self, inst: PiInstance, line: str) -> None:
@@ -335,7 +374,7 @@ class QemuManager:
             try:
                 await inst._gpio_writer.drain()
             except Exception as e:
-                logger.warning('%s GPIO send: %s', inst.client_id, e)
+                logger.warning('%s protocol send: %s', inst.client_id, e)
 
     # ── QEMU stderr watcher ───────────────────────────────────────────────────
 
@@ -345,7 +384,6 @@ class QemuManager:
         loop = asyncio.get_running_loop()
         try:
             while inst.running:
-                # readline() blocks until a line or EOF — run in executor so we don't block the loop
                 line = await loop.run_in_executor(None, inst.process.stderr.readline)
                 if not line:
                     break
@@ -423,7 +461,7 @@ class QemuManager:
 
 # ── Lifespan pre-warm ────────────────────────────────────────────────────────
 async def _prewarm_pi3_boot_images() -> None:
-    """Lifespan hook: download + cache the Pi 3 boot files in the
+    """Lifespan hook: download + cache the Pi 3 virt boot files in the
     background at process start.
 
     The cache check is cheap when files are already on disk (named
@@ -441,9 +479,6 @@ async def _prewarm_pi3_boot_images() -> None:
             exc,
         )
         return
-    # Fire-and-forget — let it complete in the background while the
-    # rest of the lifespan continues. provider.warmup() swallows its
-    # own errors, so the task never logs unhandled exceptions.
     asyncio.create_task(provider.warmup(PI3_IMAGE_SET))
 
 
