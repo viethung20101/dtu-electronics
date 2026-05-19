@@ -277,36 +277,49 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!onMouseDown) return;
-      // Don't swallow the pointerdown when the user is interacting with a
-      // live wokwi component (rotating a potentiometer knob, pressing a
-      // pushbutton, toggling a slide-switch, dragging the joystick stick,
-      // etc.). The wokwi-elements internally use pointerdown/move/up on
-      // their shadow-DOM SVGs; if we call stopPropagation() in the capture
-      // phase here, that internal logic NEVER receives the event and the
-      // knob can't rotate, the button never reports pressed, etc.
+      // Don't swallow the pointerdown for wokwi components that own their
+      // own pointer interaction (rotary knobs, pushbuttons, slide-switches,
+      // joysticks, keypads, encoders). For those the wokwi element binds
+      // pointerdown/move/up on its shadow-DOM SVG; if we call
+      // stopPropagation() in the capture phase here the internal logic
+      // never sees the event and the knob can't rotate, the button never
+      // reports pressed, etc.
       //
-      // The canvas's drag-to-rearrange flow still works: the user can grab
-      // the component WRAPPER (its padding/border) or any non-interactive
-      // part of the body. For interactive parts the wokwi component owns
-      // the click — same UX as Wokwi/Tinkercad.
+      // EVERY OTHER component (sensors, displays, LEDs, resistors, even
+      // ones with attachEvents for the sensor-update / SPICE-prop bridge)
+      // expects clicks to bubble up to the canvas → open the property
+      // dialog or grab for drag-to-rearrange. The previous "swallow only
+      // when isInteractive" heuristic was too broad: it included DHT22,
+      // HC-SR04, NTC, photoresistor, LED, etc. — all of which have
+      // attachEvents but no internal pointer handler, so clicks on them
+      // SHOULD bubble. With the broad guard, those dialogs never opened.
       //
-      // We additionally allow the canvas drag when the simulation is NOT
-      // running (interactionRunning=false): the user is in "edit mode"
-      // arranging the board, so capturing the click into a canvas drag
-      // is the correct behaviour even on interactive components.
+      // The whitelist below is tight on purpose: only add a tag name when
+      // the wokwi element actually has its own pointerdown handler that
+      // the user needs to reach. If a new interactive part is added,
+      // append its tag here.
       const target = e.target as HTMLElement;
-      const targetIsInteractive =
-        isInteractive &&
+      const tag = target.tagName?.toLowerCase() ?? '';
+      const ownsPointer =
         interactionRunning &&
-        target.tagName.toLowerCase().startsWith('wokwi-');
-      if (targetIsInteractive) {
+        (tag === 'wokwi-pushbutton' ||
+          tag === 'wokwi-pushbutton-6mm' ||
+          tag === 'wokwi-potentiometer' ||
+          tag === 'wokwi-slide-potentiometer' ||
+          tag === 'wokwi-slide-switch' ||
+          tag === 'wokwi-dip-switch-8' ||
+          tag === 'wokwi-analog-joystick' ||
+          tag === 'wokwi-ky-040' ||
+          tag === 'wokwi-membrane-keypad' ||
+          tag === 'wokwi-rotary-dialer');
+      if (ownsPointer) {
         // Let the wokwi component own this pointerdown.
         return;
       }
       e.stopPropagation();
       onMouseDown(e);
     },
-    [onMouseDown, isInteractive, interactionRunning],
+    [onMouseDown, interactionRunning],
   );
 
   const handleDoubleClick = useCallback(
