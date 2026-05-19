@@ -28,6 +28,9 @@ import {
   ATtinyTimer1,
   attinyTimer1Config,
 } from 'avr8js';
+import type { AVRTimerConfig } from 'avr8js/dist/esm/peripherals/timer';
+import type { ADCConfig, ADCMuxConfiguration } from 'avr8js/dist/esm/peripherals/adc';
+import { ADCMuxInputType, ADCReference } from 'avr8js/dist/esm/peripherals/adc';
 import { PinManager } from './PinManager';
 import { hexToUint8Array } from '../utils/hexParser';
 import { I2CBusManager, nullI2CMaster } from './I2CBusManager';
@@ -143,6 +146,110 @@ const attiny85PortBConfig = {
   externalInterrupts: [] as never[],
 };
 
+/**
+ * ATtiny85 Timer0 config — Arduino `millis()` / `delay()` rely on the
+ * TIMER0_OVF interrupt to tick the millisecond counter. avr8js's generic
+ * `AVRTimer` is fully data-driven, so we just supply ATtiny85's register
+ * addresses (different from the ATmega328P defaults in `timer0Config`)
+ * and the right interrupt vector offsets.
+ *
+ * Refs: <avr/iotnx5.h> for register addresses; ATtiny25/45/85 datasheet
+ * (Atmel-2586) for vector indices.
+ *   _VECTOR(5)  → TIMER0_OVF   → word 0x0A
+ *   _VECTOR(10) → TIMER0_COMPA → word 0x14
+ *   _VECTOR(11) → TIMER0_COMPB → word 0x16
+ */
+/**
+ * ATtiny85 ADC config — required because the chip's ADC registers live at
+ * completely different memory addresses than the ATmega328P defaults that
+ * avr8js's `adcConfig` ships with. Without this, `analogRead()` writes
+ * ADSC at ATtiny85's ADCSRA (0x26) and polls forever because avr8js is
+ * listening at 0x7A instead.
+ *
+ * Refs: <avr/iotnx5.h>; ATtiny25/45/85 datasheet (Atmel-2586) sec. 17.
+ *   ADMUX  = 0x07 (I/O) -> 0x27 (mem)
+ *   ADCSRA = 0x06       -> 0x26
+ *   ADCSRB = 0x03       -> 0x23
+ *   ADCL   = 0x04       -> 0x24
+ *   ADCH   = 0x05       -> 0x25
+ *   DIDR0  = 0x14       -> 0x34
+ *   ADC_vect = _VECTOR(8) -> word 0x10
+ *
+ * MUX field is 4 bits (bits 3:0). Single-ended channels 0..3 = PB5/PB2/PB4/PB3.
+ * Reference bits REFS1:REFS0 at ADMUX[7:6] select VCC/AREF/Internal1V1 by default;
+ * full REFS2 extension lives at ADMUX[4] but the avr8js helper checks bit 3,
+ * so the rare 2.56 V internal reference is currently unsupported — every
+ * default-ref sketch (`analogReference(DEFAULT)`) works fine.
+ */
+const attiny85AdcChannels: ADCMuxConfiguration = {
+  0: { type: ADCMuxInputType.SingleEnded, channel: 0 }, // PB5
+  1: { type: ADCMuxInputType.SingleEnded, channel: 1 }, // PB2
+  2: { type: ADCMuxInputType.SingleEnded, channel: 2 }, // PB4
+  3: { type: ADCMuxInputType.SingleEnded, channel: 3 }, // PB3
+  12: { type: ADCMuxInputType.Constant, voltage: 1.1 }, // VBG
+  13: { type: ADCMuxInputType.Constant, voltage: 0 }, // GND
+  15: { type: ADCMuxInputType.Temperature },
+};
+
+const attiny85AdcConfig: ADCConfig = {
+  ADMUX: 0x27,
+  ADCSRA: 0x26,
+  ADCSRB: 0x23,
+  ADCL: 0x24,
+  ADCH: 0x25,
+  DIDR0: 0x34,
+  // ATtiny85 vectors are 1-word RJMP (vs ATmega328P's 2-word JMP) so the
+  // avr8js "address" field is the raw vector index, not vector*2.
+  adcInterrupt: 0x08, // _VECTOR(8) ADC_vect
+  numChannels: 4,
+  muxInputMask: 0xf,
+  muxChannels: attiny85AdcChannels,
+  adcReferences: [
+    ADCReference.AVCC,        // 00 = VCC
+    ADCReference.AREF,        // 01 = external AREF (PB0)
+    ADCReference.Internal1V1, // 10 = internal 1.1 V
+    ADCReference.Reserved,    // 11 = reserved
+  ],
+};
+
+const attiny85Timer0Config: AVRTimerConfig = {
+  bits: 8,
+  captureInterrupt: 0,
+  // ATtiny85 vectors are 1-word RJMP (vs ATmega328P's 2-word JMP) so the
+  // avr8js "address" field is the raw vector index, not vector*2.
+  compAInterrupt: 0x0a, // _VECTOR(10) TIMER0_COMPA_vect
+  compBInterrupt: 0x0b, // _VECTOR(11) TIMER0_COMPB_vect
+  compCInterrupt: 0,
+  ovfInterrupt: 0x05, // _VECTOR(5)  TIMER0_OVF_vect
+  TIFR: 0x58,
+  OCRA: 0x56,
+  OCRB: 0x5c,
+  OCRC: 0,
+  ICR: 0,
+  TCNT: 0x52,
+  TCCRA: 0x4f,
+  TCCRB: 0x53,
+  TCCRC: 0,
+  TIMSK: 0x59,
+  TOV: 0b00000010,
+  OCFA: 0b00010000,
+  OCFB: 0b00001000,
+  OCFC: 0,
+  TOIE: 0b00000010,
+  OCIEA: 0b00010000,
+  OCIEB: 0b00001000,
+  OCIEC: 0,
+  compPortA: 0x38,
+  compPinA: 0,
+  compPortB: 0x38,
+  compPinB: 1,
+  compPortC: 0,
+  compPinC: 0,
+  externalClockPort: 0x36,
+  externalClockPin: 2,
+  dividers: { 0: 0, 1: 1, 2: 8, 3: 64, 4: 256, 5: 1024, 6: 0, 7: 0 },
+};
+
 /** Ordered list of Mega ports with their avr8js configs */
 const MEGA_PORT_CONFIGS = [
   { name: 'PORTA', config: portAConfig },
@@ -245,10 +352,26 @@ export class AVRSimulator {
     this.cpu = new CPU(this.program, sramBytes);
 
     if (this.boardVariant === 'tiny85') {
-      // ATtiny85: PORTB only (PB0-PB5), Timer1 via ATtinyTimer1, no USART
+      // ATtiny85: PORTB only (PB0-PB5). Timer0 powers millis()/delay() in
+      // ATTinyCore via TIMER0_OVF. Timer1 is the high-speed 8-bit PWM
+      // timer (PLL clock). No hardware USART on this chip.
+      //
+      // Known limitation (task #116): the Timer0 OVF interrupt does fire at
+      // the correct cadence (1.024 ms simulated, verified via debug
+      // instrumentation), but real ATTinyCore-compiled `delay()` does not
+      // observably advance — the LED stays stuck either HIGH or LOW
+      // depending on which phase the firmware was in when the first OVF
+      // hit. Likely a subtle interaction between the avr8js clearInterrupt
+      // semantics (only clears the pending queue entry, leaves TIFR bit
+      // set) and ATTinyCore's ISR relying on hardware auto-clear of TOV0.
+      // Workaround attempts (manual TIFR clear after ISR entry) did not
+      // change the visible behavior. Needs a deeper avr8js dive.
       this.portB = new AVRIOPort(this.cpu, attiny85PortBConfig as typeof portBConfig);
-      this.adc = new AVRADC(this.cpu, adcConfig);
-      this.peripherals = [new ATtinyTimer1(this.cpu, attinyTimer1Config)];
+      this.adc = new AVRADC(this.cpu, attiny85AdcConfig);
+      this.peripherals = [
+        new AVRTimer(this.cpu, attiny85Timer0Config),
+        new ATtinyTimer1(this.cpu, attinyTimer1Config),
+      ];
       // usart stays null — ATtiny85 has no hardware USART
     } else {
       // ATmega2560 has more vectors before the timers/USART (8 external INTs, etc.),
@@ -611,8 +734,11 @@ export class AVRSimulator {
 
       if (this.boardVariant === 'tiny85') {
         this.portB = new AVRIOPort(this.cpu, attiny85PortBConfig as typeof portBConfig);
-        this.adc = new AVRADC(this.cpu, adcConfig);
-        this.peripherals = [new ATtinyTimer1(this.cpu, attinyTimer1Config)];
+        this.adc = new AVRADC(this.cpu, attiny85AdcConfig);
+        this.peripherals = [
+          new AVRTimer(this.cpu, attiny85Timer0Config),
+          new ATtinyTimer1(this.cpu, attinyTimer1Config),
+        ];
         this.usart = null;
       } else {
         this.spi = new AVRSPI(this.cpu, spiConfig, 16000000);

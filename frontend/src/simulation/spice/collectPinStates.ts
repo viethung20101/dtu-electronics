@@ -31,6 +31,11 @@ function pinNameToArduinoPin(pinName: string, boardKind: BoardKind): number {
   if (/^A\d+$/.test(pinName)) {
     return 14 + parseInt(pinName.slice(1), 10);
   }
+  // ATtiny85 port-style names (PB0..PB5) map 1:1 to Arduino pin numbers
+  // because ATTinyCore's pinMap is identity for the tiny85 variant.
+  if (/^PB\d+$/.test(pinName)) {
+    return parseInt(pinName.slice(2), 10);
+  }
   if (/^\d+$/.test(pinName)) {
     return parseInt(pinName, 10);
   }

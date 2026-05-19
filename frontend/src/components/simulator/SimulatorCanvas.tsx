@@ -1100,8 +1100,11 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
         case 'nano-rp2040':
           ledPin = 25; // GPIO25
           break;
+        case 'attiny85':
+          ledPin = 1; // PB1 (Digispark convention)
+          break;
         default:
-          ledPin = 13; // Pin 13 for Arduino Uno/Nano/Mega, ATtiny85, etc.
+          ledPin = 13; // Pin 13 for Arduino Uno/Nano/Mega
       }
 
       unsubs.push(

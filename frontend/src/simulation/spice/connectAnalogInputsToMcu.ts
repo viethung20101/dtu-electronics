@@ -48,7 +48,15 @@ const ADC_PIN_MAP: Partial<Record<BoardKind, Array<{ pinName: string; channel: n
   'arduino-uno': ADC_6CH,
   'arduino-nano': ADC_8CH,
   'arduino-mega': ADC_16CH,
-  attiny85: adcRange('A', 0, 4),
+  // ATtiny85: ADC channels live on PORTB pins, not on A0..An.
+  // Wires reference the chip's own pin names (PB5/PB2/PB4/PB3).
+  //   PB5 -> ADC0  PB2 -> ADC1  PB4 -> ADC2  PB3 -> ADC3
+  attiny85: [
+    { pinName: 'PB5', channel: 0 },
+    { pinName: 'PB2', channel: 1 },
+    { pinName: 'PB4', channel: 2 },
+    { pinName: 'PB3', channel: 3 },
+  ],
 
   // RP2040
   'raspberry-pi-pico': [

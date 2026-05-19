@@ -1550,33 +1550,21 @@ void loop() {
 `,
     components: [
       { type: 'wokwi-arduino-uno', id: 'arduino-uno', x: 100, y: 100, properties: {} },
-      { type: 'wokwi-ssd1306', id: 'ssd1306-1', x: 420, y: 120, properties: {} },
+      { type: 'wokwi-ssd1306', id: 'ssd1306-1', x: 420, y: 100, properties: {} },
+      { type: 'wokwi-ds1307', id: 'rtc1', x: 420, y: 280, properties: {} },
     ],
     wires: [
-      {
-        id: 'wire-sda',
-        start: { componentId: 'arduino-uno', pinName: 'A4' },
-        end: { componentId: 'ssd1306-1', pinName: 'DATA' },
-        color: '#2196f3',
-      },
-      {
-        id: 'wire-scl',
-        start: { componentId: 'arduino-uno', pinName: 'A5' },
-        end: { componentId: 'ssd1306-1', pinName: 'CLK' },
-        color: '#ff9800',
-      },
-      {
-        id: 'wire-gnd',
-        start: { componentId: 'arduino-uno', pinName: 'GND.1' },
-        end: { componentId: 'ssd1306-1', pinName: 'GND' },
-        color: '#000000',
-      },
-      {
-        id: 'wire-vcc',
-        start: { componentId: 'arduino-uno', pinName: '5V' },
-        end: { componentId: 'ssd1306-1', pinName: 'VIN' },
-        color: '#ff0000',
-      },
+      // SDA bus (shared)
+      { id: 'wire-sda', start: { componentId: 'arduino-uno', pinName: 'A4' }, end: { componentId: 'ssd1306-1', pinName: 'DATA' }, color: '#2196f3' },
+      { id: 'wire-sda-rtc', start: { componentId: 'ssd1306-1', pinName: 'DATA' }, end: { componentId: 'rtc1', pinName: 'SDA' }, color: '#2196f3' },
+      // SCL bus (shared)
+      { id: 'wire-scl', start: { componentId: 'arduino-uno', pinName: 'A5' }, end: { componentId: 'ssd1306-1', pinName: 'CLK' }, color: '#ff9800' },
+      { id: 'wire-scl-rtc', start: { componentId: 'ssd1306-1', pinName: 'CLK' }, end: { componentId: 'rtc1', pinName: 'SCL' }, color: '#ff9800' },
+      // Power + ground for both devices
+      { id: 'wire-gnd', start: { componentId: 'arduino-uno', pinName: 'GND.1' }, end: { componentId: 'ssd1306-1', pinName: 'GND' }, color: '#000000' },
+      { id: 'wire-gnd-rtc', start: { componentId: 'ssd1306-1', pinName: 'GND' }, end: { componentId: 'rtc1', pinName: 'GND' }, color: '#000000' },
+      { id: 'wire-vcc', start: { componentId: 'arduino-uno', pinName: '5V' }, end: { componentId: 'ssd1306-1', pinName: 'VIN' }, color: '#ff0000' },
+      { id: 'wire-vcc-rtc', start: { componentId: 'ssd1306-1', pinName: 'VIN' }, end: { componentId: 'rtc1', pinName: 'VCC' }, color: '#ff0000' },
     ],
   },
   {
@@ -1653,8 +1641,16 @@ void loop() {
   delay(1000);
 }
 `,
-    components: [{ type: 'wokwi-arduino-uno', id: 'arduino-uno', x: 100, y: 100, properties: {} }],
-    wires: [],
+    components: [
+      { type: 'wokwi-arduino-uno', id: 'arduino-uno', x: 100, y: 100, properties: {} },
+      { type: 'wokwi-ds1307', id: 'rtc1', x: 480, y: 200, properties: {} },
+    ],
+    wires: [
+      { id: 'w-sda', start: { componentId: 'arduino-uno', pinName: 'A4' }, end: { componentId: 'rtc1', pinName: 'SDA' }, color: '#0066cc' },
+      { id: 'w-scl', start: { componentId: 'arduino-uno', pinName: 'A5' }, end: { componentId: 'rtc1', pinName: 'SCL' }, color: '#ffaa00' },
+      { id: 'w-vcc', start: { componentId: 'arduino-uno', pinName: '5V' }, end: { componentId: 'rtc1', pinName: 'VCC' }, color: '#ff0000' },
+      { id: 'w-gnd', start: { componentId: 'arduino-uno', pinName: 'GND' }, end: { componentId: 'rtc1', pinName: 'GND' }, color: '#000000' },
+    ],
   },
   {
     id: 'i2c-eeprom-rw',
@@ -6997,7 +6993,7 @@ void loop() {
     id: 'attiny85-blink',
     title: 'ATtiny85: Blink LED',
     description:
-      'Classic blink on the ATtiny85 built-in LED (PB1). Great first sketch for this tiny 8-bit chip.',
+      'Blink an external LED on PB1 (Digispark pin 1) through a 220 Ohm current-limit resistor.',
     category: 'basics',
     difficulty: 'beginner',
     boardFilter: 'attiny85',
@@ -7006,11 +7002,11 @@ void loop() {
         boardKind: 'attiny85',
         x: 120,
         y: 160,
-        code: `// ATtiny85 — Blink built-in LED on PB1
-// Pin 1 = PB1 = OC0B/OC1A (also Digispark LED)
+        code: `// ATtiny85 — Blink an LED wired to PB1 (Digispark pin 1)
+// PB1 -> 220 Ohm -> LED anode; LED cathode -> GND
 
 void setup() {
-  pinMode(1, OUTPUT);  // PB1 as output
+  pinMode(1, OUTPUT);
 }
 
 void loop() {
@@ -7022,8 +7018,30 @@ void loop() {
       },
     ],
     code: '',
-    components: [],
-    wires: [],
+    components: [
+      { type: 'wokwi-led', id: 'tiny-led1', x: 360, y: 140, properties: { color: 'green' } },
+      { type: 'wokwi-resistor', id: 'tiny-r1', x: 360, y: 220, properties: { resistance: '220' } },
+    ],
+    wires: [
+      {
+        id: 'tinyw1',
+        start: { componentId: 'attiny85', pinName: 'PB1' },
+        end: { componentId: 'tiny-led1', pinName: 'A' },
+        color: '#22cc22',
+      },
+      {
+        id: 'tinyw2',
+        start: { componentId: 'tiny-led1', pinName: 'C' },
+        end: { componentId: 'tiny-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
+        id: 'tinyw3',
+        start: { componentId: 'tiny-r1', pinName: '2' },
+        end: { componentId: 'attiny85', pinName: 'GND' },
+        color: '#000000',
+      },
+    ],
   },
 
   {
@@ -7058,6 +7076,13 @@ void loop() {
     components: [
       { type: 'wokwi-pushbutton', id: 'tiny-btn1', x: 380, y: 130, properties: { color: 'green' } },
       { type: 'wokwi-led', id: 'tiny-led1', x: 380, y: 240, properties: { color: 'red' } },
+      {
+        type: 'wokwi-resistor',
+        id: 'tiny-btn-r1',
+        x: 380,
+        y: 320,
+        properties: { resistance: '220' },
+      },
     ],
     wires: [
       {
@@ -7079,9 +7104,15 @@ void loop() {
         color: '#ff4444',
       },
       {
+        id: 'tb-led-r',
+        start: { componentId: 'tiny-led1', pinName: 'C' },
+        end: { componentId: 'tiny-btn-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
         id: 'tb-gnd2',
-        start: { componentId: 'attiny85', pinName: 'GND' },
-        end: { componentId: 'tiny-led1', pinName: 'C' },
+        start: { componentId: 'tiny-btn-r1', pinName: '2' },
+        end: { componentId: 'attiny85', pinName: 'GND' },
         color: '#000000',
       },
     ],
@@ -7217,6 +7248,13 @@ void loop() {
         properties: { temperature: '25' },
       },
       { type: 'wokwi-led', id: 'tiny-ntc-led', x: 380, y: 300, properties: { color: 'red' } },
+      {
+        type: 'wokwi-resistor',
+        id: 'tiny-ntc-r1',
+        x: 380,
+        y: 380,
+        properties: { resistance: '220' },
+      },
     ],
     wires: [
       {
@@ -7244,9 +7282,15 @@ void loop() {
         color: '#ff4444',
       },
       {
+        id: 'tn-led-r',
+        start: { componentId: 'tiny-ntc-led', pinName: 'C' },
+        end: { componentId: 'tiny-ntc-r1', pinName: '1' },
+        color: '#888888',
+      },
+      {
         id: 'tn-lgnd',
-        start: { componentId: 'attiny85', pinName: 'GND' },
-        end: { componentId: 'tiny-ntc-led', pinName: 'C' },
+        start: { componentId: 'tiny-ntc-r1', pinName: '2' },
+        end: { componentId: 'attiny85', pinName: 'GND' },
         color: '#000000',
       },
     ],
