@@ -29,8 +29,22 @@ createRoot(document.getElementById('root')!).render(<App />);
 // open-source build (see vite.config.ts) and to the real overlay only when
 // VITE_PRO_BUILD=true at build time. The dynamic import keeps the pro chunk
 // out of the OSS bundle entirely (Vite tree-shakes the never-taken branch).
-if (import.meta.env.VITE_PRO_BUILD) {
+//
+// VITE_DESKTOP=true is set by the Tauri desktop build. The desktop shell
+// owns its own license + auth UI (Phase 3 of paid-clients) and runs against
+// a locally spawned sidecar, so the velxio.dev-coupled overlay (trackers,
+// billing, cloud auth, admin) is intentionally NOT loaded — even if a
+// build accidentally sets both flags.
+if (import.meta.env.VITE_PRO_BUILD && !import.meta.env.VITE_DESKTOP) {
   import('@pro/index')
     .then((m) => m.mountPro?.())
     .catch((err) => console.warn('[pro] failed to load overlay:', err));
+}
+
+// Desktop-only hooks (ESP32 QEMU prompt now, welcome screen in Phase 3).
+// Dynamic import so the OSS bundle never pulls this in.
+if (import.meta.env.VITE_DESKTOP) {
+  import('./desktop/index')
+    .then((m) => m.mountDesktop?.())
+    .catch((err) => console.warn('[desktop] failed to load hooks:', err));
 }

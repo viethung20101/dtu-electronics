@@ -1,7 +1,6 @@
 import axios from 'axios';
+import { getApiBase } from '../lib/apiBase';
 import type { ESP32BoardOptions, SpiffsFile } from '../types/boardOptions';
-
-const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 export interface SketchFile {
   name: string;
@@ -82,7 +81,7 @@ export async function compileCode(
   onProgress?: CompileProgress,
   extras?: CompileExtras,
 ): Promise<CompileResult> {
-  console.log('Sending compilation request to:', `${API_BASE}/compile/start`);
+  console.log('Sending compilation request to:', `${getApiBase()}/compile/start`);
   console.log('Board:', board);
   console.log(
     'Files:',
@@ -100,7 +99,7 @@ export async function compileCode(
   let jobId: string;
   try {
     const startResp = await axios.post<CompileStartResponse>(
-      `${API_BASE}/compile/start`,
+      `${getApiBase()}/compile/start`,
       {
         files,
         board_fqbn: board,
@@ -139,7 +138,7 @@ export async function compileCode(
     let status: CompileStatusResponse;
     try {
       const resp = await axios.get<CompileStatusResponse>(
-        `${API_BASE}/compile/status/${jobId}`,
+        `${getApiBase()}/compile/status/${jobId}`,
         { withCredentials: true, timeout: 30000 },
       );
       status = resp.data;

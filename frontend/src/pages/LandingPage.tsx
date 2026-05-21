@@ -680,6 +680,12 @@ export const LandingPage: React.FC = () => {
             <span className="hero-accent">{t('landing.hero.titleAccent')}</span>
           </h1>
           <p className="hero-subtitle">{t('landing.hero.subtitle')}</p>
+          {/*
+            Slot for the pro overlay's OS-detect Velxio Desktop download
+            CTA. Pure OSS leaves it empty; velxio.dev mounts a
+            DesktopDownloadButton here as the visual primary.
+          */}
+          <div data-velxio-slot="landing-hero-primary-cta" />
           <div className="hero-ctas">
             <Link
               to={localize('/editor')}

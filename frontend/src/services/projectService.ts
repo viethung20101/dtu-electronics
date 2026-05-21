@@ -1,8 +1,13 @@
 import axios from 'axios';
+import { getApiBase } from '../lib/apiBase';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '/api';
-
-const api = axios.create({ baseURL: API_BASE, withCredentials: true });
+// baseURL is resolved on every request so a host (e.g. the Tauri desktop
+// shell) can swap the backend port at runtime.
+const api = axios.create({ withCredentials: true });
+api.interceptors.request.use((config) => {
+  config.baseURL = getApiBase();
+  return config;
+});
 
 export interface SketchFile {
   name: string;
