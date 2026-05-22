@@ -305,6 +305,13 @@ export class AVRSimulator {
   private lastPortCValue = 0;
   private lastPortDValue = 0;
   private lastOcrValues: number[] = [];
+  /**
+   * Last known TXEN bit value, used to detect 0→1 transitions and seed the
+   * TX pin baseline at idle HIGH the moment the firmware enables the USART.
+   * Without this seed the oscilloscope shows a floating/LOW baseline until
+   * the first byte transmits, which doesn't match real hardware.
+   */
+  private lastTxEnable = false;
 
   constructor(pinManager: PinManager, boardVariant: 'uno' | 'mega' | 'tiny85' = 'uno') {
     this.pinManager = pinManager;
@@ -423,9 +430,14 @@ export class AVRSimulator {
       this.usart = new AVRUSART(this.cpu, activeUsart0Config, 16000000);
       this.usart.onByteTransmit = (value: number) => {
         if (this.onSerialData) this.onSerialData(String.fromCharCode(value));
+        // Synthesize the UART frame on PD1 so the oscilloscope sees a real
+        // waveform during Serial.print. See emitUartTxFrame() for details.
+        this.emitUartTxFrame(value);
       };
       this.usart.onConfigurationChange = () => {
         if (this.onBaudRateChange && this.usart) this.onBaudRateChange(this.usart.baudRate);
+        // Seed idle HIGH on the TX pin the first time TXEN flips on.
+        this.handleUartConfigChange();
       };
 
       this.twi = new AVRTWI(this.cpu, activeTwiConfig, 16000000);
@@ -507,6 +519,88 @@ export class AVRSimulator {
     let i = this.scheduledPinChanges.length;
     while (i > 0 && this.scheduledPinChanges[i - 1].cycle > atCycle) i--;
     this.scheduledPinChanges.splice(i, 0, { cycle: atCycle, pin, state });
+  }
+
+  /**
+   * Synthesize a real bit-level UART frame on the TX pin so an oscilloscope
+   * sees a waveform during Serial.print, matching real ATmega328P / ATmega2560
+   * behavior. avr8js's USART only intercepts the byte at the UDR0 register
+   * level — it never toggles PD1 (Uno/Nano) / PE1 (Mega), so without this
+   * shim the TX pin is flat in the scope while real hardware would show the
+   * UART frame at the configured baud rate.
+   *
+   * Frame layout (8N1, the Arduino default):
+   *   [start LOW] [data LSB ... data MSB] [parity?] [stop1] [stop2?]
+   *
+   * We honour avr8js's USART configuration getters (bitsPerChar, parityEnabled,
+   * parityOdd, stopBits, baudRate) so unusual configurations stay accurate.
+   *
+   * Each transition is emitted via onPinChangeWithTime so the oscilloscope
+   * stamps it with simulator time (cpu.cycles / 16_000 ms), giving bit-level
+   * timing that holds at any sweep speed.
+   */
+  private emitUartTxFrame(byte: number): void {
+    const usart = this.usart;
+    if (!usart || !this.cpu || !this.onPinChangeWithTime) return;
+    if (!usart.txEnable) return;
+
+    const baud = usart.baudRate;
+    if (!baud || baud <= 0) return;
+
+    // ATmega328P (Uno/Nano) UART0: TX = PD1 → Arduino pin 1
+    // ATmega2560 (Mega)    UART0: TX = PE1 → Arduino pin 1 (Mega TX0)
+    // ATtiny85 has no hardware USART so this method is never called.
+    const txPin = 1;
+
+    const freqHz = 16_000_000;
+    const cyclesPerBit = freqHz / baud;
+    const startCycle = this.cpu.cycles;
+
+    // Build the frame bit-by-bit. UART idles HIGH; start = LOW; data LSB first;
+    // optional parity; stop bit(s) HIGH.  Idle->start gives the first transition.
+    const dataBits = usart.bitsPerChar; // typically 8
+    const bits: boolean[] = [false]; // start bit
+    let onesCount = 0;
+    for (let i = 0; i < dataBits; i++) {
+      const b = (byte >> i) & 1;
+      bits.push(b !== 0);
+      onesCount += b;
+    }
+    if (usart.parityEnabled) {
+      // Even parity = bit that makes total ones even; odd = total ones odd.
+      const parity = usart.parityOdd ? (onesCount % 2 === 0) : (onesCount % 2 !== 0);
+      bits.push(parity);
+    }
+    for (let i = 0; i < usart.stopBits; i++) bits.push(true);
+
+    // Emit only the bits that change state to keep buffer churn minimal.
+    // The "previous" state at startCycle is idle HIGH.
+    let prevState = true;
+    for (let i = 0; i < bits.length; i++) {
+      if (bits[i] !== prevState) {
+        const timeMs = (startCycle + i * cyclesPerBit) / 16_000;
+        this.onPinChangeWithTime(txPin, bits[i], timeMs);
+        prevState = bits[i];
+      }
+    }
+    // After the stop bit(s) the line is already HIGH (idle) so no trailing
+    // transition is needed — the next byte will start from HIGH automatically.
+  }
+
+  /**
+   * Seed the TX pin at idle HIGH when the firmware sets TXEN for the first
+   * time (typically inside Serial.begin).  Without this seed the scope's
+   * "initial state before the first byte" defaults to LOW, hiding the start
+   * bit transition of the very first byte sent.
+   */
+  private handleUartConfigChange(): void {
+    if (!this.usart || !this.cpu) return;
+    const tx = this.usart.txEnable;
+    if (tx && !this.lastTxEnable && this.onPinChangeWithTime) {
+      const timeMs = this.cpu.cycles / 16_000;
+      this.onPinChangeWithTime(1, true, timeMs);
+    }
+    this.lastTxEnable = tx;
   }
 
   /** Flush all scheduled pin changes whose target cycle has been reached. */
@@ -749,9 +843,11 @@ export class AVRSimulator {
         this.usart = new AVRUSART(this.cpu, usart0Config, 16000000);
         this.usart.onByteTransmit = (value: number) => {
           if (this.onSerialData) this.onSerialData(String.fromCharCode(value));
+          this.emitUartTxFrame(value);
         };
         this.usart.onConfigurationChange = () => {
           if (this.onBaudRateChange && this.usart) this.onBaudRateChange(this.usart.baudRate);
+          this.handleUartConfigChange();
         };
 
         this.twi = new AVRTWI(this.cpu, twiConfig, 16000000);
