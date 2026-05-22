@@ -76,6 +76,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
     setMenuOpen(false);
   }, [location.pathname]);
 
+  // Tauri desktop: skip the header entirely. The marketing nav was
+  // already hidden, but the strip itself was still painting an empty
+  // black bar over the editor. Brand/auto-save/share/auth-slot all
+  // live elsewhere in desktop: title bar shows "Velxio Desktop", the
+  // native menubar has File/Edit/View/Help, auto-save is a Pro cloud
+  // feature (desktop saves to .vlx), share generates a velxio.dev URL
+  // that doesn't apply to a desktop session, and the license flow
+  // owns its own DesktopWelcomePage.
+  if (import.meta.env.VITE_DESKTOP) {
+    return null;
+  }
+
   const isActive = (path: string) =>
     location.pathname === localize(path) ? ' header-nav-link-active' : '';
 

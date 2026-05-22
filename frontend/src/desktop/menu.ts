@@ -26,6 +26,8 @@ import { listen } from './tauriBridge';
 import { dlog } from './log';
 import { triggerDownloadVlx, importVlxFile } from '../utils/vlxFile';
 import { useSimulatorStore } from '../store/useSimulatorStore';
+import { switchLocale } from '../i18n/path';
+import { LOCALES, type Locale } from '../i18n/config';
 
 type MenuAction =
   | 'new-project'
@@ -34,10 +36,14 @@ type MenuAction =
   | 'find-in-editor'
   | 'toggle-file-explorer'
   | 'toggle-serial-monitor'
-  | 'check-for-updates';
+  | 'check-for-updates'
+  | 'set-locale';
 
 interface MenuEventPayload {
   action: MenuAction;
+  // Only present when action='set-locale'. Matches an entry in
+  // i18n/config.ts::LOCALES.
+  locale?: string;
 }
 
 let installed = false;
@@ -47,11 +53,11 @@ export async function installDesktopMenuListener(): Promise<void> {
   installed = true;
   await listen<MenuEventPayload>('velxio://menu', (event) => {
     dlog('menu event', event.payload);
-    void handle(event.payload.action);
+    void handle(event.payload.action, event.payload);
   });
 }
 
-async function handle(action: MenuAction): Promise<void> {
+async function handle(action: MenuAction, payload?: MenuEventPayload): Promise<void> {
   switch (action) {
     case 'save-vlx':
       triggerDownloadVlx();
@@ -70,7 +76,32 @@ async function handle(action: MenuAction): Promise<void> {
     case 'check-for-updates':
       await checkForUpdates();
       return;
+    case 'set-locale':
+      if (payload?.locale) setLocale(payload.locale);
+      return;
   }
+}
+
+function setLocale(locale: string): void {
+  // Defensive: ignore unknown locales coming from the menu so a
+  // stale shell doesn't navigate to a broken URL.
+  if (!(LOCALES as readonly string[]).includes(locale)) {
+    dlog('set-locale: ignoring unknown locale', { locale });
+    return;
+  }
+  const target = locale as Locale;
+  const next =
+    switchLocale(window.location.pathname, target) +
+    window.location.search +
+    window.location.hash;
+  if (next === window.location.pathname + window.location.search + window.location.hash) {
+    return;
+  }
+  // history.pushState + popstate lets React Router pick the change up
+  // without a full reload, preserving the editor state. Reload would
+  // re-spawn the sidecar handshake and lose Monaco/sim state for ~5s.
+  window.history.pushState(null, '', next);
+  window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
 function pickAndImportVlx(): void {
