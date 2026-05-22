@@ -680,12 +680,6 @@ export const LandingPage: React.FC = () => {
             <span className="hero-accent">{t('landing.hero.titleAccent')}</span>
           </h1>
           <p className="hero-subtitle">{t('landing.hero.subtitle')}</p>
-          {/*
-            Slot for the pro overlay's OS-detect Velxio Desktop download
-            CTA. Pure OSS leaves it empty; velxio.dev mounts a
-            DesktopDownloadButton here as the visual primary.
-          */}
-          <div data-velxio-slot="landing-hero-primary-cta" />
           <div className="hero-ctas">
             <Link
               to={localize('/editor')}
@@ -706,6 +700,13 @@ export const LandingPage: React.FC = () => {
               {t('landing.hero.ctaGithub')}
             </a>
           </div>
+          {/*
+            Slot for the pro overlay's OS-detect Velxio Desktop download
+            CTA. Sits BELOW the online-editor CTAs so users see "try
+            online" first, then a softer "or download to go faster
+            offline" affordance. Pure OSS leaves it empty.
+          */}
+          <div data-velxio-slot="landing-hero-download-cta" />
           <p className="hero-trust-line">{t('landing.hero.trustLine')}</p>
         </div>
         <div className="hero-right">
