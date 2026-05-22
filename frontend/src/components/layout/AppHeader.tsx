@@ -104,7 +104,13 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
             </Link>
           </div>
 
-          {/* Main nav links (desktop) */}
+          {/* Main nav links (web only). The Tauri desktop build hides
+              this nav and surfaces the equivalent actions via the
+              native menubar (see pro/desktop/src-tauri/src/menu.rs in
+              velxio-prod). VITE_DESKTOP is the env flag the Tauri
+              build sets — main.tsx already uses it to gate the @pro
+              overlay, same pattern here. */}
+          {!import.meta.env.VITE_DESKTOP && (
           <nav className={'header-nav-links' + (menuOpen ? ' header-nav-open' : '')}>
             <Link to={localize('/')} className={'header-nav-link' + isActive('/')}>
               {t('header.nav.home')}
@@ -168,6 +174,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
               {t('header.nav.discord')}
             </a>
           </nav>
+          )}
         </div>
 
         {/* Right: language + share + auth + mobile hamburger */}
@@ -224,16 +231,19 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
               OSS image has no auth backend either. */}
           <div data-velxio-slot="header-auth" style={{ display: 'contents' }} />
 
-          {/* Mobile hamburger */}
-          <button
-            className="header-hamburger"
-            onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            <span />
-            <span />
-            <span />
-          </button>
+          {/* Mobile hamburger — useless in desktop where the nav it
+              would expand is itself hidden. */}
+          {!import.meta.env.VITE_DESKTOP && (
+            <button
+              className="header-hamburger"
+              onClick={() => setMenuOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          )}
         </div>
       </div>
 
