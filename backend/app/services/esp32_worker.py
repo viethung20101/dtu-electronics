@@ -947,15 +947,25 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             else:
                 note = ''
 
-            if type(slave).__name__ == 'MPU6050Slave':
+            slave_type_name = type(slave).__name__
+            if slave_type_name == 'MPU6050Slave':
                 seq = _i2c_event_seq
                 n   = seq[addr] = seq.get(addr, 0) + 1
                 _log(f'I2C #{n:03d} bus={bus_id} addr=0x{addr:02x} {op_name} {note}')
-            else:
+            elif slave_type_name != 'I2CWriteSink':
+                # I2CWriteSink fires per-byte for display drivers (SSD1306,
+                # PCF8574). A 1024-byte writevto (oled.show()) generates
+                # ~1025 events. Logging each one + emitting a WS message
+                # blocks the QEMU thread long enough that the firmware's
+                # ESP-IDF I2C ISR re-enters and trips IWDT on the SECOND
+                # consecutive show() call. Skip the verbose per-event log
+                # and WS trace for write-only sinks — the user-visible
+                # OLED render is what matters, not byte-level tracing.
                 _log(f'I2C bus={bus_id} addr=0x{addr:02x} event=0x{event:04x} '
-                     f'op={op_name} result=0x{result:02x} slave={type(slave).__name__}')
-            # Emit trace event to WebSocket so JS test can observe I2C traffic
-            if not _stopped.is_set():
+                     f'op={op_name} result=0x{result:02x} slave={slave_type_name}')
+            # Emit trace event to WebSocket so JS test can observe I2C traffic.
+            # Skip for I2CWriteSink (display data dumps) — see comment above.
+            if not _stopped.is_set() and slave_type_name != 'I2CWriteSink':
                 _emit({'type': 'i2c_trace', 'bus': bus_id, 'addr': addr,
                        'event': event, 'op': op_name, 'result': result,
                        'reg_ptr': reg_ptr})
