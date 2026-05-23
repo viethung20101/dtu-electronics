@@ -9,7 +9,7 @@ import { BOARD_PIN_GROUPS } from '../../simulation/spice/boardPinGroups';
 import { CircuitVerificationModal } from '../simulator/CircuitVerificationModal';
 import type { PinSourceState } from '../../simulation/spice/types';
 import type { BoardKind, LanguageMode } from '../../types/board';
-import { BOARD_KIND_FQBN, BOARD_KIND_LABELS, BOARD_SUPPORTS_MICROPYTHON } from '../../types/board';
+import { BOARD_KIND_FQBN, BOARD_KIND_LABELS, BOARD_SUPPORTS_MICROPYTHON, isPiBoardKind } from '../../types/board';
 import { compileCode } from '../../services/compilation';
 import {
   compileRom,
@@ -61,6 +61,8 @@ const BOARD_PILL_ICON: Record<BoardKind, string> = {
   'arduino-mega': '▬',
   'raspberry-pi-pico': '◆',
   'raspberry-pi-3': '⬛',
+  'raspberry-pi-4': '⬛',
+  'raspberry-pi-5': '⬛',
   esp32: '⬡',
   'esp32-s3': '⬡',
   'esp32-c3': '⬡',
@@ -72,6 +74,8 @@ const BOARD_PILL_COLOR: Record<BoardKind, string> = {
   'arduino-mega': '#4fc3f7',
   'raspberry-pi-pico': '#ce93d8',
   'raspberry-pi-3': '#ef9a9a',
+  'raspberry-pi-4': '#ef9a9a',
+  'raspberry-pi-5': '#ef9a9a',
   esp32: '#a5d6a7',
   'esp32-s3': '#a5d6a7',
   'esp32-c3': '#a5d6a7',
@@ -259,7 +263,7 @@ export const EditorToolbar = ({
     const kind = activeBoard?.boardKind;
 
     // Raspberry Pi 3B doesn't need arduino-cli compilation
-    if (kind === 'raspberry-pi-3') {
+    if (isPiBoardKind(kind)) {
       addLog({
         timestamp: new Date(),
         type: 'info',
@@ -566,7 +570,7 @@ export const EditorToolbar = ({
       }
 
       const isQemuBoard =
-        board?.boardKind === 'raspberry-pi-3' ||
+        board?.boardKind && isPiBoardKind(board.boardKind) ||
         board?.boardKind === 'esp32' ||
         board?.boardKind === 'esp32-s3' ||
         board?.boardKind === 'esp32-cam' ||
@@ -713,7 +717,7 @@ export const EditorToolbar = ({
     for (const board of boardsList) {
       const label = BOARD_KIND_LABELS[board.boardKind] ?? board.boardKind;
 
-      if (board.boardKind === 'raspberry-pi-3') {
+      if (isPiBoardKind(board.boardKind)) {
         addLog({
           timestamp: new Date(),
           type: 'info',
@@ -815,7 +819,7 @@ export const EditorToolbar = ({
       codeChangedSinceLastCompile ||
       boardsList.some(
         (b) =>
-          b.boardKind !== 'raspberry-pi-3' &&
+          !isPiBoardKind(b.boardKind) &&
           b.languageMode !== 'micropython' &&
           !b.compiledProgram,
       );
@@ -830,7 +834,7 @@ export const EditorToolbar = ({
     for (const board of refreshed) {
       if (board.running) continue;
       const isQemu =
-        board.boardKind === 'raspberry-pi-3' ||
+        isPiBoardKind(board.boardKind) ||
         board.boardKind === 'esp32' ||
         board.boardKind === 'esp32-s3';
       if (isQemu || board.compiledProgram || board.languageMode === 'micropython') {

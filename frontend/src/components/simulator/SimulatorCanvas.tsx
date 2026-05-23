@@ -413,6 +413,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     const remoteBoards = boards.filter(
       (b) =>
         b.boardKind === 'raspberry-pi-3' ||
+        b.boardKind === 'raspberry-pi-4' ||
+        b.boardKind === 'raspberry-pi-5' ||
         b.boardKind === 'esp32' ||
         b.boardKind === 'esp32-s3' ||
         b.boardKind === 'esp32-c3',

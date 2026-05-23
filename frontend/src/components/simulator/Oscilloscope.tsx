@@ -68,6 +68,8 @@ function getPinsForBoardKind(boardKind: BoardKind): { pin: number; label: string
     case 'aitewinrobot-esp32c3-supermini':
       return Array.from({ length: 22 }, (_, i) => ({ pin: i, label: `GPIO${i}` }));
     case 'raspberry-pi-3':
+    case 'raspberry-pi-4':
+    case 'raspberry-pi-5':
       return Array.from({ length: 28 }, (_, i) => ({ pin: i, label: `GPIO${i}` }));
     default:
       // arduino-uno, arduino-nano
