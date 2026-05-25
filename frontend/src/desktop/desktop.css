@@ -190,6 +190,72 @@
   cursor: not-allowed;
 }
 
+.vlx-desktop-grace-dismiss {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.vlx-desktop-grace-dismiss:hover {
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+/* Indeterminate progress strip used by Esp32QemuPrompt while
+   streaming a body without a Content-Length header. */
+@keyframes vlx-indeterminate {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ── Lockout overlay (v0.3.0+) ─────────────────────────────── */
+
+.vlx-desktop-lockout {
+  position: fixed;
+  inset: 0;
+  z-index: 10001; /* above the welcome (10000) so a stale welcome can't peek through */
+  background: rgba(8, 8, 12, 0.96);
+  color: #e6e6e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  /* Block all clicks from leaking through to the editor underneath. */
+  pointer-events: auto;
+}
+
+.vlx-desktop-lockout-card {
+  width: min(460px, 92vw);
+  padding: 36px;
+  background: #15151b;
+  border: 1px solid #2c2c33;
+  border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+}
+
+.vlx-desktop-lockout-brand h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.vlx-desktop-lockout-brand p {
+  margin: 0 0 24px;
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* Editor-side hook: when the body has this class, Save / Compile /
    Run buttons style themselves as disabled. Upstream's CSS uses
    `.editor-button` for the toolbar — we override its appearance and

@@ -16,6 +16,21 @@ export type ValidationResult = {
   entitlements?: Record<string, boolean>;
 };
 
+/**
+ * Shape returned by the Rust `license_gate_info` command (added in
+ * v0.3.0). The `state` field is the same string the sidecar sees in
+ * `VELXIO_LICENSE_STATE`, so the welcome flow can switch on it
+ * directly.
+ *
+ * `null` state means the gate is closed — no valid key, grandfather
+ * expired. UI should mount the lockout overlay.
+ */
+export type GateInfo = {
+  state: 'valid' | 'soft_grace' | 'hard_grace' | 'grandfather' | null;
+  grandfather_days_remaining: number;
+  grandfather_active: boolean;
+};
+
 export type TauriInvoke = <T = unknown>(
   cmd: string,
   args?: Record<string, unknown>,
@@ -138,6 +153,49 @@ function randomNonce(): string {
   const g = globalThis as { crypto?: { randomUUID?: () => string } };
   if (g.crypto?.randomUUID) return g.crypto.randomUUID();
   return `v-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+/**
+ * Read the current license gate state (v0.3.0+). Defaults the grandfather
+ * fields to {0, false} outside Tauri so dev-in-browser doesn't crash.
+ */
+export async function getGateInfo(): Promise<GateInfo> {
+  if (!isTauri()) {
+    return { state: 'valid', grandfather_days_remaining: 0, grandfather_active: false };
+  }
+  try {
+    return await invoke<GateInfo>('license_gate_info');
+  } catch (err) {
+    tryLog('getGateInfo: command not registered (pre-0.3.0 shell?)', { err: String(err) });
+    // Pre-0.3.0 shells don't expose the command; assume legacy "always valid"
+    // so the rest of the app stays usable until the user updates.
+    return { state: 'valid', grandfather_days_remaining: 0, grandfather_active: false };
+  }
+}
+
+/**
+ * Ask the Tauri shell to restart itself. Used after a successful
+ * sign-in / key paste from a lockout state — the sidecar didn't
+ * spawn because the gate was closed at startup, and the simplest way
+ * to re-evaluate the gate + spawn the sidecar is a full restart.
+ */
+export async function restartApp(): Promise<void> {
+  if (!isTauri()) {
+    // In vite-dev (browser) we can't restart the Tauri shell — best
+    // we can do is a hard reload so any cached fetch results flush.
+    window.location.reload();
+    return;
+  }
+  // The process plugin command is `plugin:process|restart` in 2.x.
+  // No args. Returns never (the process exits before the promise
+  // resolves), so we don't await meaningfully — but we still call
+  // through invoke so the call can be logged on failure.
+  try {
+    await invoke('plugin:process|restart');
+  } catch (err) {
+    tryLog('restartApp: invoke failed', { err: String(err) });
+    throw err;
+  }
 }
 
 export async function beginSignIn(apiBase = 'https://velxio.dev'): Promise<string> {

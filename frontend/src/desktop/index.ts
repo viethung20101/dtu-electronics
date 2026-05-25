@@ -1,58 +1,89 @@
 /**
- * Velxio Desktop SPA hooks — mounted from main.tsx when VITE_DESKTOP is set.
+ * Velxio Desktop SPA hooks - mounted from main.tsx when VITE_DESKTOP is set.
  *
- * Two responsibilities in Phase 3:
+ * Responsibilities since v0.3.0:
  *
- *  1. Show the welcome / sign-in screen if the stored license key
- *     fails validation. While the welcome screen is up, the SPA's
- *     editor is hidden behind it so the user can't compile / run.
- *  2. Mount desktop-only side panels (the ESP32 QEMU prompt).
+ *   1. Decide on first paint whether to mount the welcome / lockout
+ *      overlay or let the editor open directly. Driven by
+ *      `license_gate_info()` (returns {state, grandfather_days_remaining}).
+ *   2. Listen for `velxio://license-required` from the Tauri shell -
+ *      fires when the sidecar refuses to start (gate closed) OR
+ *      exits with code 78 mid-session. Mounts the LockoutOverlay.
+ *   3. Mount the persistent side panels (grace banner + ESP32 prompt).
  *
- * Phase 4 will add the offline JWT cache and grace banners on top.
+ * Variant decision (no key paths):
  *
- * Pure OSS still runs without any of this (the dynamic import is
- * tree-shaken when the env flag is unset). The pro overlay also
- * doesn't load in desktop builds, so this module owns the desktop UI.
+ *   gate.state === 'grandfather'    -> soft welcome with "use anyway for N days"
+ *   gate.state === null             -> lockout (no_credential variant)
+ *   gate.state === 'valid'|'soft'|'hard' -> normal app, banner handles grace
+ *
+ * Tampered tokens currently surface via the sidecar exit-78 path
+ * because the shell's runtime_state_for_sidecar() maps `Tampered` to
+ * None. We could distinguish the two by passing a reason in the event
+ * payload (Phase 4 polish).
  */
 
 import { createRoot, type Root } from 'react-dom/client';
-import { createElement } from 'react';
-import { createElement as h, Fragment } from 'react';
+import { createElement, createElement as h, Fragment } from 'react';
 import { DesktopWelcomePage } from './DesktopWelcomePage';
 import { Esp32QemuPrompt } from './Esp32QemuPrompt';
 import { GraceBanner } from './GraceBanner';
-import { invoke, isTauri, type ValidationResult } from './tauriBridge';
+import { LockoutOverlay, type LockoutReason } from './LockoutOverlay';
+import {
+  getGateInfo,
+  invoke,
+  isTauri,
+  listen,
+  type GateInfo,
+  type ValidationResult,
+} from './tauriBridge';
 import { installDesktopMenuListener } from './menu';
 import { dlog } from './log';
 import './desktop.css';
 
 let mounted = false;
-let welcomeRoot: Root | null = null;
-let welcomeHost: HTMLElement | null = null;
+let overlayRoot: Root | null = null;
+let overlayHost: HTMLElement | null = null;
 let sidePanelRoot: Root | null = null;
 
-function unmountWelcome(): void {
-  if (welcomeRoot) {
-    try { welcomeRoot.unmount(); } catch { /* noop */ }
-    welcomeRoot = null;
+function unmountOverlay(): void {
+  if (overlayRoot) {
+    try { overlayRoot.unmount(); } catch { /* noop */ }
+    overlayRoot = null;
   }
-  if (welcomeHost) {
-    welcomeHost.remove();
-    welcomeHost = null;
+  if (overlayHost) {
+    overlayHost.remove();
+    overlayHost = null;
   }
 }
 
-function mountWelcome(): void {
-  if (welcomeRoot) return;
-  welcomeHost = document.createElement('div');
-  welcomeHost.id = 'velxio-desktop-welcome-root';
-  document.body.appendChild(welcomeHost);
-  welcomeRoot = createRoot(welcomeHost);
-  welcomeRoot.render(
+function ensureOverlayHost(): HTMLElement {
+  if (overlayHost) return overlayHost;
+  overlayHost = document.createElement('div');
+  overlayHost.id = 'velxio-desktop-overlay-root';
+  document.body.appendChild(overlayHost);
+  return overlayHost;
+}
+
+function mountWelcome(grandfatherDaysRemaining: number | null): void {
+  unmountOverlay();
+  const host = ensureOverlayHost();
+  overlayRoot = createRoot(host);
+  overlayRoot.render(
     createElement(DesktopWelcomePage, {
-      onAuthorised: () => unmountWelcome(),
+      onAuthorised: () => unmountOverlay(),
+      grandfatherDaysRemaining,
     }),
   );
+  dlog('mountWelcome', { grandfatherDaysRemaining });
+}
+
+function mountLockout(reason: LockoutReason): void {
+  unmountOverlay();
+  const host = ensureOverlayHost();
+  overlayRoot = createRoot(host);
+  overlayRoot.render(createElement(LockoutOverlay, { reason }));
+  dlog('mountLockout', { reason });
 }
 
 function mountSidePanels(): void {
@@ -61,62 +92,137 @@ function mountSidePanels(): void {
   host.id = 'velxio-desktop-side-panels';
   document.body.appendChild(host);
   sidePanelRoot = createRoot(host);
-  // Single root for both side-panel surfaces so we don't burn extra
-  // React roots on the document. Both renderers return null when
-  // they have nothing to show, so the only cost is the subscription
-  // they each install.
   sidePanelRoot.render(
     h(Fragment, null, h(GraceBanner, null), h(Esp32QemuPrompt, null)),
   );
 }
 
 /**
- * Resolve the initial license state in the background.
+ * Decide initial state on first paint. Three outcomes:
  *
- * Policy: the editor ALWAYS opens directly on first launch. Compile,
- * run, simulate AVR/RP2040/ATtiny, save .vlx — all that works
- * without a license because it's upstream OSS functionality.
+ *   1. State is valid / soft_grace / hard_grace -> editor opens, no
+ *      overlay (the GraceBanner side panel handles in-app messaging
+ *      for soft/hard grace).
+ *   2. State is grandfather -> soft welcome with grandfather days
+ *      remaining + a "continue without signing in" escape.
+ *   3. State is null -> hard lockout (no_credential variant).
  *
- * The welcome / sign-in screen used to mount unconditionally when
- * the license check failed; that gated 100% of the app behind an
- * account and broke the "try before you buy" expectation. Now the
- * check just runs to populate state for downstream consumers:
- *
- *   - GraceBanner subscribes to `velxio://license-status` and shows
- *     the amber/red banner only when an EXISTING license enters
- *     soft/hard grace, lock, or tampered state.
- *   - Pro-only features (ESP32 QEMU download, agent IA) check
- *     entitlements at use time and prompt then.
- *
- * Sign-in is still reachable via the native menubar
- * (View → ... in pro/desktop/src-tauri/src/menu.rs).
+ * Tampered tokens currently hit case 3 with a generic reason; we
+ * could refine by passing a richer payload from the shell later.
  */
-async function checkInitialLicense(): Promise<void> {
+async function evaluateAndMount(gate: GateInfo): Promise<void> {
+  switch (gate.state) {
+    case 'valid':
+    case 'soft_grace':
+    case 'hard_grace':
+      dlog('evaluateAndMount: state=valid/grace - no overlay', { state: gate.state });
+      return;
+    case 'grandfather':
+      mountWelcome(gate.grandfather_days_remaining);
+      return;
+    case null:
+    default:
+      mountLockout('no_credential');
+      return;
+  }
+}
+
+/**
+ * Background: validate the cached key. Logs the result for the
+ * desktop-debug.log file. Does not gate the editor - the shell
+ * already did that at startup. This is mostly an observability hook
+ * so we can debug a "valid in shell, invalid in API" mismatch.
+ */
+async function validateInBackground(): Promise<void> {
   if (!isTauri()) return;
   try {
     const key = await invoke<string | null>('license_get_key');
     if (!key) {
-      dlog('checkInitialLicense: no key — anonymous mode (editor open, free OSS features)');
+      dlog('validateInBackground: no key (grandfather or anonymous mode)');
       return;
     }
     const result = await invoke<ValidationResult>('license_validate', { key });
-    dlog('checkInitialLicense: validated', {
+    dlog('validateInBackground: validated', {
       valid: result.valid,
       plan: result.plan,
       reason_code: result.reason_code,
     });
-    // We deliberately don't mountWelcome here even if invalid — the
-    // GraceBanner shows for invalid keys (locked / tampered), and an
-    // anonymous-mode user (no key at all) sees nothing extra.
   } catch (err) {
-    dlog('checkInitialLicense: failed', { err: String(err) });
+    dlog('validateInBackground: failed', { err: String(err) });
   }
+}
+
+/**
+ * Install the `velxio://license-required` listener. The shell fires
+ * this in two cases:
+ *
+ *   - At startup, when `runtime_state_for_sidecar()` returns None
+ *     (no key + grandfather expired, or tampered token). Sidecar
+ *     wasn't spawned; we mount the lockout.
+ *   - Mid-session, when the sidecar exits with code 78 (the gate
+ *     refused mid-run). Same treatment.
+ *
+ * Payload is either the string "locked" (startup case) or a number
+ * (the sidecar's exit code, currently always 78). Either way we
+ * mount the no_credential lockout - the user resolves it with
+ * sign-in or paste-key, then restartApp() reboots the shell.
+ */
+function installLicenseRequiredListener(): void {
+  void listen('velxio://license-required', (event) => {
+    dlog('license-required event', { payload: event.payload });
+    mountLockout('no_credential');
+  });
+}
+
+/**
+ * Foreground polling for gate transitions the shell can't push us.
+ *
+ * The shell's checkin_loop emits `velxio://license-status` every 6h
+ * after a network refresh - but the JWT exp is a fixed timestamp, so
+ * the soft -> hard -> locked transitions happen purely on wall-clock
+ * elapse. The shell doesn't notice them until the next checkin.
+ *
+ * We poll `license_gate_info` every 10 min while the document is
+ * visible. When the state slips from valid/grace into a locked state
+ * (gate.state === null), we mount the lockout overlay AND emit a
+ * console log for the debug file. Same trigger as the startup
+ * evaluation - the user can sign in / paste-key from the same UI.
+ *
+ * Polling is suspended while the document is hidden (minimised,
+ * background tab in dev) so a backgrounded laptop doesn't burn
+ * cycles on a fixed-output computation.
+ */
+let lastGateState: GateInfo['state'] = 'valid';
+
+function installGatePoller(): void {
+  const POLL_MS = 10 * 60 * 1000;
+  const tick = async () => {
+    if (document.visibilityState !== 'visible') return;
+    try {
+      const gate = await getGateInfo();
+      // Only react on a TRANSITION INTO a locked state - flicking
+      // the overlay on every poll would re-mount during the user
+      // typing in the paste field. The lockout-overlay sticks
+      // around until restartApp() resolves it.
+      if (gate.state === null && lastGateState !== null) {
+        dlog('gate transitioned to locked while running', { from: lastGateState });
+        mountLockout('expired');
+      }
+      lastGateState = gate.state;
+    } catch (err) {
+      dlog('gate poller: getGateInfo failed', { err: String(err) });
+    }
+  };
+  window.setInterval(tick, POLL_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') void tick();
+  });
 }
 
 export const mountDesktop = (): void => {
   if (mounted) return;
   mounted = true;
-  dlog('mountDesktop — Tauri shell active');
+  dlog('mountDesktop - Tauri shell active');
 
   // Native menubar (Velxio / File / Edit / View / Help) sends events
   // here. Hook the listener before any UI is mounted so the first
@@ -124,5 +230,17 @@ export const mountDesktop = (): void => {
   void installDesktopMenuListener();
 
   mountSidePanels();
-  void checkInitialLicense();
+  installLicenseRequiredListener();
+  installGatePoller();
+
+  // First-paint gate evaluation. If the shell is pre-0.3.0 the
+  // command isn't registered and getGateInfo() returns the legacy
+  // "always valid" stub so the editor opens normally.
+  void (async () => {
+    const gate = await getGateInfo();
+    dlog('initial gate', gate);
+    lastGateState = gate.state;
+    await evaluateAndMount(gate);
+    void validateInBackground();
+  })();
 };
