@@ -47,15 +47,23 @@ requestAnimationFrame(() => {
 // VITE_PRO_BUILD=true at build time. The dynamic import keeps the pro chunk
 // out of the OSS bundle entirely (Vite tree-shakes the never-taken branch).
 //
-// VITE_DESKTOP=true is set by the Tauri desktop build. The desktop shell
-// owns its own license + auth UI (Phase 3 of paid-clients) and runs against
-// a locally spawned sidecar, so the velxio.dev-coupled overlay (trackers,
-// billing, cloud auth, admin) is intentionally NOT loaded — even if a
-// build accidentally sets both flags.
-if (import.meta.env.VITE_PRO_BUILD && !import.meta.env.VITE_DESKTOP) {
-  import('@pro/index')
-    .then((m) => m.mountPro?.())
-    .catch((err) => console.warn('[pro] failed to load overlay:', err));
+// Two desktop modes since v0.4.0:
+//   - VITE_PRO_BUILD + VITE_DESKTOP → slim pro entry (@pro/desktop_index)
+//     that ONLY mounts the AI agent + DiagnoseCompileButton, no analytics
+//     / sessions / billing / admin / save overrides (those talk to
+//     velxio.dev with cookies the desktop doesn't have).
+//   - VITE_PRO_BUILD only (web) → full mountPro with every surface.
+// VITE_DESKTOP alone (no pro) stays a pure-OSS desktop build.
+if (import.meta.env.VITE_PRO_BUILD) {
+  if (import.meta.env.VITE_DESKTOP) {
+    import('@pro/desktop_index')
+      .then((m) => m.mountProDesktop?.())
+      .catch((err) => console.warn('[pro-desktop] failed to load slim overlay:', err));
+  } else {
+    import('@pro/index')
+      .then((m) => m.mountPro?.())
+      .catch((err) => console.warn('[pro] failed to load overlay:', err));
+  }
 }
 
 // Desktop-only hooks (ESP32 QEMU prompt now, welcome screen in Phase 3).
