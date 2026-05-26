@@ -791,6 +791,18 @@ export class AVRSimulator {
         // Poll PWM registers every frame
         this.pollPwmRegisters();
 
+        // Try to drain any pending RX byte every frame. The primary
+        // drain path is onRxComplete (re-fires after each successful
+        // delivery), but that callback only ever fires AFTER a byte was
+        // accepted — if the very first delivery attempt fails (sketch
+        // hasn't called Serial.begin yet, so rxEnable is false) nothing
+        // would ever re-kick the queue and bytes from a sibling board
+        // sit there forever. A per-frame retry is cheap (no-op when the
+        // queue is empty or rxBusyValue is set) and makes the link
+        // self-heal across both startup races and Serial.end()/begin()
+        // toggles in the sketch.
+        if (this.serialRxQueue.length > 0) this.drainSerialRxQueue();
+
         frameCount++;
         if (frameCount % 60 === 0) {
           console.log(`[CPU] Frame ${frameCount}, PC: ${this.cpu.pc}, Cycles: ${this.cpu.cycles}`);
@@ -819,6 +831,13 @@ export class AVRSimulator {
       this.animationFrame = null;
     }
     this.scheduledPinChanges = [];
+
+    // Drop any bytes the previous run had queued for the sketch's RX
+    // but never delivered (RX disabled, busy, or the sketch hadn't
+    // reached Serial.begin yet). Without this the next run starts with
+    // a stale tail that drains into the fresh USART before the sketch
+    // is ready, and from the user's point of view the link is "dead".
+    this.serialRxQueue = [];
 
     console.log('AVR simulation stopped');
   }
