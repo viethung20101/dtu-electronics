@@ -17,10 +17,23 @@ import { defineConfig } from 'vitest/config';
  *     and the test files themselves.
  */
 export default defineConfig({
+  // Allow vitest to import test files / sources from outside this
+  // project root - specifically `../../pro/frontend/src/pro/...` for
+  // velxio-prod overlay tests. Without this, Vite's fs sandbox blocks
+  // the read with "Cannot find module '/@fs/...'".
+  server: { fs: { allow: ['..', '../..'] } },
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/__tests__/**/*.test.ts', 'src/**/__tests__/**/*.test.ts'],
+    include: [
+      'src/__tests__/**/*.test.ts',
+      'src/**/__tests__/**/*.test.ts',
+      // velxio-prod pro overlay tests (when run from a velxio-prod
+      // checkout — these are the source-of-truth pro tests, not the
+      // stale copies at src/pro/). Harmless on pure-OSS clones
+      // because the glob has nothing to match there.
+      '../../pro/frontend/src/pro/**/__tests__/**/*.test.ts',
+    ],
     testTimeout: 30_000,
     hookTimeout: 30_000,
     // Vitest 4 removed `test.poolOptions` — config moved to top-level
