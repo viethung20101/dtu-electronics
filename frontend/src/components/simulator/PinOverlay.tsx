@@ -114,29 +114,18 @@ export const PinOverlay: React.FC<PinOverlayProps> = ({
       }}
     >
       {pins.map((pin, index) => {
-        // Container origin in CANVAS space is (componentX + wrapperOffsetX,
-        // componentY + wrapperOffsetY). The wrapper top-left in canvas
-        // space is (componentX - (6 - wrapperOffsetX), componentY - (6 -
-        // wrapperOffsetY)) for the DynamicComponent path, but more
-        // simply: padding+border on the wrapper is 6px on each side, so
-        // the wrapper-top-left equals containerOrigin - (6 - offset).
-        // Pivot for CSS rotation (transform-origin: center center) is
-        // wrapperTopLeft + (wrapperW/2, wrapperH/2). Express it in
-        // container-local coords by subtracting containerOrigin.
+        // Container origin in CANVAS = (componentX + wrapperOffsetX,
+        // componentY + wrapperOffsetY) — i.e. shifted INTO the wrapper
+        // by the wrapper's padding+border so pin.x can be added directly.
+        // The wrapper itself sits at (componentX, componentY), so its
+        // top-left in container-local coords is (-wrapperOffsetX,
+        // -wrapperOffsetY). CSS rotates around the wrapper's centre.
         let pinX = pin.x;
         let pinY = pin.y;
         const angle = ((rotation % 360) + 360) % 360;
         if (angle !== 0 && wrapperBox) {
-          // Wrapper interior padding+border is 6 px on each side
-          // (DynamicComponent: padding:4 + border:2). For boards rendered
-          // directly the caller passes wrapperOffsetX/Y = 0, so the
-          // 6 - offset arithmetic still resolves correctly (6 - 0 = 6
-          // would be wrong for boards which don't have a wrapper at
-          // all — but boards also pass rotation = 0 so we never enter
-          // this branch for them).
-          const wrapperInner = 6;
-          const wrapperLeftLocal = -(wrapperInner - wrapperOffsetX);
-          const wrapperTopLocal = -(wrapperInner - wrapperOffsetY);
+          const wrapperLeftLocal = -wrapperOffsetX;
+          const wrapperTopLocal = -wrapperOffsetY;
           const pivotX = wrapperLeftLocal + wrapperBox.w / 2;
           const pivotY = wrapperTopLocal + wrapperBox.h / 2;
           const theta = (angle * Math.PI) / 180;
