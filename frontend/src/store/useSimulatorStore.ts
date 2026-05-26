@@ -2142,9 +2142,13 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
         const component = state.components.find((c) => c.id === componentId);
         // Check if this componentId matches a board id
         const board = state.boards.find((b) => b.id === componentId);
-        // Components have a DynamicComponent wrapper with border:2px + padding:4px → offset (4,6)
-        // Boards are rendered directly without a wrapper, so no offset.
-        const compX = component ? component.x + 4 : board ? board.x : state.boardPosition.x;
+        // Components have a DynamicComponent wrapper with border:2px +
+        // padding:4px on EVERY side → inner element sits at (+6, +6)
+        // from the wrapper top-left. Earlier code used (+4, +6) — the
+        // 2 px X bias rotated visibly with the component and looked
+        // like wires came off the pins when rotated. Boards are
+        // rendered directly without that wrapper, so no offset.
+        const compX = component ? component.x + 6 : board ? board.x : state.boardPosition.x;
         const compY = component ? component.y + 6 : board ? board.y : state.boardPosition.y;
         // Boards never rotate; components carry their angle in properties.rotation.
         const rotation = component ? Number(component.properties?.rotation) || 0 : 0;
@@ -2174,11 +2178,12 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
       const updatedWires = state.wires.map((wire) => {
         const updated = { ...wire };
 
-        // Resolve start — components have wrapper offset (4,6), boards do not
+        // Resolve start — components have wrapper offset (6,6) on
+        // both axes (padding:4 + border:2). Boards have no wrapper.
         const startComp = state.components.find((c) => c.id === wire.start.componentId);
         const startBoard = state.boards.find((b) => b.id === wire.start.componentId);
         const startX = startComp
-          ? startComp.x + 4
+          ? startComp.x + 6
           : startBoard
             ? startBoard.x
             : state.boardPosition.x;
@@ -2199,10 +2204,10 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
           ? { ...wire.start, x: startPos.x, y: startPos.y }
           : { ...wire.start, x: startX, y: startY };
 
-        // Resolve end — components have wrapper offset (4,6), boards do not
+        // Resolve end — same (6,6) wrapper offset as start above.
         const endComp = state.components.find((c) => c.id === wire.end.componentId);
         const endBoard = state.boards.find((b) => b.id === wire.end.componentId);
-        const endX = endComp ? endComp.x + 4 : endBoard ? endBoard.x : state.boardPosition.x;
+        const endX = endComp ? endComp.x + 6 : endBoard ? endBoard.x : state.boardPosition.x;
         const endY = endComp ? endComp.y + 6 : endBoard ? endBoard.y : state.boardPosition.y;
         const endRotation = endComp ? Number(endComp.properties?.rotation) || 0 : 0;
         const endPos = calculatePinPosition(
