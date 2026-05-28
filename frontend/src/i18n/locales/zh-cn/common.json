@@ -402,5 +402,17 @@
         "failed": "注册失败。"
       }
     }
+  },
+  "quotaModal": {
+    "titleFree": "今日免费额度已用完",
+    "titlePaid": "已达到每日上限",
+    "bodyFree": "免费账户每天有 {{cap}} 条 AI 消息。Pro ($15/月) 可享 {{proCap}}/天 —— 是免费版的 {{multiplier}} 倍。或等待配额重置。",
+    "bodyPaid": "您的 {{plan}} 套餐每天允许 {{cap}} 条消息。升级到更高级别或等待重置。",
+    "today": "今日",
+    "thisMonth": "本月",
+    "resets": "重置时间",
+    "ctaUpgrade": "升级到 Pro — $15/月",
+    "ctaSeePlans": "查看套餐",
+    "ctaWait": "等待重置"
   }
 }

@@ -402,5 +402,17 @@
         "failed": "Falha no registro."
       }
     }
+  },
+  "quotaModal": {
+    "titleFree": "Você atingiu o limite gratuito de hoje",
+    "titlePaid": "Você atingiu seu limite diário",
+    "bodyFree": "Contas Free recebem {{cap}} mensagens de IA por dia. O Pro ($15/mês) te dá {{proCap}}/dia — {{multiplier}}× o limite. Ou espere até sua cota reiniciar.",
+    "bodyPaid": "Seu plano {{plan}} permite {{cap}} mensagens por dia. Faça upgrade ou aguarde o reinício.",
+    "today": "Hoje",
+    "thisMonth": "Este mês",
+    "resets": "Reinicia",
+    "ctaUpgrade": "Fazer upgrade para Pro — $15/mês",
+    "ctaSeePlans": "Ver planos",
+    "ctaWait": "Aguardar reinício"
   }
 }

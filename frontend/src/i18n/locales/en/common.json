@@ -402,5 +402,17 @@
         "failed": "Registration failed."
       }
     }
+  },
+  "quotaModal": {
+    "titleFree": "You've hit today's free limit",
+    "titlePaid": "You've reached your daily limit",
+    "bodyFree": "Free accounts get {{cap}} AI messages a day. Pro ($15/mo) gives you {{proCap}}/day — {{multiplier}}× the cap. Or wait until your quota resets.",
+    "bodyPaid": "Your {{plan}} plan allows {{cap}} messages per day. Upgrade to a higher tier or wait for the reset.",
+    "today": "Today",
+    "thisMonth": "This month",
+    "resets": "Resets",
+    "ctaUpgrade": "Upgrade to Pro — $15/mo",
+    "ctaSeePlans": "See plans",
+    "ctaWait": "Wait until reset"
   }
 }
