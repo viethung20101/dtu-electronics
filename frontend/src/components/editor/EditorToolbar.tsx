@@ -148,6 +148,26 @@ export const EditorToolbar = ({
   const firmwareInputRef = useRef<HTMLInputElement>(null);
   const toolbarRef = useRef<HTMLDivElement>(null);
   const [missingLibHint, setMissingLibHint] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMoreMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [moreMenuOpen]);
 
   // Compile All / Run All — runs sequentially, logs to console (no dialog)
   const [compileAllRunning, setCompileAllRunning] = useState(false);
@@ -897,7 +917,12 @@ export const EditorToolbar = ({
         credentials: 'include',
       });
       if (resp.status === 402) {
-        window.location.href = '/pricing?from=screenshot_export';
+        // Fire the in-place upgrade modal instead of bouncing to /pricing —
+        // keeps the user in the editor with full context. The pro overlay's
+        // UpgradeGate listens for this event and opens UpgradePromptModal.
+        window.dispatchEvent(new CustomEvent('velxio-pro-upgrade-prompt', {
+          detail: { componentName: 'Schematic screenshot export' },
+        }));
         return;
       }
       if (resp.status === 401) {
@@ -944,11 +969,12 @@ export const EditorToolbar = ({
         credentials: 'include',
       });
       if (resp.status === 402) {
-        // Pro-required. Bounce to /pricing with a hint so the page can
-        // surface the right upgrade message. (The backend returned a
-        // structured `detail.error = 'pro_required'` payload but for the
-        // MVP we just route to pricing.)
-        window.location.href = '/pricing?from=bom_export';
+        // Fire the in-place upgrade modal instead of bouncing to /pricing —
+        // keeps the user in the editor with full context. The pro overlay's
+        // UpgradeGate listens for this event and opens UpgradePromptModal.
+        window.dispatchEvent(new CustomEvent('velxio-pro-upgrade-prompt', {
+          detail: { componentName: 'BOM export' },
+        }));
         return;
       }
       if (resp.status === 401) {
@@ -1282,12 +1308,11 @@ export const EditorToolbar = ({
               <span className="tb-libraries-label">{t('editor.toolbar.libraries.label')}</span>
             </button>
 
-            {/* Import zip — was previously hidden in a 3-dot overflow menu;
-                inlined since there's space and the discoverability cost
-                outweighed the toolbar savings. */}
+            {/* Import zip — inline by default; container query at narrow
+                widths swaps this for the corresponding overflow-menu item. */}
             <button
               onClick={() => importInputRef.current?.click()}
-              className="tb-btn"
+              className="tb-btn tb-btn-import-inline"
               title={t('editor.toolbar.import')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1298,7 +1323,7 @@ export const EditorToolbar = ({
             </button>
             <button
               onClick={() => handleExport()}
-              className="tb-btn"
+              className="tb-btn tb-btn-export-inline"
               title={t('editor.toolbar.export')}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1307,41 +1332,111 @@ export const EditorToolbar = ({
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
             </button>
-            <button
-              onClick={() => handleExportBom()}
-              className="tb-btn"
-              title={t('editor.toolbar.exportBom')}
-            >
-              {/* Spreadsheet / list icon — distinguishes the BOM from the
-                  generic project Export ZIP that sits next to it. */}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="16" rx="2" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-                <line x1="9" y1="4" x2="9" y2="20" />
-              </svg>
-            </button>
-            <button
-              onClick={() => handleExportScreenshot()}
-              className="tb-btn"
-              title={t('editor.toolbar.exportScreenshot')}
-            >
-              {/* Camera/image icon — circuit-to-image export */}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                <circle cx="12" cy="13" r="4" />
-              </svg>
-            </button>
-            <button
-              onClick={() => firmwareInputRef.current?.click()}
-              className="tb-btn"
-              title={t('editor.toolbar.uploadFirmware')}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                <line x1="12" y1="15" x2="12" y2="22" />
-                <polyline points="8 18 12 22 16 18" />
-              </svg>
-            </button>
+            {/* Overflow "More" menu — collects the secondary actions
+                (BOM, Schematic image, Upload firmware) so the toolbar no
+                longer overflows on narrow widths.  The two Pro items show
+                a small "PRO" pill in the menu so users know they're
+                premium BEFORE clicking, instead of being surprised by an
+                upgrade prompt. */}
+            <div className="tb-overflow-wrap" ref={moreMenuRef}>
+              <button
+                onClick={() => setMoreMenuOpen((v) => !v)}
+                className={`tb-btn tb-btn-overflow${moreMenuOpen ? ' tb-btn-overflow-active' : ''}`}
+                title={t('editor.toolbar.more', 'More')}
+                aria-haspopup="true"
+                aria-expanded={moreMenuOpen}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <circle cx="5" cy="12" r="1.8" />
+                  <circle cx="12" cy="12" r="1.8" />
+                  <circle cx="19" cy="12" r="1.8" />
+                </svg>
+              </button>
+              {moreMenuOpen && (
+                <div className="tb-overflow-menu" role="menu">
+                  {/* Responsive items — hidden by default, shown via
+                      container query when the toolbar is too narrow to
+                      keep their inline twins.  Keeps mobile users from
+                      losing access to Import / Export entirely. */}
+                  <button
+                    className="tb-overflow-item tb-overflow-import"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      importInputRef.current?.click();
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    <span className="tb-overflow-label">{t('editor.toolbar.importLabel', 'Import project')}</span>
+                  </button>
+                  <button
+                    className="tb-overflow-item tb-overflow-export"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      handleExport();
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span className="tb-overflow-label">{t('editor.toolbar.exportLabel', 'Export project (.zip)')}</span>
+                  </button>
+                  <button
+                    className="tb-overflow-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      handleExportBom();
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="4" width="18" height="16" rx="2" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                      <line x1="9" y1="4" x2="9" y2="20" />
+                    </svg>
+                    <span className="tb-overflow-label">{t('editor.toolbar.exportBomLabel', 'Bill of Materials (CSV)')}</span>
+                    <span className="tb-overflow-pro">PRO</span>
+                  </button>
+                  <button
+                    className="tb-overflow-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      handleExportScreenshot();
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    <span className="tb-overflow-label">{t('editor.toolbar.exportScreenshotLabel', 'Schematic image (PNG)')}</span>
+                    <span className="tb-overflow-pro">PRO</span>
+                  </button>
+                  <button
+                    className="tb-overflow-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setMoreMenuOpen(false);
+                      firmwareInputRef.current?.click();
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                      <line x1="12" y1="15" x2="12" y2="22" />
+                      <polyline points="8 18 12 22 16 18" />
+                    </svg>
+                    <span className="tb-overflow-label">{t('editor.toolbar.uploadFirmwareLabel', 'Upload firmware')}</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <div className="tb-divider" />
 
