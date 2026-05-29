@@ -881,6 +881,54 @@ export const EditorToolbar = ({
     }
   };
 
+  // Phase 3 D3.2 — Schematic screenshot. Pro-tier-gated by the backend.
+  // Same UX pattern as BOM export: everyone can click; 402 redirects to
+  // /pricing. The server-side headless chromium renders the canvas and
+  // returns a PNG, which we trigger a download for.
+  const handleExportScreenshot = async () => {
+    const projectId = currentProject?.id;
+    if (!projectId) {
+      setMessage({ type: 'error', text: 'Save the project before exporting an image.' });
+      return;
+    }
+    setMessage({ type: 'info', text: 'Rendering screenshot — may take 5-10 seconds…' });
+    try {
+      const resp = await fetch(`/api/pro/projects/${projectId}/screenshot.png`, {
+        credentials: 'include',
+      });
+      if (resp.status === 402) {
+        window.location.href = '/pricing?from=screenshot_export';
+        return;
+      }
+      if (resp.status === 401) {
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
+        return;
+      }
+      if (resp.status === 422) {
+        setMessage({ type: 'error', text: 'Add at least one component to export an image.' });
+        return;
+      }
+      if (!resp.ok) {
+        setMessage({ type: 'error', text: 'Screenshot export failed.' });
+        return;
+      }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const cd = resp.headers.get('Content-Disposition') || '';
+      const m = /filename="?([^"]+)"?/.exec(cd);
+      a.download = m ? m[1] : `velxio-${projectId}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setMessage({ type: 'success', text: 'Screenshot downloaded.' });
+    } catch {
+      setMessage({ type: 'error', text: 'Screenshot export failed.' });
+    }
+  };
+
   // Phase 3 D3.1 — BOM export. Pro-tier-gated by the backend (402 if not pro).
   // We let everyone click; the 402 response feeds the upgrade prompt below
   // so free/maker users hit the funnel naturally instead of an obviously-
@@ -1270,6 +1318,17 @@ export const EditorToolbar = ({
                 <rect x="3" y="4" width="18" height="16" rx="2" />
                 <line x1="3" y1="10" x2="21" y2="10" />
                 <line x1="9" y1="4" x2="9" y2="20" />
+              </svg>
+            </button>
+            <button
+              onClick={() => handleExportScreenshot()}
+              className="tb-btn"
+              title={t('editor.toolbar.exportScreenshot')}
+            >
+              {/* Camera/image icon — circuit-to-image export */}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
               </svg>
             </button>
             <button

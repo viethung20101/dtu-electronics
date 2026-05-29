@@ -30,7 +30,8 @@
         "cta": "Library Manager",
         "dismiss": "Dismiss"
       },
-      "exportBom": "Export Bill of Materials (CSV — Pro)"
+      "exportBom": "Export Bill of Materials (CSV — Pro)",
+      "exportScreenshot": "Export schematic as image (PNG — Pro)"
     },
     "fileExplorer": {
       "workspace": "WORKSPACE",

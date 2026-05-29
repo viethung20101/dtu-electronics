@@ -30,7 +30,8 @@
         "cta": "Gerenciador de Bibliotecas",
         "dismiss": "Dispensar"
       },
-      "exportBom": "Exportar lista de materiais (CSV — Pro)"
+      "exportBom": "Exportar lista de materiais (CSV — Pro)",
+      "exportScreenshot": "Exportar esquemático como imagem (PNG — Pro)"
     },
     "fileExplorer": {
       "workspace": "ESPAÇO DE TRABALHO",
