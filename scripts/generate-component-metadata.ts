@@ -252,6 +252,21 @@ class MetadataGenerator {
       if (typeof ov.thumbnail === 'string') {
         comp.thumbnail = ov.thumbnail;
       }
+      // Discoverability fixes for scanned wokwi parts. Auto-generated tags and
+      // the default 'other' category use the original class name, so a part
+      // like "KY040" stays unfindable when a user searches "rotary"/"encoder"
+      // and sits in the wrong picker tab. Let an override patch the fields that
+      // ComponentRegistry.search() (name/id/description/tags) and the category
+      // tab actually use.
+      if (typeof ov.category === 'string') {
+        comp.category = ov.category;
+      }
+      if (typeof ov.description === 'string') {
+        comp.description = ov.description;
+      }
+      if (Array.isArray(ov.tags)) {
+        comp.tags = ov.tags;
+      }
 
       applied++;
       console.log(`  🔧 Applied overrides for ${comp.id}`);

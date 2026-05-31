@@ -85,6 +85,65 @@ export interface ExampleProject {
 
 const legacyExamples: ExampleProject[] = [
   {
+    id: 'ky-040-rotary-encoder',
+    title: 'KY-040 Rotary Encoder',
+    description:
+      'Read a KY-040 rotary encoder with an Arduino Uno. Turn the knob to move a counter (CLK/DT quadrature) and press the shaft (SW) to reset it. Open the Serial Monitor to watch the position.',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'arduino-uno',
+    boardFilter: 'arduino-uno',
+    code: `// KY-040 rotary encoder — turn the knob to move the counter,
+// press the shaft (SW) to reset. The encoder drives CLK/DT in quadrature;
+// we sample DT on each CLK rising edge to get the direction.
+const int PIN_CLK = 2;   // CLK (A)
+const int PIN_DT  = 3;   // DT  (B)
+const int PIN_SW  = 4;   // SW  (push button, active LOW)
+
+int counter = 0;
+int lastClk = HIGH;
+
+void setup() {
+  pinMode(PIN_CLK, INPUT_PULLUP);
+  pinMode(PIN_DT, INPUT_PULLUP);
+  pinMode(PIN_SW, INPUT_PULLUP);
+  Serial.begin(115200);
+  Serial.println("KY-040 rotary encoder ready");
+  lastClk = digitalRead(PIN_CLK);
+}
+
+void loop() {
+  int clk = digitalRead(PIN_CLK);
+  if (clk != lastClk && clk == HIGH) {      // CLK rising edge
+    if (digitalRead(PIN_DT) == LOW) {
+      counter++;                            // DT LOW  -> clockwise
+    } else {
+      counter--;                            // DT HIGH -> counter-clockwise
+    }
+    Serial.print("position: ");
+    Serial.println(counter);
+  }
+  lastClk = clk;
+
+  if (digitalRead(PIN_SW) == LOW) {
+    counter = 0;
+    Serial.println("button pressed -> reset");
+    delay(200);                             // simple debounce
+  }
+}`,
+    components: [
+      { type: 'wokwi-ky-040', id: 'enc1', x: 360, y: 90, properties: {} },
+    ],
+    wires: [
+      { id: 'w-enc-clk', start: { componentId: 'enc1', pinName: 'CLK' }, end: { componentId: 'arduino-uno', pinName: '2' }, color: '#f59e0b' },
+      { id: 'w-enc-dt', start: { componentId: 'enc1', pinName: 'DT' }, end: { componentId: 'arduino-uno', pinName: '3' }, color: '#10b981' },
+      { id: 'w-enc-sw', start: { componentId: 'enc1', pinName: 'SW' }, end: { componentId: 'arduino-uno', pinName: '4' }, color: '#3b82f6' },
+      { id: 'w-enc-vcc', start: { componentId: 'enc1', pinName: 'VCC' }, end: { componentId: 'arduino-uno', pinName: '5V' }, color: '#ef4444' },
+      { id: 'w-enc-gnd', start: { componentId: 'enc1', pinName: 'GND' }, end: { componentId: 'arduino-uno', pinName: 'GND' }, color: '#1f2937' },
+    ],
+    tags: ['rotary', 'encoder', 'ky-040', 'input', 'knob', 'arduino'],
+  },
+  {
     id: 'stm32-bluepill-blink',
     title: 'STM32 Blue Pill Blink',
     description:

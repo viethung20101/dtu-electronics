@@ -1625,6 +1625,52 @@
       ]
     },
     {
+      "id": "ky-040",
+      "tagName": "wokwi-ky-040",
+      "name": "KY-040 Rotary Encoder",
+      "category": "input",
+      "description": "KY-040 incremental rotary encoder with push-button. Turning the knob outputs quadrature pulses on CLK and DT (direction = which leads); the shaft press drives an active-low SW. Reads from any board's GPIO.",
+      "thumbnail": "<svg width=\"64\" height=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"64\" height=\"64\" fill=\"#1a2332\" rx=\"4\"/>\n    <rect x=\"12\" y=\"38\" width=\"40\" height=\"18\" rx=\"2\" fill=\"#1f6f43\" stroke=\"#2d8f5a\" stroke-width=\"0.6\"/>\n    <rect x=\"17\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"24\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"31\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"38\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"45\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <circle cx=\"32\" cy=\"24\" r=\"15\" fill=\"#9aa3ad\" stroke=\"#6b7280\" stroke-width=\"1\"/>\n    <circle cx=\"32\" cy=\"24\" r=\"10\" fill=\"#c7cdd4\"/>\n    <rect x=\"31\" y=\"11\" width=\"2\" height=\"8\" rx=\"1\" fill=\"#475569\"/>\n    <path d=\"M 45 14 A 16 16 0 0 1 49 27\" fill=\"none\" stroke=\"#4ade80\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n    <path d=\"M 49 27 l -4 -1 l 2 -4 z\" fill=\"#4ade80\"/></svg>",
+      "properties": [
+        {
+          "name": "angle",
+          "type": "string",
+          "defaultValue": 0,
+          "control": "text"
+        },
+        {
+          "name": "stepSize",
+          "type": "string",
+          "defaultValue": 18,
+          "control": "text"
+        },
+        {
+          "name": "pressed",
+          "type": "string",
+          "defaultValue": false,
+          "control": "text"
+        }
+      ],
+      "defaultValues": {
+        "angle": 0,
+        "stepSize": 18,
+        "pressed": false
+      },
+      "pinCount": 0,
+      "tags": [
+        "rotary",
+        "encoder",
+        "rotary encoder",
+        "rotary-encoder",
+        "ky-040",
+        "ky040",
+        "knob",
+        "quadrature",
+        "dial",
+        "input"
+      ]
+    },
+    {
       "id": "membrane-keypad",
       "tagName": "wokwi-membrane-keypad",
       "name": "Membrane Keypad",
@@ -2740,45 +2786,6 @@
         "ks2e",
         "m",
         "dc5"
-      ]
-    },
-    {
-      "id": "ky-040",
-      "tagName": "wokwi-ky-040",
-      "name": "KY040",
-      "category": "other",
-      "thumbnail": "<svg width=\"64\" height=\"64\" xmlns=\"http://www.w3.org/2000/svg\">\n      <rect width=\"64\" height=\"64\" fill=\"#e0e0e0\" rx=\"4\"/>\n      <text x=\"50%\" y=\"50%\" text-anchor=\"middle\" dy=\".3em\" font-size=\"10\" fill=\"#666\">\n        KY-040\n      </text>\n    </svg>",
-      "properties": [
-        {
-          "name": "angle",
-          "type": "string",
-          "defaultValue": 0,
-          "control": "text"
-        },
-        {
-          "name": "stepSize",
-          "type": "string",
-          "defaultValue": 18,
-          "control": "text"
-        },
-        {
-          "name": "pressed",
-          "type": "string",
-          "defaultValue": false,
-          "control": "text"
-        }
-      ],
-      "defaultValues": {
-        "angle": 0,
-        "stepSize": 18,
-        "pressed": false
-      },
-      "pinCount": 0,
-      "tags": [
-        "ky-040",
-        "ky040",
-        "ky",
-        "040"
       ]
     },
     {

@@ -2164,5 +2164,12 @@
   "inductor": {
     "name": "Inductor (custom)",
     "thumbnail": "<svg width=\"64\" height=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"64\" height=\"64\" fill=\"#1a2332\" rx=\"4\"/>\n    <rect x=\"6\" y=\"29\" width=\"52\" height=\"3\" fill=\"#aaa\"/>\n    <path d=\"M 12 30 Q 16 18 20 30 Q 24 18 28 30 Q 32 18 36 30 Q 40 18 44 30 Q 48 18 52 30\"\n          fill=\"none\" stroke=\"#B23820\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n    <text x=\"32\" y=\"56\" text-anchor=\"middle\" font-size=\"10\" font-family=\"sans-serif\" fill=\"#e5e7eb\" font-weight=\"bold\">?mH</text></svg>"
+  },
+  "ky-040": {
+    "name": "KY-040 Rotary Encoder",
+    "category": "input",
+    "description": "KY-040 incremental rotary encoder with push-button. Turning the knob outputs quadrature pulses on CLK and DT (direction = which leads); the shaft press drives an active-low SW. Reads from any board's GPIO.",
+    "tags": ["rotary", "encoder", "rotary encoder", "rotary-encoder", "ky-040", "ky040", "knob", "quadrature", "dial", "input"],
+    "thumbnail": "<svg width=\"64\" height=\"64\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"64\" height=\"64\" fill=\"#1a2332\" rx=\"4\"/>\n    <rect x=\"12\" y=\"38\" width=\"40\" height=\"18\" rx=\"2\" fill=\"#1f6f43\" stroke=\"#2d8f5a\" stroke-width=\"0.6\"/>\n    <rect x=\"17\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"24\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"31\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"38\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <rect x=\"45\" y=\"54\" width=\"2.5\" height=\"6\" fill=\"#d8b24a\"/>\n    <circle cx=\"32\" cy=\"24\" r=\"15\" fill=\"#9aa3ad\" stroke=\"#6b7280\" stroke-width=\"1\"/>\n    <circle cx=\"32\" cy=\"24\" r=\"10\" fill=\"#c7cdd4\"/>\n    <rect x=\"31\" y=\"11\" width=\"2\" height=\"8\" rx=\"1\" fill=\"#475569\"/>\n    <path d=\"M 45 14 A 16 16 0 0 1 49 27\" fill=\"none\" stroke=\"#4ade80\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n    <path d=\"M 49 27 l -4 -1 l 2 -4 z\" fill=\"#4ade80\"/></svg>"
   }
 }
