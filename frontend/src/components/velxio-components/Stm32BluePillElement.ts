@@ -207,7 +207,16 @@ const TAG_TO_KIND: Record<string, string> = {
   'velxio-stm32-netduino2': 'stm32-netduino2',
 };
 
-class Stm32BoardElement extends HTMLElement {
+// Import-safe base. vitest runs in the 'node' environment where HTMLElement is
+// undefined, and this module is imported eagerly by useSimulatorStore (for the
+// STM32_LED map). Fall back to a dummy base so the module loads in node; in the
+// browser this is the real HTMLElement.
+const HTMLElementCtor: typeof HTMLElement =
+  typeof HTMLElement !== 'undefined'
+    ? HTMLElement
+    : (class {} as unknown as typeof HTMLElement);
+
+class Stm32BoardElement extends HTMLElementCtor {
   static get observedAttributes() {
     return ['board-kind'];
   }
@@ -340,9 +349,13 @@ class Stm32BoardElement extends HTMLElement {
 export { Stm32BoardElement as Stm32BluePillElement };
 
 // One unique constructor per tag — customElements.define() requires it.
-for (const tag of Object.keys(TAG_TO_KIND)) {
-  if (!customElements.get(tag)) {
-    const cls = class extends Stm32BoardElement {};
-    customElements.define(tag, cls);
+// Guarded for non-DOM environments (vitest 'node') where customElements
+// is undefined; registration only matters in the browser.
+if (typeof customElements !== 'undefined') {
+  for (const tag of Object.keys(TAG_TO_KIND)) {
+    if (!customElements.get(tag)) {
+      const cls = class extends Stm32BoardElement {};
+      customElements.define(tag, cls);
+    }
   }
 }
