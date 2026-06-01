@@ -32,8 +32,21 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = ({
     }
   }, [logs, autoscroll]);
 
-  // Auto-switch to "Errors" filter when a new batch of logs arrives with errors
+  // Auto-switch to "Errors" filter when a new batch of logs arrives with
+  // errors — but reset to "all" the moment a fresh compile clears/shrinks
+  // the log. Without that reset the 'errors' filter was sticky: after one
+  // failing compile, every later SUCCESSFUL compile (info/success lines
+  // only) was filtered out and the console looked empty while the sim
+  // started. (Reported: "output doesn't refresh after the first compile,
+  // unless there's an error".)
   useEffect(() => {
+    if (logs.length < prevLogsLenRef.current) {
+      // A clear() or reset shrank the list — treat it as a brand-new
+      // compile and drop any sticky filter so the next batch is visible.
+      prevLogsLenRef.current = logs.length;
+      setFilter('all');
+      return;
+    }
     if (logs.length === prevLogsLenRef.current) return;
     const newLogs = logs.slice(prevLogsLenRef.current);
     prevLogsLenRef.current = logs.length;
