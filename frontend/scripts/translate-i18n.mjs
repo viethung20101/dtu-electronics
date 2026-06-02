@@ -37,6 +37,7 @@ const TARGET_LOCALES = [
   "de",
   "ja",
   "ru",
+  "vi",
 ];
 const LOCALE_NAMES = {
   en: "English",
@@ -48,6 +49,7 @@ const LOCALE_NAMES = {
   de: "German",
   ja: "Japanese",
   ru: "Russian",
+  vi: "Vietnamese",
 };
 
 // ── Provider helpers ────────────────────────────────────────────────────

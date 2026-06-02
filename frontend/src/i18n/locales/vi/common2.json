@@ -1,0 +1,400 @@
+{
+  "editor": {
+    "toolbar": {
+      "languageMode": "Chế độ ngôn ngữ",
+      "compile": {
+        "addBoard": "Thêm bo mạch để biên dịch",
+        "loading": "Đang tải…",
+        "loadMicropython": "Tải MicroPython",
+        "compile": "Biên dịch (Ctrl+B)"
+      },
+      "run": {
+        "addBoard": "Thêm bo mạch để chạy",
+        "runMicropython": "Chạy MicroPython",
+        "run": "Chạy (tự động biên dịch nếu cần)"
+      },
+      "stop": "Dừng",
+      "reset": "Đặt lại",
+      "compileAll": "Biên dịch tất cả bo mạch",
+      "runAll": "Chạy tất cả bo mạch",
+      "libraries": {
+        "title": "Tìm kiếm và cài thư viện Arduino",
+        "label": "Thư viện"
+      },
+      "import": "Nhập dự án (.vlx Velxio hoặc .zip Wokwi)",
+      "export": "Xuất dự án hiện tại dưới dạng tệp .zip",
+      "uploadFirmware": "Tải lên firmware (.hex, .bin, .elf, .ihex) để bỏ qua biên dịch",
+      "toggleConsole": "Bật/tắt Bảng điều khiển",
+      "libHint": {
+        "message": "Thiếu thư viện? Cài đặt từ",
+        "cta": "Trình quản lý thư viện",
+        "dismiss": "Bỏ qua"
+      },
+      "exportBom": "Xuất Bill of Materials (CSV — Pro)",
+      "exportScreenshot": "Xuất sơ đồ dưới dạng ảnh (PNG — Pro)"
+    },
+    "fileExplorer": {
+      "workspace": "KHÔNG GIAN LÀM VIỆC",
+      "newWorkspace": "Không gian làm việc mới (xóa bo mạch, linh kiện, dây và tệp)",
+      "saveProject": "Lưu dự án (Ctrl+S)",
+      "clickToEdit": "nhấn để chỉnh sửa",
+      "collapse": "Thu gọn",
+      "expand": "Mở rộng",
+      "newFileInBoard": "Tệp mới trong bo mạch này",
+      "unsavedChanges": "Thay đổi chưa lưu",
+      "unsavedSuffix": "chưa lưu",
+      "emptyState": "Thêm bo mạch vào canvas để bắt đầu viết code.",
+      "confirmDelete": "Xóa tệp này?",
+      "status": {
+        "running": "Đang chạy",
+        "compiled": "Đã biên dịch",
+        "idle": "Nhàn rỗi"
+      },
+      "contextMenu": {
+        "rename": "Đổi tên",
+        "delete": "Xóa"
+      }
+    },
+    "fileTabs": {
+      "unsavedChanges": "Thay đổi chưa lưu",
+      "close": "Đóng",
+      "confirmClose": "Đóng tệp có thay đổi chưa lưu?",
+      "closeAnyway": "Đóng bất chấp",
+      "cancel": "Hủy"
+    },
+    "loginPrompt": {
+      "title": "Đăng nhập để lưu dự án",
+      "body": "Tạo tài khoản miễn phí để lưu và chia sẻ dự án của bạn.",
+      "createAccount": "Tạo tài khoản",
+      "cancel": "Hủy"
+    },
+    "saveProject": {
+      "titleSave": "Lưu dự án",
+      "titleUpdate": "Cập nhật dự án",
+      "nameLabel": "Tên dự án *",
+      "namePlaceholder": "Dự án tuyệt vời của tôi",
+      "descriptionLabel": "Mô tả",
+      "descriptionPlaceholder": "Tùy chọn",
+      "save": "Lưu",
+      "update": "Cập nhật",
+      "saving": "Đang lưu…",
+      "cancel": "Hủy",
+      "visibility": {
+        "public": "Công khai",
+        "publicHint": "Ai có liên kết đều có thể xem",
+        "private": "Riêng tư",
+        "privateHint": "Chỉ bạn có thể thấy"
+      },
+      "errors": {
+        "nameRequired": "Tên dự án là bắt buộc.",
+        "unreachable": "Không thể kết nối máy chủ. Kiểm tra kết nối và thử lại.",
+        "notAuth": "Chưa xác thực. Vui lòng đăng nhập và thử lại.",
+        "failedStatus": "Lưu thất bại ({{status}})."
+      }
+    },
+    "share": {
+      "title": "Chia sẻ dự án",
+      "public": "Công khai",
+      "private": "Riêng tư",
+      "publicHint": "Ai có liên kết đều có thể xem dự án này",
+      "privateHint": "Chỉ bạn có thể thấy dự án này",
+      "makePrivate": "Đặt thành riêng tư",
+      "makePublic": "Công khai",
+      "copy": "Sao chép",
+      "privateWarning": "Dự án này là riêng tư. Người khác sẽ thấy lỗi 403 khi mở liên kết này.",
+      "close": "Đóng"
+    },
+    "canvas": {
+      "status": {
+        "running": "Đang chạy",
+        "stopped": "Đã dừng"
+      },
+      "activeBoard": "Bo mạch đang hoạt động",
+      "noBoard": "Không có bo mạch",
+      "noBoardHint": "Không có bo mạch trên canvas — thêm một bo mạch với nút Thêm để biên dịch và chạy code",
+      "undo": {
+        "label": "Hoàn tác",
+        "title": "Hoàn tác: {{description}} (Ctrl+Z)",
+        "empty": "Không có gì để hoàn tác"
+      },
+      "redo": {
+        "label": "Làm lại",
+        "title": "Làm lại: {{description}} (Ctrl+Y)",
+        "empty": "Không có gì để làm lại"
+      },
+      "toggleSerialMonitor": "Bật/tắt Serial Monitor",
+      "serial": "Serial",
+      "toggleScope": "Bật/tắt Dao động ký / Phân tích logic",
+      "scope": "Dao động ký",
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "resetView": "Đặt lại chế độ xem (nhấn để đặt lại)",
+      "componentCount_one": "{{count}} linh kiện",
+      "componentCount_other": "{{count}} linh kiện",
+      "addComponentTitle": "Thêm linh kiện",
+      "add": "Thêm",
+      "dismiss": "Bỏ qua",
+      "removeBoard": "Xóa bo mạch",
+      "wireCount_one": "{{count}} dây",
+      "wireCount_other": "{{count}} dây",
+      "removeConfirm": {
+        "boardFallback": "Bo mạch",
+        "title": "Xóa {{label}}?",
+        "body": "Thao tác này sẽ xóa bo mạch khỏi không gian làm việc. Không thể hoàn tác.",
+        "bodyWithWires_one": "Thao tác này sẽ xóa bo mạch khỏi không gian làm việc và {{count}} dây kết nối. Không thể hoàn tác.",
+        "bodyWithWires_other": "Thao tác này sẽ xóa bo mạch khỏi không gian làm việc và {{count}} dây kết nối. Không thể hoàn tác.",
+        "cancel": "Hủy",
+        "remove": "Xóa"
+      }
+    },
+    "componentPicker": {
+      "title": "Thêm linh kiện",
+      "close": "Đóng",
+      "searchPlaceholder": "Tìm kiếm linh kiện...",
+      "clearSearch": "Xóa tìm kiếm",
+      "allComponents": "Tất cả linh kiện",
+      "boards": "Bo mạch",
+      "loading": "Đang tải linh kiện...",
+      "noResults": "Không tìm thấy linh kiện",
+      "clearFilters": "Xóa bộ lọc"
+    },
+    "libraryManager": {
+      "title": "TRÌNH QUẢN LÝ THƯ VIỆN",
+      "searchTab": "Tìm kiếm",
+      "installedTab": "Đã cài",
+      "filterPlaceholder": "Lọc tìm kiếm của bạn...",
+      "searchingFor": "Đang tìm \"{{query}}\"…",
+      "loadingLibraries": "Đang tải thư viện…",
+      "noResults": "Không có thư viện nào",
+      "noResultsFor": "Không tìm thấy thư viện cho \"{{query}}\"",
+      "byAuthor": "bởi {{author}}",
+      "install": "CÀI ĐẶT",
+      "installing": "Đang cài...",
+      "uninstall": "GỠ CÀI",
+      "uninstalling": "Đang gỡ...",
+      "loadingInstalled": "Đang tải thư viện đã cài...",
+      "noneInstalled": "Chưa cài thư viện nào.",
+      "useSearchTab": "Sử dụng tab Tìm kiếm để cài thư viện."
+    },
+    "installLibs": {
+      "title": "THƯ VIỆN YÊU CẦU",
+      "installingProgress": "Đang cài {{done}} trong số {{total}}…",
+      "allDone": "Tất cả thư viện đã được cài thành công",
+      "required_one": "Dự án này yêu cầu {{count}} thư viện. Cài đặt nó để biên dịch đúng.",
+      "required_other": "Dự án này yêu cầu {{count}} thư viện. Cài đặt chúng để biên dịch đúng.",
+      "wokwiHosted": "Thư viện được host bởi Wokwi",
+      "pending": "đang chờ",
+      "installing": "đang cài…",
+      "installed": "đã cài",
+      "errorStatus": "lỗi",
+      "close": "Đóng",
+      "skip": "Bỏ qua",
+      "installAll": "Cài tất cả ({{count}})",
+      "installingShort": "Đang cài…"
+    },
+    "shell": {
+      "code": "Code",
+      "both": "Cả hai",
+      "circuit": "Mạch",
+      "showExplorer": "Hiện trình khám phá tệp",
+      "hideExplorer": "Ẩn trình khám phá tệp",
+      "viewMode": "Chế độ xem",
+      "dragResize": "Kéo để thay đổi kích thước"
+    },
+    "oscilloscope": {
+      "title": "Dao động ký",
+      "addChannelTitle": "Thêm kênh pin",
+      "addChannel": "Thêm kênh",
+      "timeDiv": "Thời gian/div:",
+      "pauseTitle": "Tạm dừng chụp",
+      "resumeTitle": "Tiếp tục chụp",
+      "pause": "Tạm dừng",
+      "run": "Chạy",
+      "clearTitle": "Xóa tất cả mẫu đã chụp",
+      "clear": "Xóa",
+      "noChannels": "Chưa thêm kênh nào.",
+      "noChannelsHint": "Nhấn \"+ Thêm kênh\" để theo dõi một pin.",
+      "removeChannel": "Xóa {{label}}"
+    },
+    "componentProps": {
+      "close": "Đóng",
+      "tapToConnect": "Nhấn vào chân để kết nối:",
+      "tapToWire": "Nhấn vào chân để đấu dây:",
+      "pinRoles": "Vai trò chân:",
+      "arduinoPin": "Chân Arduino:",
+      "confirmDelete": "Xóa {{name}}?",
+      "confirmDeleteTitle": "Xác nhận xóa",
+      "deleteTitle": "Xóa linh kiện",
+      "rotate90": "Xoay 90°",
+      "rotate": "Xoay",
+      "delete": "Xóa",
+      "cancel": "Hủy"
+    },
+    "selectionBar": {
+      "label": "Hành động chọn",
+      "rotate90": "Xoay 90°",
+      "rotate": "Xoay",
+      "delete": "Xóa",
+      "deselect": "Bỏ chọn",
+      "changeColor": "Đổi màu",
+      "deleteKind": {
+        "wire": "Xóa dây",
+        "component": "Xóa linh kiện",
+        "board": "Xóa bo mạch"
+      }
+    },
+    "console": {
+      "title": "Đầu ra",
+      "errorCount_one": "{{count}} lỗi",
+      "errorCount_other": "{{count}} lỗi",
+      "warningCount_one": "{{count}} cảnh báo",
+      "warningCount_other": "{{count}} cảnh báo",
+      "filterAll": "Tất cả",
+      "filterErrors": "Lỗi",
+      "filterWarnings": "Cảnh báo",
+      "auto": "Tự động",
+      "clear": "Xóa đầu ra",
+      "close": "Đóng",
+      "empty": "Chưa có đầu ra biên dịch. Nhấn Biên dịch để bắt đầu."
+    },
+    "boardPicker": {
+      "title": "Thêm bo mạch"
+    },
+    "pinPicker": {
+      "close": "Đóng",
+      "filterPins": "Lọc chân…",
+      "noMatch": "Không có chân nào khớp.",
+      "rotate": "Xoay",
+      "delete": "Xóa"
+    },
+    "pi": {
+      "connected": "Đã kết nối",
+      "starting": "Đang khởi động…",
+      "offline": "Offline",
+      "powerOnTitle": "Bật nguồn Raspberry Pi",
+      "startPi": "Khởi động Pi",
+      "connectTitle": "Kết nối terminal với Pi",
+      "connect": "Kết nối",
+      "disconnectTitle": "Ngắt kết nối terminal",
+      "disconnect": "Ngắt kết nối",
+      "terminal": "Terminal",
+      "close": "Đóng",
+      "offlineTitle": "Raspberry Pi 3B đang tắt",
+      "offlineSubtitle": "Khởi động Pi để mở terminal và tương tác với hệ thống Linux.",
+      "offlineNote1": "Lưu ý: Trình khám phá tệp hiển thị vùng staging.",
+      "offlineNote2": "Sử dụng \"Tải lên Pi\" sau khi khởi động để chuyển tệp sang Pi đang chạy.",
+      "loadingTerminal": "Đang tải terminal…",
+      "selectFile": "Chọn một tệp từ trình khám phá để chỉnh sửa."
+    },
+    "sensorPanel": {
+      "close": "Đóng"
+    },
+    "customChip": {
+      "title": "Chip tùy chỉnh — {{chipName}}",
+      "tabExamples": "Ví dụ",
+      "tabEditor": "Trình soạn thảo",
+      "attributes": "Thuộc tính",
+      "compiling": "Đang biên dịch…",
+      "compile": "Biên dịch",
+      "compiledOk": "✓ Đã biên dịch — {{kb}} KB",
+      "compileFailed": "Biên dịch thất bại",
+      "cancel": "Hủy",
+      "savePlace": "Lưu & Đặt",
+      "compileFirst": "Biên dịch trước"
+    },
+    "serial": {
+      "title": "Serial Monitor",
+      "addBoard": "Thêm bo mạch để khởi động serial monitor.",
+      "autoscroll": "Tự cuộn",
+      "clearTitle": "Xóa đầu ra cho bo mạch này",
+      "clear": "Xóa",
+      "send": "Gửi",
+      "iotGatewayTitle": "Nhấn để mở qua IoT Gateway",
+      "openIotGateway": "Mở IoT Gateway",
+      "waitingData": "Đang chờ dữ liệu serial...",
+      "startSim": "Khởi động mô phỏng để xem đầu ra serial.",
+      "placeholderText": "Nhập tin nhắn để gửi...",
+      "placeholderPython": "Nhập biểu thức Python... (Ctrl+C để gián đoạn)",
+      "lineEnd": {
+        "none": "Không có kết thúc dòng",
+        "nl": "Dòng mới",
+        "cr": "Carriage return",
+        "both": "Cả NL & CR"
+      }
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Giới thiệu về Velxio",
+      "subtitle": "Trình mô phỏng hệ thống nhúng mã nguồn mở miễn phí — được xây dựng bởi một nhà phát triển đơn lẻ với niềm đam mê phần cứng và mã nguồn mở."
+    },
+    "story": {
+      "heading": "Câu chuyện",
+      "p1": "Velxio bắt đầu như một cuộc khám phá cá nhân về cách các trình mô phỏng vi điều khiển hoạt động bên trong — hướng dẫn CPU, quản lý bộ nhớ, thời gian ngoại vi và kiến trúc cấp thấp. Những gì bắt đầu như một dự án học tập trong kỳ nghỉ nhanh chóng phát triển thành một thứ lớn hơn.",
+      "p2": "Ý tưởng rất đơn giản: <strong>nếu ai đó có thể mô phỏng bo mạch Arduino, ESP32 và Raspberry Pi trực tiếp trong trình duyệt, không cần mua phần cứng, không cần cài đặt toolchain, không cần tài khoản đám mây?</strong>",
+      "p3": "Velxio v1 ra mắt trên Product Hunt và Hacker News, hỗ trợ Arduino Uno và Raspberry Pi Pico. Phản hồi từ cộng đồng những người đam mê và kỹ sư nhúng thật tuyệt vời — và nó đã thúc đẩy dự án tiến lên.",
+      "p4": "<strong>Velxio 2.0</strong> được phát hành với mô phỏng ESP32 qua QEMU (sử dụng fork lcgamboa), Raspberry Pi 3 chạy Linux thực, hỗ trợ RISC-V cho ESP32-C3 và CH32V003, mô phỏng cảm biến thực tế (DHT22, HC-SR04, WS2812B NeoPixel), và 19 bo mạch trên 5 kiến trúc CPU — tất cả chạy code biên dịch thực.",
+      "p5": "Bản phát hành v2 đã lên <strong>trang chủ Hacker News hơn 20 giờ</strong>, đạt gần 600 sao GitHub và hàng nghìn khách truy cập chỉ trong chưa đầy 24 giờ. Giờ đây nó đang được sử dụng bởi sinh viên, giáo sư và những người đam mê trên khắp thế giới."
+    },
+    "howItWorks": {
+      "heading": "Cách hoạt động",
+      "avrRp2040Body": "Mô phỏng chính xác từng chu kỳ chạy hoàn toàn trong trình duyệt của bạn sử dụng avr8js và rp2040js. Không cần backend cho mô phỏng.",
+      "esp32Body": "Xtensa ESP32 và ESP32-S3 chạy trên QEMU backend (fork lcgamboa) với flash image thực, GPIO, ADC và timers.",
+      "riscvBody": "ESP32-C3 (DevKit, XIAO, SuperMini) và CH32V003 được mô phỏng qua fork lcgamboa của QEMU với libqemu-riscv32, cùng mẫu backend như Xtensa ESP32.",
+      "raspiBody": "ARM Cortex-A53 đầy đủ trên Linux qua QEMU raspi3b — khởi động Raspberry Pi OS thực và chạy Python với RPi.GPIO."
+    },
+    "openSource": {
+      "heading": "Triết lý mã nguồn mở",
+      "lead": "Velxio là <strong>100% mã nguồn mở</strong> theo giấy phép AGPLv3. Không phụ thuộc đám mây, không có tài khoản học sinh, không có dữ liệu rời khỏi mạng của bạn. Các trường đại học và bootcamp có thể triển khai nó trên máy chủ riêng với một lệnh Docker duy nhất và cung cấp cho mỗi sinh viên quyền truy cập vào môi trường phát triển nhúng đầy đủ — miễn phí.",
+      "creditsIntro": "Dự án được xây dựng trên công sức mã nguồn mở tuyệt vời từ cộng đồng:",
+      "credits": {
+        "avr8js": "Mô phỏng CPU AVR8 bởi Wokwi",
+        "rp2040js": "Mô phỏng RP2040 bởi Wokwi",
+        "wokwiElements": "48+ linh kiện điện tử trực quan bởi Wokwi",
+        "qemuLcgamboa": "Mô phỏng ESP32 và Raspberry Pi QEMU",
+        "arduinoCli": "Toolchain biên dịch Arduino"
+      },
+      "inspiredBy": "Velxio được lấy cảm hứng từ <a>Wokwi</a>, đây là một công cụ tuyệt vời. Mục tiêu của Velxio là đi theo một con đường khác: hoàn toàn mã nguồn mở, tự host được, và hỗ trợ nhiều bo mạch dị hợp trong cùng một mạch."
+    },
+    "creator": {
+      "heading": "Người sáng tạo",
+      "role": "Kiến trúc sư Ứng dụng @ IBM · Montevideo, Uruguay",
+      "bio1": "Kiến trúc sư Ứng dụng với hơn 10 năm kinh nghiệm dẫn dắt phát triển các hệ sinh thái doanh nghiệp quy mô lớn. Chuyên gia về AI Tạo sinh (LLMs, RAG, LangChain), kiến trúc Cloud-Native (OpenShift, Kubernetes), và chuyên gia ERP Odoo được chứng nhận. Hiện đang làm việc tại IBM về các ứng dụng doanh nghiệp cho Ngân hàng Bảo hiểm Nhà nước Uruguay (BSE).",
+      "bio2": "Học Kỹ thuật Máy tính tại Universidad de Oriente ở Cuba (2012-2017), sau đó chuyển đến Uruguay nơi anh xây dựng sự nghiệp qua các vai trò tại Quanam (triển khai Odoo cho các tổ chức chính phủ), và IBM (kiến trúc doanh nghiệp cho BPS và BSE).",
+      "bio3": "Người đam mê lập trình và robot. Người sáng tạo của các dự án mã nguồn mở khác bao gồm <a>một game đua 3D chạy trên ESP32</a> (nổi trên Reddit với 40K+ lượt xem) và một bản sao iPod Classic cho Raspberry Pi.",
+      "techStack": "Ngăn xếp công nghệ"
+    },
+    "releases": {
+      "heading": "Các bản phát hành gần đây",
+      "latest": "Mới nhất",
+      "v25Tagline": "Arduino gặp SPICE trong trình duyệt của bạn",
+      "v25Blurb": "Mô phỏng mạch tương tự thời gian thực qua ngspice-WASM, kết nối với Arduino, ESP32 và Raspberry Pi Pico. 100+ linh kiện chính xác SPICE, ampe kế và vôn kế trực tiếp, 40 ví dụ tương tự/hybrid mới — đồng mô phỏng với firmware của bạn.",
+      "v2Tagline": "Canvas đa bo mạch, ESP32, Raspberry Pi 3",
+      "v2Blurb": "Mô phỏng ESP32 đầy đủ qua QEMU với WiFi/BLE, Raspberry Pi 3B Linux, hỗ trợ MicroPython trên Pico/ESP32, chip WASM tùy chỉnh, và canvas được thiết kế lại với đồng mô phỏng đa bo mạch.",
+      "readNotes": "Đọc ghi chú phát hành →"
+    },
+    "quote": {
+      "p1": "\"Tôi học Khoa học Máy tính ở Cuba từ 2012 đến 2017, và khi tôi chuyển đến Uruguay, câu hỏi phổ biến nhất là: <em>'Làm sao bạn tốt nghiệp kỹ sư mà không có internet, không có máy tính, không có YouTube?'</em>",
+      "p2": "Tôi chỉ có 4 từ cho câu trả lời: <strong>Kiên trì! Kiên trì! Kiên trì! Kiên trì!</strong>",
+      "p3": "Không có động lực nào tốt hơn việc không có kế hoạch dự phòng.\""
+    },
+    "community": {
+      "heading": "Cộng đồng & Báo chí",
+      "stats": {
+        "githubStars": "GitHub Stars",
+        "countries": "Quốc gia",
+        "supportedBoards": "Bo mạch được hỗ trợ",
+        "cpuArchitectures": "Kiến trúc CPU"
+      },
+      "featuredOn": "Được giới thiệu trên:",
+      "press": {
+        "hackerNews": "Hacker News (Trang chủ)"
+      }
+    },
+    "cta": {
+      "title": "Sẵn sàng dùng thử Velxio?",
+      "subtitle": "Không cần đăng ký. Chạy 100% trong trình duyệt. Miễn phí và mã nguồn mở.",
+      "openEditor": "Mở Trình soạn thảo"
+    }
+  }
+}

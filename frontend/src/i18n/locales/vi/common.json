@@ -1,0 +1,434 @@
+{
+  "header": {
+    "skipToContent": "Chuyển đến nội dung",
+    "openMenu": "Mở menu",
+    "closeMenu": "Đóng menu",
+    "nav": {
+      "home": "Trang chủ",
+      "documentation": "Tài liệu",
+      "examples": "Ví dụ",
+      "editor": "Trình soạn thảo",
+      "about": "Giới thiệu",
+      "pricing": "Bảng giá",
+      "download": "Tải xuống",
+      "blog": "Blog",
+      "github": "GitHub",
+      "discord": "Discord",
+      "classroom": "Cho trường học"
+    },
+    "auth": {
+      "signIn": "Đăng nhập",
+      "signUp": "Đăng ký",
+      "myProjects": "Dự án của tôi",
+      "signOut": "Đăng xuất"
+    },
+    "language": "Ngôn ngữ",
+    "search": "Tìm kiếm"
+  },
+  "footer": {
+    "about": "Velxio là phần mềm mô phỏng mạch điện và vi điều khiển miễn phí, mã nguồn mở, chạy hoàn toàn trên trình duyệt. Arduino, ESP32, RP2040 và ATtiny85, với mô phỏng tương tự chính xác theo SPICE. Được xây dựng cho những người đam mê, sinh viên và kỹ sư nhúng học qua thực hành. AGPLv3."
+  },
+  "landing": {
+    "hero": {
+      "titleLine1": "Arduino, ESP32 & Raspberry Pi.",
+      "titleAccent": "Ngay trong trình duyệt của bạn.",
+      "subtitle": "Viết code, kết nối linh kiện, nhấn chạy. 19 bo mạch, tác tử AI giúp bạn thiết kế mạch, mô phỏng CPU thực, ứng dụng desktop offline đầy đủ, mã nguồn mở AGPLv3.",
+      "ctaPrimary": "Dùng thử trình mô phỏng miễn phí →",
+      "ctaGithub": "Xem trên GitHub",
+      "trustLine": "Tác tử AI đi kèm · Hoạt động offline · Mã nguồn mở AGPLv3 · Không cần đăng ký",
+      "imageAlt": "Trình soạn thảo Velxio với mạch đèn giao thông Arduino Uno"
+    },
+    "boards": {
+      "label": "Phần cứng được hỗ trợ",
+      "titleLine1": "Mọi kiến trúc.",
+      "titleLine2": "Một công cụ duy nhất.",
+      "subtitle": "19 bo mạch trên 5 kiến trúc CPU — AVR8, ARM Cortex-M0+, RISC-V, Xtensa và Linux. Tất cả chạy cục bộ, không cần đám mây."
+    },
+    "features": {
+      "label": "Tính năng",
+      "title": "Mọi thứ bạn cần.",
+      "subtitle": "Một IDE hoàn chỉnh, trình biên dịch và bộ mô phỏng đa kiến trúc — chạy cục bộ không cần dịch vụ bên ngoài.",
+      "spice": {
+        "title": "Tương tự SPICE thời gian thực",
+        "desc": "Động cơ ngspice-WASM — phân tích nút đầy đủ MNA ở ~60 Hz. Điện trở, tụ điện, op-amp, BJT, MOSFET, bộ điều chỉnh hoạt động như silicon thực, không phải mô hình lý tưởng."
+      },
+      "engines": {
+        "title": "5 Động cơ mô phỏng",
+        "desc": "AVR8 (ATmega328P, ATmega2560, ATtiny85), RP2040 (ARM Cortex-M0+), RV32IMC (ESP32-C3, CH32V003 qua QEMU), Xtensa LX6/LX7 (ESP32 qua QEMU), và ARM Cortex-A53 (Raspberry Pi 3 Linux)."
+      },
+      "customChips": {
+        "title": "Chip tùy chỉnh",
+        "desc": "Viết mạch tích hợp của riêng bạn bằng C, Rust hoặc AssemblyScript sử dụng API Wokwi Custom Chips. Biên dịch sang WebAssembly và sử dụng trong các dự án."
+      },
+      "components": {
+        "title": "100+ Linh kiện",
+        "desc": "Các linh kiện tương tự chính xác SPICE cộng với 48+ linh kiện trực quan wokwi — LED, LCD, ILI9341 TFT, servo, buzzer, cảm biến siêu âm, bàn phím, dải NeoPixel."
+      },
+      "instruments": {
+        "title": "Dụng cụ đo trực tiếp",
+        "desc": "Dao động ký nhiều kênh, vôn kế, ampe kế, máy tạo tín hiệu. Đặt lên bất kỳ nút nào và xem dạng sóng cập nhật thời gian thực khi mô phỏng chạy."
+      },
+      "monaco": {
+        "title": "Trình soạn thảo Monaco + arduino-cli",
+        "desc": "Trình soạn thảo C++ cấp VS Code với không gian làm việc đa tệp. arduino-cli cục bộ biên dịch thành tệp .hex / .uf2 / .bin thực — không cần đi lại đám mây."
+      }
+    },
+    "support": {
+      "title": "Hỗ trợ dự án",
+      "subtitle": "Velxio hoàn toàn miễn phí và mã nguồn mở. Nếu nó tiết kiệm thời gian cho bạn, hãy cân nhắc hỗ trợ sự phát triển của nó.",
+      "ctaSponsors": "GitHub Sponsors",
+      "ctaPaypal": "Quyên góp qua PayPal"
+    },
+    "licensing": {
+      "label": "Cấp phép",
+      "title": "Miễn phí, với tùy chọn thương mại.",
+      "subtitle": "AGPLv3 cho bản phát hành mã nguồn mở. Giấy phép thương mại cho các nhóm cần tích hợp Velxio vào sản phẩm nguồn đóng.",
+      "opensource": {
+        "title": "Mã nguồn mở — AGPLv3",
+        "desc": "Miễn phí vĩnh viễn cho sử dụng cá nhân, giáo dục, nghiên cứu và tự host. Sửa đổi, fork và phân phối lại — các thay đổi của bạn cũng phải tuân theo AGPLv3.",
+        "cta": "Xem mã nguồn trên GitHub →"
+      },
+      "commercial": {
+        "badge": "Thương mại",
+        "title": "Giấy phép thương mại",
+        "desc": "Cho sản phẩm nguồn đóng, SaaS độc quyền, hoặc sử dụng nội bộ trong công ty khi tính tương thích AGPLv3 không phù hợp với mô hình kinh doanh của bạn.",
+        "cta": "Liên hệ báo giá →"
+      }
+    },
+    "ai": {
+      "label": "Tác tử AI",
+      "title": "Được hỗ trợ bởi tác tử AI.",
+      "subtitle": "Một tác tử đa bước chạy trong trình soạn thảo. Nó đọc canvas của bạn, viết code, đặt linh kiện và kết nối chúng — tất cả được điều khiển bằng ngôn ngữ tự nhiên.",
+      "cards": {
+        "wire": {
+          "title": "Đặt và đấu nối linh kiện",
+          "desc": "Yêu cầu \"thêm một nút nhấn vào D2 với pull-up lên 5V\". Tác tử chọn linh kiện, đặt lên canvas, kết nối mọi chân và gắn nhãn dây."
+        },
+        "code": {
+          "title": "Tạo sketch hoạt động",
+          "desc": "Mô tả những gì bạn muốn bo mạch làm và tác tử viết code Arduino / MicroPython, biên dịch và tải firmware — không cần copy-paste từ chat."
+        },
+        "debug": {
+          "title": "Chuẩn đoán mạch đang chạy",
+          "desc": "Kẹt với lỗi đấu nối? Chia sẻ ảnh chụp canvas và tác tử đọc sơ đồ, chạy mô phỏng, và cho biết chân nào sai."
+        }
+      }
+    },
+    "pricing": {
+      "label": "Bảng giá",
+      "title": "Miễn phí để chạy mạch. Trả tiền cho AI.",
+      "subtitle": "Trình mô phỏng luôn miễn phí. Các gói chỉ tăng hạn mức tác tử AI — tín dụng được chuyển sang mỗi ngày.",
+      "popular": "Phổ biến nhất",
+      "tiers": {
+        "free": {
+          "name": "Miễn phí",
+          "tagline": "Khám phá trình mô phỏng + hỗ trợ AI nhẹ.",
+          "f1": "100 tín dụng AI hàng ngày (lên đến 1.500/tháng)",
+          "f2": "Tất cả 30+ bo mạch + 48+ linh kiện",
+          "f3": "Mô phỏng CPU thực, dự án công khai",
+          "cta": "Bắt đầu"
+        },
+        "maker": {
+          "name": "Maker",
+          "tagline": "Cho những người đam mê đang tạo mạch thực với sự hỗ trợ của AI.",
+          "f1": "500 tín dụng AI hàng ngày (lên đến 15.000/tháng)",
+          "f2": "Dự án không công khai + Velxio Desktop (offline)",
+          "f3": "Thời gian chạy không giới hạn cho ESP32, STM32 & Raspberry Pi",
+          "cta": "Bắt đầu với Maker"
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Dự án riêng tư, GitHub Sync và xuất BOM.",
+          "f1": "2.000 tín dụng AI hàng ngày (lên đến 60.000/tháng)",
+          "f2": "Dự án riêng tư + BOM CSV + Ảnh sơ đồ",
+          "f3": "GitHub Sync + embed không watermark",
+          "cta": "Đăng ký Pro"
+        }
+      },
+      "classroomBanner": "Đưa Velxio vào khóa học? Velxio for Classroom cung cấp quyền truy cập Pro cho mọi học sinh từ $40/năm.",
+      "classroomCta": "Xem gói cho trường học →"
+    }
+  },
+  "profile": {
+    "newProject": "Dự án mới",
+    "loading": "Đang tải…",
+    "empty": "Chưa có dự án công khai nào.",
+    "private": "Riêng tư",
+    "copyLink": "Sao chép liên kết chia sẻ",
+    "notFound": "Không tìm thấy người dùng."
+  },
+  "pricing": {
+    "title": "Bảng giá",
+    "selfHosted": "Phiên bản Velxio này được tự host từ image mã nguồn mở — tất cả tính năng đều miễn phí cho mọi người sử dụng.",
+    "hostedVersion": "Phiên bản được host tại <link>velxio.dev</link> cung cấp gói Pro tùy chọn giúp tài trợ cho việc phát triển.",
+    "sourceCode": "Mã nguồn có sẵn trên <link>GitHub với giấy phép MIT</link>."
+  },
+  "admin": {
+    "loading": "Đang tải…",
+    "panel": "Bảng quản trị",
+    "logout": "Đăng xuất",
+    "tabs": {
+      "dashboard": "Bảng điều khiển",
+      "users": "Người dùng",
+      "projects": "Dự án",
+      "boards": "Bo mạch"
+    },
+    "errors": {
+      "save": "Lưu thất bại."
+    },
+    "editUser": {
+      "title": "Chỉnh sửa người dùng",
+      "username": "Tên người dùng",
+      "email": "Email",
+      "newPassword": "Mật khẩu mới (để trống để giữ)",
+      "passwordPlaceholder": "Tối thiểu 8 ký tự",
+      "admin": "Quản trị",
+      "active": "Hoạt động",
+      "cancel": "Hủy",
+      "save": "Lưu",
+      "saving": "Đang lưu…"
+    },
+    "setup": {
+      "title": "Thiết lập quản trị",
+      "body": "Chưa có tài khoản quản trị. Tạo người dùng quản trị đầu tiên để tiếp tục.",
+      "password": "Mật khẩu",
+      "confirmPassword": "Xác nhận mật khẩu",
+      "passwordMismatch": "Mật khẩu không khớp.",
+      "creating": "Đang tạo…",
+      "createAdmin": "Tạo quản trị",
+      "failed": "Tạo quản trị thất bại."
+    },
+    "notAdmin": {
+      "title": "Yêu cầu quyền quản trị",
+      "body": "Bạn phải đăng nhập với tư cách quản trị để truy cập bảng điều khiển này.",
+      "goLogin": "Đến trang đăng nhập"
+    },
+    "users": {
+      "loadFailed": "Tải người dùng thất bại.",
+      "deleteFailed": "Xóa người dùng thất bại.",
+      "confirmDelete": "Xóa người dùng \"{{username}}\" và tất cả dự án của họ? Hành động này không thể hoàn tác.",
+      "searchPlaceholder": "Tìm kiếm theo tên người dùng hoặc email…",
+      "count_one": "{{count}} người dùng",
+      "count_other": "{{count}} người dùng",
+      "noResults": "Không tìm thấy người dùng.",
+      "col": {
+        "username": "Tên người dùng",
+        "email": "Email",
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "projects": "Dự án",
+        "compiles": "Biên dịch",
+        "runs": "Chạy",
+        "boards": "Bo mạch",
+        "country": "Quốc gia",
+        "lastActive": "Hoạt động lần cuối",
+        "joined": "Tham gia",
+        "actions": "Hành động"
+      },
+      "actions": {
+        "activity": "Hoạt động",
+        "edit": "Sửa",
+        "delete": "Xóa",
+        "resetAgentUsage": "Đặt lại tác tử",
+        "resetAgentUsageTooltip": "Xóa việc sử dụng tác tử hôm nay để người dùng có thể tiếp tục sử dụng tác tử."
+      },
+      "confirmResetAgentUsage": "Đặt lại hạn mức tác tử cho \"{{username}}\" (hôm nay, UTC)?",
+      "resetAgentUsageDone": "Đã đặt lại hạn mức cho {{username}} — đã giải phóng {{cycles}} vòng trên {{rows}} hàng sự kiện.",
+      "resetAgentUsageFailed": "Đặt lại việc sử dụng tác tử thất bại."
+    },
+    "boards": {
+      "loadFailed": "Tải số liệu bo mạch thất bại.",
+      "range": "Phạm vi:",
+      "byFamily": "Theo họ bo mạch",
+      "byFqbn": "Theo FQBN chính xác",
+      "noData": "Không có dữ liệu.",
+      "col": {
+        "family": "Họ",
+        "fqbn": "FQBN",
+        "compiles": "Biên dịch",
+        "errors": "Lỗi",
+        "successRate": "Tỷ lệ thành công",
+        "runs": "Chạy",
+        "distinctUsers": "Người dùng khác nhau",
+        "distinctProjects": "Dự án khác nhau"
+      }
+    },
+    "dashboard": {
+      "loadFailed": "Tải số liệu thất bại.",
+      "loadingMetrics": "Đang tải số liệu…",
+      "unknown": "Không xác định",
+      "kpi": {
+        "totalUsers": "Tổng người dùng",
+        "totalProjects": "Tổng dự án",
+        "compilesAllTime": "Biên dịch (tất cả thời gian)",
+        "runsAllTime": "Chạy (tất cả thời gian)",
+        "newIn30d": "+{{count}} trong 30 ngày",
+        "successPct": "{{pct}}% thành công",
+        "dau": "hoạt động trong 24 giờ qua",
+        "wau": "hoạt động trong 7 ngày qua",
+        "mau": "hoạt động trong 30 ngày qua",
+        "publicPrivate": "Công khai / Riêng tư"
+      },
+      "charts": {
+        "activityOverTime": "Hoạt động theo thời gian",
+        "noActivity": "Chưa có hoạt động trong phạm vi này.",
+        "compilesByFamily": "Biên dịch theo họ bo mạch ({{days}} ngày)",
+        "diversityTitle": "Có bao nhiêu họ bo mạch mỗi người dùng",
+        "diversitySubtitle": "Tín hiệu định giá — người dùng đa bo mạch có thể cần gói trả phí.",
+        "boardCount_one": "{{count}} bo mạch",
+        "boardCount_other": "{{count}} bo mạch",
+        "noDataYet": "Chưa có dữ liệu.",
+        "topFqbn": "Bo mạch hàng đầu theo FQBN ({{days}} ngày)",
+        "topCountries": "Quốc gia hàng đầu ({{days}} ngày)",
+        "countriesSubtitle": "Từ tiêu đề CF-IPCountry của Cloudflare. \"Người dùng\" = quốc gia nhà hiện tại, \"Đăng ký\" = nơi họ đăng ký, \"Hoạt động\" = người dùng khác nhau có hoạt động trong phạm vi này.",
+        "noCountryData": "Chưa có dữ liệu quốc gia (có thể đang chạy ngoài Cloudflare).",
+        "topUsers": "Người dùng hàng đầu theo biên dịch",
+        "topProjects": "Dự án hàng đầu theo biên dịch"
+      },
+      "col": {
+        "country": "Quốc gia",
+        "users": "Người dùng",
+        "signups": "Đăng ký",
+        "activeRange": "Hoạt động ({{days}} ngày)",
+        "user": "Người dùng"
+      }
+    },
+    "activity": {
+      "loadFailed": "Tải hoạt động thất bại.",
+      "title": "Hoạt động hàng ngày — {{username}}",
+      "subtitle": "Số lần biên dịch và chạy theo ngày, theo dự án cho người dùng này.",
+      "noActivity": "Không có hoạt động trong phạm vi đã chọn.",
+      "projectCount_one": "{{count}} dự án",
+      "projectCount_other": "{{count}} dự án",
+      "deletedProject": "(dự án đã xóa)",
+      "noProject": "(không có dự án)",
+      "col": {
+        "date": "Ngày",
+        "saves": "Lưu"
+      }
+    },
+    "projects": {
+      "loadFailed": "Tải dự án thất bại.",
+      "deleteFailed": "Xóa dự án thất bại.",
+      "confirmDelete": "Xóa dự án \"{{name}}\"? Hành động này không thể hoàn tác.",
+      "searchPlaceholder": "Tìm kiếm theo tên hoặc chủ sở hữu…",
+      "count_one": "{{count}} dự án",
+      "count_other": "{{count}} dự án",
+      "noResults": "Không tìm thấy dự án.",
+      "private": "riêng tư",
+      "public": "công khai",
+      "privateTitle": "Dự án riêng tư (chế độ xem quản trị)",
+      "col": {
+        "name": "Tên",
+        "owner": "Chủ sở hữu",
+        "board": "Bo mạch",
+        "visibility": "Hiển thị",
+        "compiles": "Biên dịch",
+        "runs": "Chạy",
+        "updates": "Cập nhật",
+        "lastCompile": "Biên dịch cuối",
+        "updated": "Đã cập nhật"
+      }
+    }
+  },
+  "examples": {
+    "heading": "Dự án nổi bật",
+    "subtitle": "Khám phá và chạy các dự án ví dụ — được tổ chức theo bo mạch",
+    "searchPlaceholder": "Tìm kiếm ví dụ — thử 'esp32 oled', 'blink', 'dht'…",
+    "searchLabel": "Tìm kiếm ví dụ",
+    "clearSearch": "Xóa tìm kiếm",
+    "clear": "Xóa",
+    "matchCount_one": "{{count}} kết quả",
+    "matchCount_other": "{{count}} kết quả",
+    "filters": {
+      "categoryLabel": "Danh mục:",
+      "difficultyLabel": "Độ khó:",
+      "category": {
+        "all": "Tất cả",
+        "basics": "Cơ bản",
+        "sensors": "Cảm biến",
+        "displays": "Màn hình",
+        "communication": "Truyền thông",
+        "games": "Trò chơi",
+        "robotics": "Robot",
+        "circuits": "Mạch điện"
+      },
+      "difficulty": {
+        "all": "Tất cả",
+        "beginner": "Người mới",
+        "intermediate": "Trung cấp",
+        "advanced": "Nâng cao"
+      }
+    },
+    "copyLink": "Sao chép liên kết chia sẻ",
+    "empty": "Không tìm thấy ví dụ với bộ lọc đã chọn",
+    "emptyForQuery": "Không tìm thấy ví dụ cho \"{{query}}\" với bộ lọc đã chọn",
+    "resetFilters": "Đặt lại bộ lọc",
+    "installing": "Đang cài thư viện ({{done}}/{{total}})",
+    "loadingExample": "Đang tải ví dụ...",
+    "notFound": "Không tìm thấy ví dụ \"{{id}}\".",
+    "browseAll": "Xem tất cả ví dụ"
+  },
+  "starBanner": {
+    "ariaLabel": "Star Velxio trên GitHub",
+    "title": "Bạn thích Velxio?",
+    "body": "Một ⭐ trên GitHub giúp nhiều nhà phát triển hơn khám phá dự án — chỉ mất 2 giây!",
+    "cta": "Star trên GitHub",
+    "dismiss": "Bỏ qua"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng nhập",
+      "subtitle": "để tiếp tục với Velxio",
+      "email": "Email",
+      "password": "Mật khẩu",
+      "signIn": "Đăng nhập",
+      "signingIn": "Đang đăng nhập…",
+      "or": "hoặc",
+      "continueGoogle": "Tiếp tục với Google",
+      "noAccount": "Chưa có tài khoản?",
+      "failed": "Đăng nhập thất bại."
+    },
+    "register": {
+      "title": "Tạo tài khoản",
+      "subtitle": "Bắt đầu xây dựng miễn phí",
+      "username": "Tên người dùng",
+      "usernamePlaceholder": "ví dụ: nguyenvana",
+      "passwordPlaceholder": "Tối thiểu 8 ký tự",
+      "create": "Tạo tài khoản",
+      "creating": "Đang tạo tài khoản…",
+      "haveAccount": "Đã có tài khoản?",
+      "errors": {
+        "reserved": "Tên người dùng đó đã được đặt trước.",
+        "usernameRules": "Tên người dùng phải từ 3-30 ký tự (a-z, 0-9, _, -)",
+        "passwordTooShort": "Mật khẩu phải từ 8 ký tự trở lên.",
+        "failed": "Đăng ký thất bại."
+      }
+    }
+  },
+  "quotaModal": {
+    "titleFree": "Bạn đã đạt hạn mức miễn phí hôm nay",
+    "titlePaid": "Bạn đã đạt hạn mức hàng ngày",
+    "bodyFree": "Tài khoản miễn phí nhận {{cap}} tin nhắn AI mỗi ngày. Pro ($15/tháng) cung cấp {{proCap}}/ngày — gấp {{multiplier}} lần hạn mức. Hoặc đợi hạn mức được đặt lại.",
+    "bodyPaid": "Gói {{plan}} của bạn cho phép {{cap}} tin nhắn mỗi ngày. Nâng cấp lên gói cao hơn hoặc đợi được đặt lại.",
+    "today": "Hôm nay",
+    "thisMonth": "Tháng này",
+    "resets": "Đặt lại",
+    "ctaUpgrade": "Nâng cấp lên Pro — $15/tháng",
+    "ctaSeePlans": "Xem các gói",
+    "ctaWait": "Đợi đặt lại"
+  },
+  "editor": {
+    "share": {
+      "updateFailed": "Không thể cập nhật hiển thị — vui lòng thử lại.",
+      "visibility": {
+        "publicLabel": "Công khai",
+        "publicHint": "Ai cũng có thể tìm thấy dự án này trên velxio.dev.",
+        "unlistedLabel": "Không liệt kê",
+        "unlistedHint": "Ẩn khỏi tìm kiếm và bộ sưu tập — chỉ truy cập qua liên kết chia sẻ.",
+        "privateLabel": "Riêng tư",
+        "privateHint": "Chỉ bạn có thể xem dự án này."
+      }
+    }
+  }
+}

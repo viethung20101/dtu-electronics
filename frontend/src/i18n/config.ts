@@ -18,6 +18,7 @@ export const LOCALES = [
   "de",
   "ja",
   "ru",
+  "vi",
 ] as const;
 
 export type Locale = (typeof LOCALES)[number];
@@ -59,6 +60,7 @@ export const LOCALE_META: Record<Locale, LocaleMeta> = {
   de: { htmlLang: "de", nativeName: "Deutsch", ogLocale: "de_DE", dir: "ltr" },
   ja: { htmlLang: "ja", nativeName: "日本語", ogLocale: "ja_JP", dir: "ltr" },
   ru: { htmlLang: "ru", nativeName: "Русский", ogLocale: "ru_RU", dir: "ltr" },
+  vi: { htmlLang: "vi", nativeName: "Tiếng Việt", ogLocale: "vi_VN", dir: "ltr" },
 };
 
 export function isLocale(value: unknown): value is Locale {
