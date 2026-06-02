@@ -2174,9 +2174,9 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                     onClick={openGateway}
                     title={
                       hasIp
-                        ? `WiFi: ${activeBoard.wifiStatus.ssid ?? 'Velxio-GUEST'} — IP: ${activeBoard.wifiStatus.ip}\nClick to open IoT Gateway ↗`
+                        ? `WiFi: ${activeBoard.wifiStatus.ssid ?? 'CVS-GUEST'} — IP: ${activeBoard.wifiStatus.ip}\nClick to open IoT Gateway ↗`
                         : status === 'connected'
-                          ? `WiFi: ${activeBoard.wifiStatus.ssid ?? 'Velxio-GUEST'} — Connecting...`
+                          ? `WiFi: ${activeBoard.wifiStatus.ssid ?? 'CVS-GUEST'} — Connecting...`
                           : status === 'initializing'
                             ? 'WiFi: Initializing...'
                             : 'WiFi: Disconnected'

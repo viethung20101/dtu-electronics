@@ -26,7 +26,7 @@
     "search": "Tìm kiếm"
   },
   "footer": {
-    "about": "Velxio là phần mềm mô phỏng mạch điện và vi điều khiển miễn phí, mã nguồn mở, chạy hoàn toàn trên trình duyệt. Arduino, ESP32, RP2040 và ATtiny85, với mô phỏng tương tự chính xác theo SPICE. Được xây dựng cho những người đam mê, sinh viên và kỹ sư nhúng học qua thực hành. AGPLv3."
+    "about": "CVS là phần mềm mô phỏng mạch điện và vi điều khiển miễn phí, mã nguồn mở, chạy hoàn toàn trên trình duyệt. Arduino, ESP32, RP2040 và ATtiny85, với mô phỏng tương tự chính xác theo SPICE. Được xây dựng cho những người đam mê, sinh viên và kỹ sư nhúng học qua thực hành. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -36,7 +36,7 @@
       "ctaPrimary": "Dùng thử trình mô phỏng miễn phí →",
       "ctaGithub": "Xem trên GitHub",
       "trustLine": "Tác tử AI đi kèm · Hoạt động offline · Mã nguồn mở AGPLv3 · Không cần đăng ký",
-      "imageAlt": "Trình soạn thảo Velxio với mạch đèn giao thông Arduino Uno"
+      "imageAlt": "Trình soạn thảo CVS với mạch đèn giao thông Arduino Uno"
     },
     "boards": {
       "label": "Phần cứng được hỗ trợ",
@@ -75,14 +75,14 @@
     },
     "support": {
       "title": "Hỗ trợ dự án",
-      "subtitle": "Velxio hoàn toàn miễn phí và mã nguồn mở. Nếu nó tiết kiệm thời gian cho bạn, hãy cân nhắc hỗ trợ sự phát triển của nó.",
+      "subtitle": "CVS hoàn toàn miễn phí và mã nguồn mở. Nếu nó tiết kiệm thời gian cho bạn, hãy cân nhắc hỗ trợ sự phát triển của nó.",
       "ctaSponsors": "GitHub Sponsors",
       "ctaPaypal": "Quyên góp qua PayPal"
     },
     "licensing": {
       "label": "Cấp phép",
       "title": "Miễn phí, với tùy chọn thương mại.",
-      "subtitle": "AGPLv3 cho bản phát hành mã nguồn mở. Giấy phép thương mại cho các nhóm cần tích hợp Velxio vào sản phẩm nguồn đóng.",
+      "subtitle": "AGPLv3 cho bản phát hành mã nguồn mở. Giấy phép thương mại cho các nhóm cần tích hợp CVS vào sản phẩm nguồn đóng.",
       "opensource": {
         "title": "Mã nguồn mở — AGPLv3",
         "desc": "Miễn phí vĩnh viễn cho sử dụng cá nhân, giáo dục, nghiên cứu và tự host. Sửa đổi, fork và phân phối lại — các thay đổi của bạn cũng phải tuân theo AGPLv3.",
@@ -132,7 +132,7 @@
           "name": "Maker",
           "tagline": "Cho những người đam mê đang tạo mạch thực với sự hỗ trợ của AI.",
           "f1": "500 tín dụng AI hàng ngày (lên đến 15.000/tháng)",
-          "f2": "Dự án không công khai + Velxio Desktop (offline)",
+          "f2": "Dự án không công khai + CVS Desktop (offline)",
           "f3": "Thời gian chạy không giới hạn cho ESP32, STM32 & Raspberry Pi",
           "cta": "Bắt đầu với Maker"
         },
@@ -145,7 +145,7 @@
           "cta": "Đăng ký Pro"
         }
       },
-      "classroomBanner": "Đưa Velxio vào khóa học? Velxio for Classroom cung cấp quyền truy cập Pro cho mọi học sinh từ $40/năm.",
+      "classroomBanner": "Đưa CVS vào khóa học? CVS for Classroom cung cấp quyền truy cập Pro cho mọi học sinh từ $40/năm.",
       "classroomCta": "Xem gói cho trường học →"
     }
   },
@@ -159,8 +159,8 @@
   },
   "pricing": {
     "title": "Bảng giá",
-    "selfHosted": "Phiên bản Velxio này được tự host từ image mã nguồn mở — tất cả tính năng đều miễn phí cho mọi người sử dụng.",
-    "hostedVersion": "Phiên bản được host tại <link>velxio.dev</link> cung cấp gói Pro tùy chọn giúp tài trợ cho việc phát triển.",
+    "selfHosted": "Phiên bản CVS này được tự host từ image mã nguồn mở — tất cả tính năng đều miễn phí cho mọi người sử dụng.",
+    "hostedVersion": "Phiên bản được host tại <link>cvs.local</link> cung cấp gói Pro tùy chọn giúp tài trợ cho việc phát triển.",
     "sourceCode": "Mã nguồn có sẵn trên <link>GitHub với giấy phép MIT</link>."
   },
   "admin": {
@@ -370,8 +370,8 @@
     "browseAll": "Xem tất cả ví dụ"
   },
   "starBanner": {
-    "ariaLabel": "Star Velxio trên GitHub",
-    "title": "Bạn thích Velxio?",
+    "ariaLabel": "Star CVS trên GitHub",
+    "title": "Bạn thích CVS?",
     "body": "Một ⭐ trên GitHub giúp nhiều nhà phát triển hơn khám phá dự án — chỉ mất 2 giây!",
     "cta": "Star trên GitHub",
     "dismiss": "Bỏ qua"
@@ -379,7 +379,7 @@
   "auth": {
     "login": {
       "title": "Đăng nhập",
-      "subtitle": "để tiếp tục với Velxio",
+      "subtitle": "để tiếp tục với CVS",
       "email": "Email",
       "password": "Mật khẩu",
       "signIn": "Đăng nhập",
@@ -423,7 +423,7 @@
       "updateFailed": "Không thể cập nhật hiển thị — vui lòng thử lại.",
       "visibility": {
         "publicLabel": "Công khai",
-        "publicHint": "Ai cũng có thể tìm thấy dự án này trên velxio.dev.",
+        "publicHint": "Ai cũng có thể tìm thấy dự án này trên cvs.local.",
         "unlistedLabel": "Không liệt kê",
         "unlistedHint": "Ẩn khỏi tìm kiếm và bộ sưu tập — chỉ truy cập qua liên kết chia sẻ.",
         "privateLabel": "Riêng tư",

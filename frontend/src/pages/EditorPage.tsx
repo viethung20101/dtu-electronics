@@ -55,10 +55,10 @@ const resizeHandleStyle: React.CSSProperties = {
 export const EditorPage: React.FC = () => {
   const { t } = useTranslation();
   useSEO({
-    title: 'Multi-Board Simulator Editor — Arduino, ESP32, RP2040, RISC-V | Velxio',
+    title: 'Multi-Board Simulator Editor — Arduino, ESP32, RP2040, RISC-V | CVS',
     description:
       'Write, compile and simulate Arduino, ESP32, Raspberry Pi Pico, ESP32-C3, and Raspberry Pi 3 code in your browser. 19 boards, 5 CPU architectures, 48+ components. Free and open-source.',
-    url: 'https://velxio.dev/editor',
+    url: 'https://cvs.local/editor',
   });
 
   // Silent auto-save for the loaded project (only fires when authed AND

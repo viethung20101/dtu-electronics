@@ -504,7 +504,7 @@ const BoardCard: React.FC<BoardCardProps> = ({ kind, onSelect }) => {
     <button className="component-card" onClick={onSelect} style={{ position: 'relative' }}>
       {isProBoardKind(kind) && (
         <span
-          title="Pro feature — paid plan or Velxio Desktop"
+          title="Pro feature — paid plan or CVS Desktop"
           style={{
             position: 'absolute',
             top: 6,

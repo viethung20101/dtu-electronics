@@ -21,7 +21,7 @@
         "title": "Tìm kiếm và cài thư viện Arduino",
         "label": "Thư viện"
       },
-      "import": "Nhập dự án (.vlx Velxio hoặc .zip Wokwi)",
+      "import": "Nhập dự án (.vlx CVS hoặc .zip Wokwi)",
       "export": "Xuất dự án hiện tại dưới dạng tệp .zip",
       "uploadFirmware": "Tải lên firmware (.hex, .bin, .elf, .ihex) để bỏ qua biên dịch",
       "toggleConsole": "Bật/tắt Bảng điều khiển",
@@ -325,15 +325,15 @@
   },
   "about": {
     "hero": {
-      "title": "Giới thiệu về Velxio",
+      "title": "Giới thiệu về CVS",
       "subtitle": "Trình mô phỏng hệ thống nhúng mã nguồn mở miễn phí — được xây dựng bởi một nhà phát triển đơn lẻ với niềm đam mê phần cứng và mã nguồn mở."
     },
     "story": {
       "heading": "Câu chuyện",
-      "p1": "Velxio bắt đầu như một cuộc khám phá cá nhân về cách các trình mô phỏng vi điều khiển hoạt động bên trong — hướng dẫn CPU, quản lý bộ nhớ, thời gian ngoại vi và kiến trúc cấp thấp. Những gì bắt đầu như một dự án học tập trong kỳ nghỉ nhanh chóng phát triển thành một thứ lớn hơn.",
+      "p1": "CVS bắt đầu như một cuộc khám phá cá nhân về cách các trình mô phỏng vi điều khiển hoạt động bên trong — hướng dẫn CPU, quản lý bộ nhớ, thời gian ngoại vi và kiến trúc cấp thấp. Những gì bắt đầu như một dự án học tập trong kỳ nghỉ nhanh chóng phát triển thành một thứ lớn hơn.",
       "p2": "Ý tưởng rất đơn giản: <strong>nếu ai đó có thể mô phỏng bo mạch Arduino, ESP32 và Raspberry Pi trực tiếp trong trình duyệt, không cần mua phần cứng, không cần cài đặt toolchain, không cần tài khoản đám mây?</strong>",
-      "p3": "Velxio v1 ra mắt trên Product Hunt và Hacker News, hỗ trợ Arduino Uno và Raspberry Pi Pico. Phản hồi từ cộng đồng những người đam mê và kỹ sư nhúng thật tuyệt vời — và nó đã thúc đẩy dự án tiến lên.",
-      "p4": "<strong>Velxio 2.0</strong> được phát hành với mô phỏng ESP32 qua QEMU (sử dụng fork lcgamboa), Raspberry Pi 3 chạy Linux thực, hỗ trợ RISC-V cho ESP32-C3 và CH32V003, mô phỏng cảm biến thực tế (DHT22, HC-SR04, WS2812B NeoPixel), và 19 bo mạch trên 5 kiến trúc CPU — tất cả chạy code biên dịch thực.",
+      "p3": "CVS v1 ra mắt trên Product Hunt và Hacker News, hỗ trợ Arduino Uno và Raspberry Pi Pico. Phản hồi từ cộng đồng những người đam mê và kỹ sư nhúng thật tuyệt vời — và nó đã thúc đẩy dự án tiến lên.",
+      "p4": "<strong>CVS 2.0</strong> được phát hành với mô phỏng ESP32 qua QEMU (sử dụng fork lcgamboa), Raspberry Pi 3 chạy Linux thực, hỗ trợ RISC-V cho ESP32-C3 và CH32V003, mô phỏng cảm biến thực tế (DHT22, HC-SR04, WS2812B NeoPixel), và 19 bo mạch trên 5 kiến trúc CPU — tất cả chạy code biên dịch thực.",
       "p5": "Bản phát hành v2 đã lên <strong>trang chủ Hacker News hơn 20 giờ</strong>, đạt gần 600 sao GitHub và hàng nghìn khách truy cập chỉ trong chưa đầy 24 giờ. Giờ đây nó đang được sử dụng bởi sinh viên, giáo sư và những người đam mê trên khắp thế giới."
     },
     "howItWorks": {
@@ -345,7 +345,7 @@
     },
     "openSource": {
       "heading": "Triết lý mã nguồn mở",
-      "lead": "Velxio là <strong>100% mã nguồn mở</strong> theo giấy phép AGPLv3. Không phụ thuộc đám mây, không có tài khoản học sinh, không có dữ liệu rời khỏi mạng của bạn. Các trường đại học và bootcamp có thể triển khai nó trên máy chủ riêng với một lệnh Docker duy nhất và cung cấp cho mỗi sinh viên quyền truy cập vào môi trường phát triển nhúng đầy đủ — miễn phí.",
+      "lead": "CVS là <strong>100% mã nguồn mở</strong> theo giấy phép AGPLv3. Không phụ thuộc đám mây, không có tài khoản học sinh, không có dữ liệu rời khỏi mạng của bạn. Các trường đại học và bootcamp có thể triển khai nó trên máy chủ riêng với một lệnh Docker duy nhất và cung cấp cho mỗi sinh viên quyền truy cập vào môi trường phát triển nhúng đầy đủ — miễn phí.",
       "creditsIntro": "Dự án được xây dựng trên công sức mã nguồn mở tuyệt vời từ cộng đồng:",
       "credits": {
         "avr8js": "Mô phỏng CPU AVR8 bởi Wokwi",
@@ -354,7 +354,7 @@
         "qemuLcgamboa": "Mô phỏng ESP32 và Raspberry Pi QEMU",
         "arduinoCli": "Toolchain biên dịch Arduino"
       },
-      "inspiredBy": "Velxio được lấy cảm hứng từ <a>Wokwi</a>, đây là một công cụ tuyệt vời. Mục tiêu của Velxio là đi theo một con đường khác: hoàn toàn mã nguồn mở, tự host được, và hỗ trợ nhiều bo mạch dị hợp trong cùng một mạch."
+      "inspiredBy": "CVS được lấy cảm hứng từ <a>Wokwi</a>, đây là một công cụ tuyệt vời. Mục tiêu của CVS là đi theo một con đường khác: hoàn toàn mã nguồn mở, tự host được, và hỗ trợ nhiều bo mạch dị hợp trong cùng một mạch."
     },
     "creator": {
       "heading": "Người sáng tạo",
@@ -392,7 +392,7 @@
       }
     },
     "cta": {
-      "title": "Sẵn sàng dùng thử Velxio?",
+      "title": "Sẵn sàng dùng thử CVS?",
       "subtitle": "Không cần đăng ký. Chạy 100% trong trình duyệt. Miễn phí và mã nguồn mở.",
       "openEditor": "Mở Trình soạn thảo"
     }

@@ -21,7 +21,7 @@
         "title": "Arduino-Bibliotheken suchen und installieren",
         "label": "Bibliotheken"
       },
-      "import": "Projekt importieren (.vlx Velxio oder .zip Wokwi)",
+      "import": "Projekt importieren (.vlx CVS oder .zip Wokwi)",
       "export": "Aktuelles Projekt als .zip-Datei exportieren",
       "uploadFirmware": "Firmware hochladen (.hex, .bin, .elf, .ihex) zur Umgehung der Kompilierung",
       "toggleConsole": "Ausgabekonsole umschalten",
@@ -323,15 +323,15 @@
   },
   "about": {
     "hero": {
-      "title": "Über Velxio",
+      "title": "Über CVS",
       "subtitle": "Ein kostenloser, quelloffener Emulator für eingebettete Systeme – entwickelt von einem einzelnen Entwickler mit Leidenschaft für Hardware und Open Source."
     },
     "story": {
       "heading": "Die Geschichte",
-      "p1": "Velxio begann als persönliche Erkundung, wie Mikrocontroller-Emulatoren intern funktionieren – CPU-Befehle, Speicherverwaltung, Peripherie-Timing und Low-Level-Architektur. Was als Lernprojekt während eines Urlaubs begann, wuchs schnell zu etwas Größerem heran.",
+      "p1": "CVS begann als persönliche Erkundung, wie Mikrocontroller-Emulatoren intern funktionieren – CPU-Befehle, Speicherverwaltung, Peripherie-Timing und Low-Level-Architektur. Was als Lernprojekt während eines Urlaubs begann, wuchs schnell zu etwas Größerem heran.",
       "p2": "Die Idee war einfach: <strong>Was wäre, wenn jeder Arduino-, ESP32- und Raspberry-Pi-Boards direkt im Browser simulieren könnte, ohne Hardware zu kaufen, ohne Toolchains zu installieren, ohne Cloud-Konten?</strong>",
-      "p3": "Velxio v1 startete auf Product Hunt und Hacker News und unterstützte Arduino Uno und Raspberry Pi Pico. Das Feedback der Maker- und Embedded-Community war unglaublich – und trieb das Projekt voran.",
-      "p4": "<strong>Velxio 2.0</strong> brachte ESP32-Emulation über QEMU (mit dem lcgamboa-Fork), einen Raspberry Pi 3 mit echtem Linux, RISC-V-Unterstützung für ESP32-C3 und CH32V003, realistische Sensor-Simulation (DHT22, HC-SR04, WS2812B NeoPixel) und 19 Boards auf 5 CPU-Architekturen – alle mit echtem kompiliertem Code.",
+      "p3": "CVS v1 startete auf Product Hunt und Hacker News und unterstützte Arduino Uno und Raspberry Pi Pico. Das Feedback der Maker- und Embedded-Community war unglaublich – und trieb das Projekt voran.",
+      "p4": "<strong>CVS 2.0</strong> brachte ESP32-Emulation über QEMU (mit dem lcgamboa-Fork), einen Raspberry Pi 3 mit echtem Linux, RISC-V-Unterstützung für ESP32-C3 und CH32V003, realistische Sensor-Simulation (DHT22, HC-SR04, WS2812B NeoPixel) und 19 Boards auf 5 CPU-Architekturen – alle mit echtem kompiliertem Code.",
       "p5": "Der v2-Start erreichte die <strong>Titelseite von Hacker News für über 20 Stunden</strong>, erreichte fast 600 GitHub-Sterne und Tausende von Besuchern in weniger als 24 Stunden. Es wird jetzt von Studenten, Professoren und Machern auf der ganzen Welt genutzt."
     },
     "howItWorks": {
@@ -343,7 +343,7 @@
     },
     "openSource": {
       "heading": "Open-Source-Philosophie",
-      "lead": "Velxio ist <strong>100 % Open Source</strong> unter der AGPLv3-Lizenz. Keine Cloud-Abhängigkeit, keine Studentenkonten, keine Daten verlassen Ihr Netzwerk. Universitäten und Bootcamps können es mit einem einzigen Docker-Befehl auf ihren eigenen Servern bereitstellen und jedem Studenten Zugang zu einer vollständigen Embedded-Entwicklungsumgebung geben – kostenlos.",
+      "lead": "CVS ist <strong>100 % Open Source</strong> unter der AGPLv3-Lizenz. Keine Cloud-Abhängigkeit, keine Studentenkonten, keine Daten verlassen Ihr Netzwerk. Universitäten und Bootcamps können es mit einem einzigen Docker-Befehl auf ihren eigenen Servern bereitstellen und jedem Studenten Zugang zu einer vollständigen Embedded-Entwicklungsumgebung geben – kostenlos.",
       "creditsIntro": "Das Projekt baut auf erstaunlicher Open-Source-Arbeit der Community auf:",
       "credits": {
         "avr8js": "AVR8-CPU-Emulation von Wokwi",
@@ -352,7 +352,7 @@
         "qemuLcgamboa": "ESP32- und Raspberry-Pi-QEMU-Emulation",
         "arduinoCli": "Arduino-Kompilierungswerkzeugkette"
       },
-      "inspiredBy": "Velxio wurde von <a>Wokwi</a> inspiriert, einem fantastischen Tool. Das Ziel von Velxio ist es, einen anderen Weg zu gehen: vollständig Open Source, selbst hostbar und Unterstützung mehrerer heterogener Boards in derselben Schaltung."
+      "inspiredBy": "CVS wurde von <a>Wokwi</a> inspiriert, einem fantastischen Tool. Das Ziel von CVS ist es, einen anderen Weg zu gehen: vollständig Open Source, selbst hostbar und Unterstützung mehrerer heterogener Boards in derselben Schaltung."
     },
     "creator": {
       "heading": "Der Schöpfer",
@@ -390,7 +390,7 @@
       }
     },
     "cta": {
-      "title": "Bereit, Velxio auszuprobieren?",
+      "title": "Bereit, CVS auszuprobieren?",
       "subtitle": "Keine Anmeldung erforderlich. Läuft zu 100 % in Ihrem Browser. Kostenlos und Open Source.",
       "openEditor": "Editor öffnen"
     }

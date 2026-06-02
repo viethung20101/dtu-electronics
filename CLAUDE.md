@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 **Velxio** — a fully local, open-source Arduino emulator 
-- GitHub: https://github.com/davidmonterocrespo24/velxio
+- GitHub: https://github.com/viethung20101/dtu-electronics
 - Frontend: React + Vite + TypeScript with Monaco Editor and visual simulation canvas
 - Backend: FastAPI + Python for Arduino code compilation via arduino-cli
 - Simulation: Real AVR8 emulation using avr8js with full GPIO/timer/USART support

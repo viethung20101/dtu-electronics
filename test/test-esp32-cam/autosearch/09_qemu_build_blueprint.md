@@ -10,7 +10,7 @@ Production gets `libqemu-xtensa.so` from a **GitHub Release**, not from
 the source tree. The download is wired in `Dockerfile.standalone:11-23`:
 
 ```dockerfile
-ARG QEMU_RELEASE_URL=https://github.com/davidmonterocrespo24/velxio/releases/download/qemu-prebuilt
+ARG QEMU_RELEASE_URL=https://github.com/viethung20101/dtu-electronics/releases/download/qemu-prebuilt
 …
 curl -fSL -o "libqemu-xtensa.so" \
      "${QEMU_RELEASE_URL}/libqemu-xtensa-${TARGETARCH}.so"

@@ -1,6 +1,6 @@
 /**
  * Regression test for GitHub issue #122
- * https://github.com/davidmonterocrespo24/velxio/issues/122
+ * https://github.com/viethung20101/dtu-electronics/issues/122
  *
  * The user (chenxyzj) reported three sub-problems running MicroPython on ESP32:
  *

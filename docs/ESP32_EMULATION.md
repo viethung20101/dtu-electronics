@@ -259,7 +259,7 @@ ESP32 emulation with full GPIO is active automatically. No environment variables
 ### 2.2 Local Image Build
 
 ```bash
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 docker build -f Dockerfile.standalone -t velxio .
 docker run -d -p 3080:80 velxio

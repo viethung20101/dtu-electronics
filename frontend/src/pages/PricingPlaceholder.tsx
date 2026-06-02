@@ -58,7 +58,7 @@ export const PricingPlaceholder = () => {
               components={{
                 link: (
                   <a
-                    href="https://github.com/davidmonterocrespo24/velxio"
+                    href="https://github.com/viethung20101/dtu-electronics"
                     style={{ color: '#888' }}
                   />
                 ),

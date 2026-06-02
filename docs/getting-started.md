@@ -48,7 +48,7 @@ The named volumes are what make compile times reasonable on subsequent runs — 
 ### Docker Compose (build from source)
 
 ```bash
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 docker compose up -d --build
 ```
@@ -66,7 +66,7 @@ Manual installs get the browser-side boards (AVR, RP2040, RISC-V TypeScript ISA)
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 ```
 
@@ -200,7 +200,7 @@ Click **Examples** in the nav bar, filter by board or category, and click **Load
 
 ## Community & Links
 
-- **GitHub:** [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio)
+- **GitHub:** [github.com/viethung20101/dtu-electronics](https://github.com/viethung20101/dtu-electronics)
 - **Discord:** [discord.gg/3mARjJrh4E](https://discord.gg/3mARjJrh4E)
 - **Live demo:** [velxio.dev](https://velxio.dev)
 - **Sponsor:** [github.com/sponsors/davidmonterocrespo24](https://github.com/sponsors/davidmonterocrespo24)

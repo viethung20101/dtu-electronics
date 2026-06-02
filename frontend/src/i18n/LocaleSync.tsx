@@ -26,10 +26,13 @@ export function LocaleSync({ children }: Props) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      await loadLocale(target);
+      if (cancelled) return;
       if (i18n.language !== target) {
-        await loadLocale(target);
-        if (cancelled) return;
         await i18n.changeLanguage(target);
+      } else {
+        // Force i18next to re-evaluate translations with the newly-loaded bundle.
+        i18n.reloadResources(target);
       }
       writeLocaleCookie(target);
       const meta = LOCALE_META[target] ?? LOCALE_META[DEFAULT_LOCALE];

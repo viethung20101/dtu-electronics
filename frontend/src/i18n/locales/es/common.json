@@ -26,7 +26,7 @@
     "search": "Buscar"
   },
   "footer": {
-    "about": "Velxio es un simulador gratuito y de código abierto de circuitos y microcontroladores que funciona completamente en tu navegador. Arduino, ESP32, RP2040 y ATtiny85, con co-simulación analógica precisa con SPICE. Creado para makers, estudiantes e ingenieros de sistemas embebidos que aprenden haciendo. AGPLv3."
+    "about": "CVS es un simulador gratuito y de código abierto de circuitos y microcontroladores que funciona completamente en tu navegador. Arduino, ESP32, RP2040 y ATtiny85, con co-simulación analógica precisa con SPICE. Creado para makers, estudiantes e ingenieros de sistemas embebidos que aprenden haciendo. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -36,7 +36,7 @@
       "ctaPrimary": "Probar el simulador online gratis →",
       "ctaGithub": "Ver en GitHub",
       "trustLine": "Agente de IA incluido · Funciona offline · Código abierto AGPLv3 · Sin registro",
-      "imageAlt": "Editor de Velxio con circuito de semáforo en Arduino Uno"
+      "imageAlt": "Editor de CVS con circuito de semáforo en Arduino Uno"
     },
     "boards": {
       "label": "Hardware compatible",
@@ -75,14 +75,14 @@
     },
     "support": {
       "title": "Apoya el proyecto",
-      "subtitle": "Velxio es gratuito y de código abierto. Si te ahorra tiempo, considera apoyar su desarrollo.",
+      "subtitle": "CVS es gratuito y de código abierto. Si te ahorra tiempo, considera apoyar su desarrollo.",
       "ctaSponsors": "GitHub Sponsors",
       "ctaPaypal": "Donar vía PayPal"
     },
     "licensing": {
       "label": "Licencias",
       "title": "Gratis, con opción comercial.",
-      "subtitle": "AGPLv3 para la versión open-source. Licencia comercial para equipos que necesitan integrar Velxio en productos closed-source.",
+      "subtitle": "AGPLv3 para la versión open-source. Licencia comercial para equipos que necesitan integrar CVS en productos closed-source.",
       "opensource": {
         "title": "Open source — AGPLv3",
         "desc": "Gratis para siempre para uso personal, educación, investigación y self-hosting. Modificá, forkeá y redistribuí — tus cambios siguen bajo AGPLv3.",
@@ -132,7 +132,7 @@
           "name": "Maker",
           "tagline": "Para makers que construyen circuitos reales con ayuda de IA.",
           "f1": "500 créditos de IA por día (hasta 15,000/mes)",
-          "f2": "Proyectos no listados + Velxio Desktop (offline)",
+          "f2": "Proyectos no listados + CVS Desktop (offline)",
           "f3": "Tiempo de simulación ilimitado en ESP32, STM32 y Raspberry Pi",
           "cta": "Empezar con Maker"
         },
@@ -145,7 +145,7 @@
           "cta": "Suscribirse a Pro"
         }
       },
-      "classroomBanner": "¿Llevás Velxio a un curso? Velxio for Classroom da a cada estudiante acceso Pro desde $40/año.",
+      "classroomBanner": "¿Llevás CVS a un curso? CVS for Classroom da a cada estudiante acceso Pro desde $40/año.",
       "classroomCta": "Ver planes para aula →"
     }
   },
@@ -159,8 +159,8 @@
   },
   "pricing": {
     "title": "Precios",
-    "selfHosted": "Esta instancia de Velxio está autoalojada desde la imagen de código abierto: todas las funciones son gratuitas para todos los que la usan.",
-    "hostedVersion": "La versión alojada en <link>velxio.dev</link> ofrece un nivel Pro opcional que ayuda a financiar el desarrollo.",
+    "selfHosted": "Esta instancia de CVS está autoalojada desde la imagen de código abierto: todas las funciones son gratuitas para todos los que la usan.",
+    "hostedVersion": "La versión alojada en <link>cvs.local</link> ofrece un nivel Pro opcional que ayuda a financiar el desarrollo.",
     "sourceCode": "El código fuente tiene <link>licencia MIT en GitHub</link>."
   },
   "admin": {
@@ -370,8 +370,8 @@
     "browseAll": "Ver todos los ejemplos"
   },
   "starBanner": {
-    "ariaLabel": "Marcar Velxio con estrella en GitHub",
-    "title": "¿Disfrutando de Velxio?",
+    "ariaLabel": "Marcar CVS con estrella en GitHub",
+    "title": "¿Disfrutando de CVS?",
     "body": "¡Una ⭐ en GitHub ayuda a que más desarrolladores descubran el proyecto — solo toma 2 segundos!",
     "cta": "Marcar con estrella en GitHub",
     "dismiss": "Descartar"
@@ -379,7 +379,7 @@
   "auth": {
     "login": {
       "title": "Iniciar sesión",
-      "subtitle": "para continuar en Velxio",
+      "subtitle": "para continuar en CVS",
       "email": "Correo electrónico",
       "password": "Contraseña",
       "signIn": "Iniciar sesión",
@@ -423,7 +423,7 @@
       "updateFailed": "No se pudo cambiar la visibilidad — intentá de nuevo.",
       "visibility": {
         "publicLabel": "Público",
-        "publicHint": "Cualquiera puede encontrar este proyecto en velxio.dev.",
+        "publicHint": "Cualquiera puede encontrar este proyecto en cvs.local.",
         "unlistedLabel": "No listado",
         "unlistedHint": "Oculto de búsqueda y galería — solo accesible con el link.",
         "privateLabel": "Privado",

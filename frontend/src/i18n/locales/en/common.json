@@ -26,7 +26,7 @@
     "search": "Search"
   },
   "footer": {
-    "about": "Velxio is a free, open-source circuit and microcontroller simulator that runs entirely in your browser. Arduino, ESP32, RP2040 and ATtiny85, with SPICE-accurate analog co-simulation. Built for makers, students and embedded engineers learning by doing. AGPLv3."
+    "about": "CVS is a free, open-source circuit and microcontroller simulator that runs entirely in your browser. Arduino, ESP32, RP2040 and ATtiny85, with SPICE-accurate analog co-simulation. Built for makers, students and embedded engineers learning by doing. AGPLv3."
   },
   "landing": {
     "hero": {
@@ -36,7 +36,7 @@
       "ctaPrimary": "Try Simulator Free Online →",
       "ctaGithub": "View on GitHub",
       "trustLine": "AI agent included · Works offline · Open source AGPLv3 · No signup needed",
-      "imageAlt": "Velxio editor with Arduino Uno traffic-light circuit"
+      "imageAlt": "CVS editor with Arduino Uno traffic-light circuit"
     },
     "boards": {
       "label": "Supported Hardware",
@@ -75,14 +75,14 @@
     },
     "support": {
       "title": "Support the project",
-      "subtitle": "Velxio is free and open source. If it saves you time, consider supporting its development.",
+      "subtitle": "CVS is free and open source. If it saves you time, consider supporting its development.",
       "ctaSponsors": "GitHub Sponsors",
       "ctaPaypal": "Donate via PayPal"
     },
     "licensing": {
       "label": "Licensing",
       "title": "Free, with a commercial option.",
-      "subtitle": "AGPLv3 for the open-source release. A commercial license for teams that need to ship Velxio inside closed-source products.",
+      "subtitle": "AGPLv3 for the open-source release. A commercial license for teams that need to ship CVS inside closed-source products.",
       "opensource": {
         "title": "Open source — AGPLv3",
         "desc": "Free forever for personal use, education, research and self-hosting. Modify, fork and redistribute — your changes stay under AGPLv3 too.",
@@ -132,7 +132,7 @@
           "name": "Maker",
           "tagline": "For makers shipping real circuits with AI help.",
           "f1": "500 daily AI credits (up to 15,000/month)",
-          "f2": "Unlisted projects + Velxio Desktop (offline)",
+          "f2": "Unlisted projects + CVS Desktop (offline)",
           "f3": "Unlimited ESP32, STM32 & Raspberry Pi run time",
           "cta": "Start Maker"
         },
@@ -145,7 +145,7 @@
           "cta": "Subscribe to Pro"
         }
       },
-      "classroomBanner": "Bringing Velxio into a course? Velxio for Classroom gives every student Pro access from $40/year.",
+      "classroomBanner": "Bringing CVS into a course? CVS for Classroom gives every student Pro access from $40/year.",
       "classroomCta": "See classroom plans →"
     }
   },
@@ -159,8 +159,8 @@
   },
   "pricing": {
     "title": "Pricing",
-    "selfHosted": "This Velxio instance is self-hosted from the open-source image — all features are free for everyone using it.",
-    "hostedVersion": "The hosted version at <link>velxio.dev</link> offers an optional Pro tier that helps fund development.",
+    "selfHosted": "This CVS instance is self-hosted from the open-source image — all features are free for everyone using it.",
+    "hostedVersion": "The hosted version at <link>cvs.local</link> offers an optional Pro tier that helps fund development.",
     "sourceCode": "Source code is <link>MIT-licensed on GitHub</link>."
   },
   "admin": {
@@ -370,8 +370,8 @@
     "browseAll": "Browse all examples"
   },
   "starBanner": {
-    "ariaLabel": "Star Velxio on GitHub",
-    "title": "Enjoying Velxio?",
+    "ariaLabel": "Star CVS on GitHub",
+    "title": "Enjoying CVS?",
     "body": "A ⭐ on GitHub helps more developers discover the project — it only takes 2 seconds!",
     "cta": "Star on GitHub",
     "dismiss": "Dismiss"
@@ -379,7 +379,7 @@
   "auth": {
     "login": {
       "title": "Sign in",
-      "subtitle": "to continue to Velxio",
+      "subtitle": "to continue to CVS",
       "email": "Email",
       "password": "Password",
       "signIn": "Sign in",
@@ -423,7 +423,7 @@
       "updateFailed": "Could not update visibility — please try again.",
       "visibility": {
         "publicLabel": "Public",
-        "publicHint": "Anyone can find this project on velxio.dev.",
+        "publicHint": "Anyone can find this project on cvs.local.",
         "unlistedLabel": "Unlisted",
         "unlistedHint": "Hidden from search and the gallery — only accessible via the share link.",
         "privateLabel": "Private",

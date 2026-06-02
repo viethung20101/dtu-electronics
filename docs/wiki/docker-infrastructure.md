@@ -117,7 +117,7 @@ The Dockerfile uses **4 stages** to minimize final image size while building all
 FROM ubuntu:22.04 AS qemu-provider
 
 ARG TARGETARCH
-ARG QEMU_RELEASE_URL=https://github.com/davidmonterocrespo24/velxio/releases/download/qemu-prebuilt
+ARG QEMU_RELEASE_URL=https://github.com/viethung20101/dtu-electronics/releases/download/qemu-prebuilt
 ```
 
 **Key details:**
@@ -355,7 +355,7 @@ The workflow has two jobs:
    - Uses `--clobber` to overwrite existing files if the release already exists
    - Requires the `VELXIO_RELEASE_TOKEN` secret (a PAT with `contents:write` on the velxio repo)
 
-**Release structure at `github.com/davidmonterocrespo24/velxio/releases/tag/qemu-prebuilt`:**
+**Release structure at `github.com/viethung20101/dtu-electronics/releases/tag/qemu-prebuilt`:**
 ```
 libqemu-xtensa-amd64.so
 libqemu-xtensa-arm64.so
@@ -791,7 +791,7 @@ healthcheck:
 | Arg | Default | Description |
 |-----|---------|-------------|
 | `TARGETARCH` | (auto-injected by Buildx) | Target architecture: `amd64` or `arm64` |
-| `QEMU_RELEASE_URL` | `https://github.com/davidmonterocrespo24/velxio/releases/download/qemu-prebuilt` | URL prefix for QEMU binary downloads |
+| `QEMU_RELEASE_URL` | `https://github.com/viethung20101/dtu-electronics/releases/download/qemu-prebuilt` | URL prefix for QEMU binary downloads |
 | `ESPIDF_IMAGE` | (unused, legacy) | Was used for external ESP-IDF image reference |
 
 ---
@@ -821,7 +821,7 @@ docker logs -f velxio
 
 ```bash
 # Clone the repository
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 
 # Build and run with docker compose

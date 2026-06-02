@@ -3,986 +3,984 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>https://velxio.dev/</loc>
+    <loc>https://cvs.local/</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/editor</loc>
+    <loc>https://cvs.local/editor</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples</loc>
+    <loc>https://cvs.local/examples</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs</loc>
+    <loc>https://cvs.local/docs</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/intro</loc>
+    <loc>https://cvs.local/docs/intro</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/getting-started</loc>
+    <loc>https://cvs.local/docs/getting-started</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/emulator</loc>
+    <loc>https://cvs.local/docs/emulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/esp32-emulation</loc>
+    <loc>https://cvs.local/docs/esp32-emulation</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/riscv-emulation</loc>
+    <loc>https://cvs.local/docs/riscv-emulation</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/rp2040-emulation</loc>
+    <loc>https://cvs.local/docs/rp2040-emulation</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/raspberry-pi3-emulation</loc>
+    <loc>https://cvs.local/docs/raspberry-pi3-emulation</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/components</loc>
+    <loc>https://cvs.local/docs/components</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/architecture</loc>
+    <loc>https://cvs.local/docs/architecture</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/third-party</loc>
+    <loc>https://cvs.local/docs/third-party</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/mcp</loc>
+    <loc>https://cvs.local/docs/mcp</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/setup</loc>
+    <loc>https://cvs.local/docs/setup</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/docs/roadmap</loc>
+    <loc>https://cvs.local/docs/roadmap</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/circuit-simulator</loc>
+    <loc>https://cvs.local/circuit-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/spice-simulator</loc>
+    <loc>https://cvs.local/spice-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/electronics-simulator</loc>
+    <loc>https://cvs.local/electronics-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/custom-chip-simulator</loc>
+    <loc>https://cvs.local/custom-chip-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/attiny85-simulator</loc>
+    <loc>https://cvs.local/attiny85-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/arduino-simulator</loc>
+    <loc>https://cvs.local/arduino-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/arduino-emulator</loc>
+    <loc>https://cvs.local/arduino-emulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/atmega328p-simulator</loc>
+    <loc>https://cvs.local/atmega328p-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/arduino-mega-simulator</loc>
+    <loc>https://cvs.local/arduino-mega-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/esp32-simulator</loc>
+    <loc>https://cvs.local/esp32-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/esp32-s3-simulator</loc>
+    <loc>https://cvs.local/esp32-s3-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/esp32-c3-simulator</loc>
+    <loc>https://cvs.local/esp32-c3-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/raspberry-pi-pico-simulator</loc>
+    <loc>https://cvs.local/raspberry-pi-pico-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/raspberry-pi-simulator</loc>
+    <loc>https://cvs.local/raspberry-pi-simulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/v2</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/v2-5</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/about</loc>
+    <loc>https://cvs.local/about</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
-    <loc>https://velxio.dev/examples/blink-led</loc>
+    <loc>https://cvs.local/examples/blink-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/traffic-light</loc>
+    <loc>https://cvs.local/examples/traffic-light</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/button-led</loc>
+    <loc>https://cvs.local/examples/button-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/fade-led</loc>
+    <loc>https://cvs.local/examples/fade-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/serial-hello</loc>
+    <loc>https://cvs.local/examples/serial-hello</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/rgb-led</loc>
+    <loc>https://cvs.local/examples/rgb-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/simon-says</loc>
+    <loc>https://cvs.local/examples/simon-says</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-doom-raycaster</loc>
+    <loc>https://cvs.local/examples/pico-doom-raycaster</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/tft-display</loc>
+    <loc>https://cvs.local/examples/tft-display</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/lcd-hello</loc>
+    <loc>https://cvs.local/examples/lcd-hello</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/serial-echo</loc>
+    <loc>https://cvs.local/examples/serial-echo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/serial-led-control</loc>
+    <loc>https://cvs.local/examples/serial-led-control</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/i2c-scanner</loc>
+    <loc>https://cvs.local/examples/i2c-scanner</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/i2c-rtc-read</loc>
+    <loc>https://cvs.local/examples/i2c-rtc-read</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/i2c-eeprom-rw</loc>
+    <loc>https://cvs.local/examples/i2c-eeprom-rw</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/spi-loopback</loc>
+    <loc>https://cvs.local/examples/spi-loopback</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/multi-protocol</loc>
+    <loc>https://cvs.local/examples/multi-protocol</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-blink</loc>
+    <loc>https://cvs.local/examples/pico-blink</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-serial-echo</loc>
+    <loc>https://cvs.local/examples/pico-serial-echo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-serial-led-control</loc>
+    <loc>https://cvs.local/examples/pico-serial-led-control</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-i2c-scanner</loc>
+    <loc>https://cvs.local/examples/pico-i2c-scanner</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-i2c-rtc-read</loc>
+    <loc>https://cvs.local/examples/pico-i2c-rtc-read</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-i2c-eeprom-rw</loc>
+    <loc>https://cvs.local/examples/pico-i2c-eeprom-rw</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-spi-loopback</loc>
+    <loc>https://cvs.local/examples/pico-spi-loopback</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-adc-read</loc>
+    <loc>https://cvs.local/examples/pico-adc-read</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-multi-protocol</loc>
+    <loc>https://cvs.local/examples/pico-multi-protocol</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-blink-led</loc>
+    <loc>https://cvs.local/examples/esp32-blink-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-serial-echo</loc>
+    <loc>https://cvs.local/examples/esp32-serial-echo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pi-to-arduino-led-control</loc>
+    <loc>https://cvs.local/examples/pi-to-arduino-led-control</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/dual-pico-serial1-passthrough</loc>
+    <loc>https://cvs.local/examples/dual-pico-serial1-passthrough</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/dual-pico-bidirectional-handshake</loc>
+    <loc>https://cvs.local/examples/dual-pico-bidirectional-handshake</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/dual-pico-digital-mirror</loc>
+    <loc>https://cvs.local/examples/dual-pico-digital-mirror</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nano-blink</loc>
+    <loc>https://cvs.local/examples/nano-blink</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nano-serial</loc>
+    <loc>https://cvs.local/examples/nano-serial</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nano-button-led</loc>
+    <loc>https://cvs.local/examples/nano-button-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nano-fade</loc>
+    <loc>https://cvs.local/examples/nano-fade</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mega-blink</loc>
+    <loc>https://cvs.local/examples/mega-blink</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mega-serial</loc>
+    <loc>https://cvs.local/examples/mega-serial</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mega-led-chase</loc>
+    <loc>https://cvs.local/examples/mega-led-chase</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mega-serial-control</loc>
+    <loc>https://cvs.local/examples/mega-serial-control</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-blink</loc>
+    <loc>https://cvs.local/examples/c3-blink</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-serial</loc>
+    <loc>https://cvs.local/examples/c3-serial</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-rgb</loc>
+    <loc>https://cvs.local/examples/c3-rgb</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-button</loc>
+    <loc>https://cvs.local/examples/c3-button</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-serial-echo</loc>
+    <loc>https://cvs.local/examples/c3-serial-echo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-7segment</loc>
+    <loc>https://cvs.local/examples/uno-7segment</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-7segment</loc>
+    <loc>https://cvs.local/examples/pico-7segment</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-7segment</loc>
+    <loc>https://cvs.local/examples/esp32-7segment</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-potentiometer</loc>
+    <loc>https://cvs.local/examples/uno-potentiometer</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-rgb-cycle</loc>
+    <loc>https://cvs.local/examples/uno-rgb-cycle</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-button-led</loc>
+    <loc>https://cvs.local/examples/pico-button-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-rgb</loc>
+    <loc>https://cvs.local/examples/pico-rgb</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-dht22</loc>
+    <loc>https://cvs.local/examples/uno-dht22</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-hcsr04</loc>
+    <loc>https://cvs.local/examples/uno-hcsr04</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-pir</loc>
+    <loc>https://cvs.local/examples/uno-pir</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-servo</loc>
+    <loc>https://cvs.local/examples/uno-servo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-photoresistor</loc>
+    <loc>https://cvs.local/examples/uno-photoresistor</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/uno-ntc</loc>
+    <loc>https://cvs.local/examples/uno-ntc</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-dht22</loc>
+    <loc>https://cvs.local/examples/pico-dht22</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-hcsr04</loc>
+    <loc>https://cvs.local/examples/pico-hcsr04</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-pir</loc>
+    <loc>https://cvs.local/examples/pico-pir</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-servo</loc>
+    <loc>https://cvs.local/examples/pico-servo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-ntc</loc>
+    <loc>https://cvs.local/examples/pico-ntc</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pico-joystick</loc>
+    <loc>https://cvs.local/examples/pico-joystick</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-dht22</loc>
+    <loc>https://cvs.local/examples/esp32-dht22</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-hcsr04</loc>
+    <loc>https://cvs.local/examples/esp32-hcsr04</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-mpu6050</loc>
+    <loc>https://cvs.local/examples/esp32-mpu6050</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-pir</loc>
+    <loc>https://cvs.local/examples/esp32-pir</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-servo</loc>
+    <loc>https://cvs.local/examples/esp32-servo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-joystick</loc>
+    <loc>https://cvs.local/examples/esp32-joystick</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-dht22</loc>
+    <loc>https://cvs.local/examples/c3-dht22</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-hcsr04</loc>
+    <loc>https://cvs.local/examples/c3-hcsr04</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-pir</loc>
+    <loc>https://cvs.local/examples/c3-pir</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/c3-servo</loc>
+    <loc>https://cvs.local/examples/c3-servo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32c3-wifi-scan</loc>
+    <loc>https://cvs.local/examples/esp32c3-wifi-scan</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32c3-wifi-connect</loc>
+    <loc>https://cvs.local/examples/esp32c3-wifi-connect</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32c3-http-server</loc>
+    <loc>https://cvs.local/examples/esp32c3-http-server</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32c3-ble-advertise</loc>
+    <loc>https://cvs.local/examples/esp32c3-ble-advertise</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-wifi-scan</loc>
+    <loc>https://cvs.local/examples/esp32-wifi-scan</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-wifi-connect</loc>
+    <loc>https://cvs.local/examples/esp32-wifi-connect</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-http-server</loc>
+    <loc>https://cvs.local/examples/esp32-http-server</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-ble-advertise</loc>
+    <loc>https://cvs.local/examples/esp32-ble-advertise</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-bmp280</loc>
+    <loc>https://cvs.local/examples/esp32-bmp280</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-oled</loc>
+    <loc>https://cvs.local/examples/esp32-oled</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/attiny85-blink</loc>
+    <loc>https://cvs.local/examples/attiny85-blink</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/attiny85-button-led</loc>
+    <loc>https://cvs.local/examples/attiny85-button-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/attiny85-pwm-fade</loc>
+    <loc>https://cvs.local/examples/attiny85-pwm-fade</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/attiny85-ntc-sensor</loc>
+    <loc>https://cvs.local/examples/attiny85-ntc-sensor</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32cam-webcam-demo</loc>
+    <loc>https://cvs.local/examples/esp32cam-webcam-demo</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32cam-lcd-preview</loc>
+    <loc>https://cvs.local/examples/esp32cam-lcd-preview</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/voltage-divider</loc>
+    <loc>https://cvs.local/examples/voltage-divider</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/rc-low-pass-filter</loc>
+    <loc>https://cvs.local/examples/rc-low-pass-filter</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/wheatstone-bridge</loc>
+    <loc>https://cvs.local/examples/wheatstone-bridge</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/ntc-temperature</loc>
+    <loc>https://cvs.local/examples/ntc-temperature</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/led-current-limiting</loc>
+    <loc>https://cvs.local/examples/led-current-limiting</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/parallel-resistors</loc>
+    <loc>https://cvs.local/examples/parallel-resistors</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pot-adc-reader</loc>
+    <loc>https://cvs.local/examples/pot-adc-reader</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/photoresistor-light</loc>
+    <loc>https://cvs.local/examples/photoresistor-light</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/multi-led-bar</loc>
+    <loc>https://cvs.local/examples/multi-led-bar</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/capacitor-charge-curve</loc>
+    <loc>https://cvs.local/examples/capacitor-charge-curve</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/npn-led-switch</loc>
+    <loc>https://cvs.local/examples/npn-led-switch</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/pnp-high-side-switch</loc>
+    <loc>https://cvs.local/examples/pnp-high-side-switch</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mosfet-pwm-led</loc>
+    <loc>https://cvs.local/examples/mosfet-pwm-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/diode-rectifier</loc>
+    <loc>https://cvs.local/examples/diode-rectifier</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/zener-regulator</loc>
+    <loc>https://cvs.local/examples/zener-regulator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/schottky-reverse-protection</loc>
+    <loc>https://cvs.local/examples/schottky-reverse-protection</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/bjt-common-emitter</loc>
+    <loc>https://cvs.local/examples/bjt-common-emitter</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/darlington-high-current</loc>
+    <loc>https://cvs.local/examples/darlington-high-current</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/opamp-inverting</loc>
+    <loc>https://cvs.local/examples/opamp-inverting</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/opamp-voltage-follower</loc>
+    <loc>https://cvs.local/examples/opamp-voltage-follower</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/opamp-comparator</loc>
+    <loc>https://cvs.local/examples/opamp-comparator</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/opamp-difference</loc>
+    <loc>https://cvs.local/examples/opamp-difference</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/opamp-schmitt-trigger</loc>
+    <loc>https://cvs.local/examples/opamp-schmitt-trigger</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/and-gate-alarm</loc>
+    <loc>https://cvs.local/examples/and-gate-alarm</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/xor-toggle-detector</loc>
+    <loc>https://cvs.local/examples/xor-toggle-detector</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nand-sr-latch</loc>
+    <loc>https://cvs.local/examples/nand-sr-latch</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/full-adder</loc>
+    <loc>https://cvs.local/examples/full-adder</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/binary-counter-leds</loc>
+    <loc>https://cvs.local/examples/binary-counter-leds</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/logic-probe</loc>
+    <loc>https://cvs.local/examples/logic-probe</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/relay-led-switch</loc>
+    <loc>https://cvs.local/examples/relay-led-switch</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/optocoupler-signal</loc>
+    <loc>https://cvs.local/examples/optocoupler-signal</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/l293d-motor-control</loc>
+    <loc>https://cvs.local/examples/l293d-motor-control</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/l293d-speed-pwm</loc>
+    <loc>https://cvs.local/examples/l293d-speed-pwm</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/power-supply-7805</loc>
+    <loc>https://cvs.local/examples/power-supply-7805</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/lm317-adjustable-psu</loc>
+    <loc>https://cvs.local/examples/lm317-adjustable-psu</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/battery-voltage-monitor</loc>
+    <loc>https://cvs.local/examples/battery-voltage-monitor</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-dual-adc</loc>
+    <loc>https://cvs.local/examples/esp32-dual-adc</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/mega-multi-led</loc>
+    <loc>https://cvs.local/examples/mega-multi-led</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/nano-sensor-station</loc>
+    <loc>https://cvs.local/examples/nano-sensor-station</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://velxio.dev/examples/esp32-pwm-led-rgb</loc>
+    <loc>https://cvs.local/examples/esp32-pwm-led-rgb</loc>
     <lastmod>2026-05-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

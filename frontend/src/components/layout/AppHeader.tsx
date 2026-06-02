@@ -10,7 +10,7 @@ import { trackVisitGitHub, trackVisitDiscord } from '../../utils/analytics';
 import type { AutoSaveState } from '../../hooks/useAutoSaveProject';
 import './LanguageSwitcher.css';
 
-const GITHUB_URL = 'https://github.com/davidmonterocrespo24/velxio';
+const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
 const DISCORD_URL = 'https://discord.gg/3mARjJrh4E';
 
 interface AppHeaderProps {
@@ -54,7 +54,7 @@ const AutoSaveIndicator: React.FC<{ state: AutoSaveState }> = ({ state }) => {
           borderRadius: '50%',
           background: meta.color,
           opacity: state.status === 'saving' ? 0.7 : 1,
-          animation: state.status === 'saving' ? 'velxio-pulse 1s ease-in-out infinite' : 'none',
+          animation: state.status === 'saving' ? 'cvs-pulse 1s ease-in-out infinite' : 'none',
         }}
       />
       <span>{meta.label}</span>
@@ -112,7 +112,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
               <path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4" />
             </svg>
             <Link to={localize('/')} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <span className="header-title">Velxio</span>
+              <span className="header-title">CVS</span>
             </Link>
           </div>
 
@@ -138,18 +138,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave }) => {
             </Link>
             <Link to={localize('/about')} className={'header-nav-link' + isActive('/about')}>
               {t('header.nav.about')}
-            </Link>
-            <Link to={localize('/pricing')} className={'header-nav-link' + isActive('/pricing')}>
-              {t('header.nav.pricing')}
-            </Link>
-            <Link to={localize('/classroom')} className={'header-nav-link' + isActive('/classroom')}>
-              {t('header.nav.classroom', 'For schools')}
-            </Link>
-            <Link
-              to={localize('/account/desktop-install')}
-              className={'header-nav-link' + isActive('/account/desktop-install')}
-            >
-              {t('header.nav.download')}
             </Link>
             <a
               href={blogUrlFor(currentLocale)}

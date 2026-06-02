@@ -11,24 +11,21 @@ import { DocsPage } from './pages/DocsPage';
 // the overlay is loaded.
 import { ExampleDetailPage } from './pages/ExampleDetailPage';
 import { ExampleEditorPage } from './pages/ExampleEditorPage';
-import { ArduinoSimulatorPage } from './pages/ArduinoSimulatorPage';
-import { ArduinoEmulatorPage } from './pages/ArduinoEmulatorPage';
-import { AtmegaSimulatorPage } from './pages/AtmegaSimulatorPage';
-import { ArduinoMegaSimulatorPage } from './pages/ArduinoMegaSimulatorPage';
-import { Attiny85SimulatorPage } from './pages/Attiny85SimulatorPage';
 import { CircuitSimulatorPage } from './pages/CircuitSimulatorPage';
 import { SpiceSimulatorPage } from './pages/SpiceSimulatorPage';
 import { ElectronicsSimulatorPage } from './pages/ElectronicsSimulatorPage';
 import { CustomChipSimulatorPage } from './pages/CustomChipSimulatorPage';
+import { Attiny85SimulatorPage } from './pages/Attiny85SimulatorPage';
+import { ArduinoSimulatorPage } from './pages/ArduinoSimulatorPage';
+import { ArduinoEmulatorPage } from './pages/ArduinoEmulatorPage';
+import { AtmegaSimulatorPage } from './pages/AtmegaSimulatorPage';
+import { ArduinoMegaSimulatorPage } from './pages/ArduinoMegaSimulatorPage';
 import { Esp32SimulatorPage } from './pages/Esp32SimulatorPage';
 import { Esp32S3SimulatorPage } from './pages/Esp32S3SimulatorPage';
 import { Esp32C3SimulatorPage } from './pages/Esp32C3SimulatorPage';
 import { RaspberryPiPicoSimulatorPage } from './pages/RaspberryPiPicoSimulatorPage';
 import { RaspberryPiSimulatorPage } from './pages/RaspberryPiSimulatorPage';
-import { Velxio2Page } from './pages/Velxio2Page';
-import { Velxio25Page } from './pages/Velxio25Page';
 import { AboutPage } from './pages/AboutPage';
-import { PricingPlaceholder } from './pages/PricingPlaceholder';
 import { LocaleSync } from './i18n/LocaleSync';
 import { NON_DEFAULT_LOCALES } from './i18n/config';
 import { useProRoutes } from './lib/proRoutes';
@@ -64,7 +61,7 @@ const ROUTES: { path: string; element: ReactElement; index?: boolean }[] = [
   { path: 'example/:exampleId', element: <ExampleEditorPage /> },
   { path: 'docs', element: <DocsPage /> },
   { path: 'docs/:section', element: <DocsPage /> },
-  // SEO landing pages — keyword-targeted
+  // SEO landing pages — keyword-targeted (kept per user confirmation)
   { path: 'circuit-simulator', element: <CircuitSimulatorPage /> },
   { path: 'spice-simulator', element: <SpiceSimulatorPage /> },
   { path: 'electronics-simulator', element: <ElectronicsSimulatorPage /> },
@@ -79,11 +76,7 @@ const ROUTES: { path: string; element: ReactElement; index?: boolean }[] = [
   { path: 'esp32-c3-simulator', element: <Esp32C3SimulatorPage /> },
   { path: 'raspberry-pi-pico-simulator', element: <RaspberryPiPicoSimulatorPage /> },
   { path: 'raspberry-pi-simulator', element: <RaspberryPiSimulatorPage /> },
-  { path: 'v2', element: <Velxio2Page /> },
-  { path: 'v2-5', element: <Velxio25Page /> },
   { path: 'about', element: <AboutPage /> },
-  // Pricing — placeholder by default; private overlays portal-inject the real page
-  { path: 'pricing', element: <PricingPlaceholder /> },
   // project/:id, :username/:projectName, :username — also moved to the
   // pro overlay (project persistence + public profiles are pro features).
 ];

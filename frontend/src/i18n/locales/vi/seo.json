@@ -2,206 +2,206 @@
   "seo": {
     "circuit": {
       "hero": {
-        "title": "Free Online Circuit Simulator",
-        "accent": "SPICE-accurate analog, in your browser",
-        "subtitle": "Drop resistors, capacitors, op-amps, transistors, and regulators on the canvas — every part is solved by real ngspice running in WebAssembly. Wire it to Arduino, ESP32, or Raspberry Pi Pico firmware and watch them co-simulate. Free, no install, no account.",
-        "ctaPrimary": "Open Circuit Simulator",
-        "ctaSecondary": "Browse 40+ Analog Examples",
-        "trust": "Free & open-source · Real ngspice engine · Runs 100% in your browser"
+        "title": "Trình mô phỏng mạch trực tuyến miễn phí",
+        "accent": "Analog chính xác SPICE, trong trình duyệt của bạn",
+        "subtitle": "Đặt điện trở, tụ điện, op-amp, transistor và bộ điều chỉnh trên canvas — mỗi phần được giải bằng ngspice thực chạy trong WebAssembly. Nối dây với Arduino, ESP32 hoặc Raspberry Pi Pico firmware và xem chúng mô phỏng cùng nhau. Miễn phí, không cần cài đặt, không cần tài khoản.",
+        "ctaPrimary": "Mở Trình mô phỏng mạch",
+        "ctaSecondary": "Duyệt 40+ ví dụ Analog",
+        "trust": "Miễn phí & mã nguồn mở · Engine ngspice thực · Chạy 100% trong trình duyệt"
       },
       "what": {
-        "heading": "What can you simulate?",
-        "lead": "Velxio runs the real ngspice solver — the same engine professional EDA tools use — on every tick. This is not a linear approximation. Diodes have proper forward drop, BJTs cut off and saturate, op-amps hit their rails, regulators have dropout."
+        "heading": "Bạn có thể mô phỏng gì?",
+        "lead": "CVS chạy bộ giải ngspice thực — cùng engine mà các công cụ EDA chuyên nghiệp sử dụng — ở mọi tick. Đây không phải xấp xỉ tuyến tính. Diode có sụt áp thuận đúng, BJT cắt và bão hòa, op-amp chạm rails, bộ điều chỉnh có dropout."
       },
       "cards": {
         "passive": {
-          "title": "Passive networks",
-          "body": "Voltage dividers, RC/RL/RLC filters, Wheatstone bridges, capacitor charging curves, resonant tank circuits."
+          "title": "Mạch thụ động",
+          "body": "Bộ chia áp, bộ lọc RC/RL/RLC, cầu Wheatstone, đường cong sạc tụ, mạch cộng hưởng."
         },
         "diodes": {
-          "title": "Diodes & rectifiers",
-          "body": "Half-wave, full-wave bridge rectifiers, Zener regulators, voltage doublers, clippers and clampers."
+          "title": "Diode & bộ chỉnh lưu",
+          "body": "Chỉnh lưu nửa sóng, cầu chỉnh lưu toàn sóng, bộ điều chỉnh Zener, bộ nhân đôi áp, bộ cắt và kẹp."
         },
         "bjt": {
-          "title": "Transistor circuits",
-          "body": "BJT common-emitter amplifiers, transistor switches, Darlington pairs, MOSFET drivers, H-bridge motor drives, current mirrors."
+          "title": "Mạch transistor",
+          "body": "Bộ khuếch đại common-emitter BJT, công tắc transistor, cặp Darlington, driver MOSFET, điều khiển motor H-bridge, gương dòng."
         },
         "opamp": {
-          "title": "Op-amp circuits",
-          "body": "Inverting/non-inverting amplifiers, summing amps, differential amps, integrators, differentiators, Schmitt triggers, comparators."
+          "title": "Mạch op-amp",
+          "body": "Bộ khuếch đại đảo/không đảo, bộ cộng, bộ vi sai, tích phân, vi phân, Schmitt triggers, comparators."
         },
         "logic": {
           "title": "Logic & flip-flops",
-          "body": "AND/OR/NAND/NOR/XOR/XNOR/NOT gates, 74HC-series DIP-14 packages, edge-triggered D / T / JK flip-flops, SR latches."
+          "body": "Cổng AND/OR/NAND/NOR/XOR/XNOR/NOT, gói DIP-14 series 74HC, flip-flop D/T/JK edge-triggered, SR latches."
         },
         "power": {
-          "title": "Power & sensors",
-          "body": "7805/7812/LM317 regulators, photodiode + transimpedance pipelines, NTC thermistor bridges, PIR/flame sensor sliders, optocouplers, relays."
+          "title": "Nguồn & cảm biến",
+          "body": "Bộ điều chỉnh 7805/7812/LM317, photodiode + transimpedance, cầu NTC thermistor, thanh PIR/flame sensor, optocouplers, relays."
         }
       },
       "how": {
-        "heading": "How the analog simulation works",
-        "leadPrefix": "Velxio uses ",
+        "heading": "Cách mô phỏng analog hoạt động",
+        "leadPrefix": "CVS sử dụng ",
         "leadHighlight": "ngspice-WASM",
-        "leadMid": " via the open-source ",
+        "leadMid": " qua ",
         "leadCode": "eecircuit-engine",
-        "leadSuffix": ". Every wire on the canvas becomes a SPICE net, every component becomes a SPICE device card, and the solver runs full Modified Nodal Analysis on each tick.",
-        "wireTitle": "1. Wire",
-        "wireBody": "Drop components, drag wires. Velxio union-finds the wire graph into SPICE nets in real time as you build.",
-        "solveTitle": "2. Solve",
-        "solveBody": "ngspice solves the full circuit at ~60 Hz. Non-linear devices iterate to convergence — no shortcuts, no idealisations.",
-        "probeTitle": "3. Probe",
-        "probeBody": "Drop voltmeters, ammeters, or oscilloscope channels on any node. Live readings update as the simulation runs."
+        "leadSuffix": " mã nguồn mở. Mỗi dây trên canvas trở thành một SPICE net, mỗi linh kiện trở thành SPICE device card, và bộ giải chạy Modified Nodal Analysis đầy đủ ở mỗi tick.",
+        "wireTitle": "1. Dây",
+        "wireBody": "Đặt linh kiện, kéo dây. CVS tìm union của đồ thị dây thành các net SPICE theo thời gian thực khi bạn xây dựng.",
+        "solveTitle": "2. Giải",
+        "solveBody": "ngspice giải mạch đầy đủ ở ~60 Hz. Các thiết bị phi tuyến lặp đến hội tụ — không có đường tắt, không lý tưởng hóa.",
+        "probeTitle": "3. Đo",
+        "probeBody": "Đặt vôn kế, ampe kế, hoặc kênh oscilloscope trên bất kỳ node nào. Các số đọc cập nhật theo thời gian thực khi mô phỏng chạy."
       },
       "co": {
-        "heading": "The unique feature: hybrid digital + analog co-simulation",
-        "lead": "Most browser circuit simulators stop at passive analog. Velxio also runs the firmware on the microcontroller driving the circuit — on the same clock.",
-        "gpioTitle": "GPIO drives the circuit",
+        "heading": "Tính năng độc đáo: đồng mô phỏng kỹ thuật số + analog lai",
+        "lead": "Hầu hết trình mô phỏng mạch trên trình duyệt dừng ở tương tự thụ động. CVS cũng chạy firmware trên vi điều khiển điều khiển mạch — trên cùng một đồng hồ.",
+        "gpioTitle": "GPIO điều khiển mạch",
         "gpioBodyPrefix": "",
         "gpioBodyCode": "digitalWrite(HIGH)",
-        "gpioBodySuffix": " in your sketch sets a SPICE voltage source HIGH. Drive a MOSFET gate, switch a relay, charge a capacitor through a resistor — all from real firmware.",
-        "adcTitle": "ADC reads the circuit",
+        "gpioBodySuffix": " trong sketch của bạn set một nguồn áp SPICE HIGH. Điều khiển cổng MOSFET, đóng relay, sạc tụ qua điện trở — tất cả từ firmware thực.",
+        "adcTitle": "ADC đọc mạch",
         "adcBodyPrefix": "",
         "adcBodyCode": "analogRead()",
-        "adcBodySuffix": " returns the SPICE-solved voltage at the input node — after the op-amp gain stage, after the divider, after the saturation. What you measure is what the circuit produces.",
-        "sameTitle": "Same canvas, same clock",
-        "sameBody": "Arduino + transistor + motor on the same board. ESP32 + photodiode + op-amp + ADC. CH32V003 + Zener + LED. Validate firmware and hardware together before soldering."
+        "adcBodySuffix": " trả về điện áp node analog đã được SPICE giải — sau tầng khuếch đại op-amp, sau bộ chia, sau bão hòa. Điều bạn đo là điều mạch tạo ra.",
+        "sameTitle": "Cùng canvas, cùng đồng hồ",
+        "sameBody": "Arduino + transistor + motor trên cùng board. ESP32 + photodiode + op-amp + ADC. CH32V003 + Zener + LED. Kiểm chứng firmware và phần cứng cùng nhau trước khi hàn."
       },
       "faq": {
-        "heading": "Frequently Asked Questions",
-        "q1": "Is this circuit simulator really free?",
-        "a1": "Yes. Velxio is fully free and open-source under the GNU AGPLv3 license. No account required, no cloud subscription, no paywalled components — every part of the simulator runs in your browser.",
-        "q2": "What kind of analog simulation does Velxio use?",
-        "a2": "Velxio runs ngspice — the open-source SPICE simulator used by professional EDA tools — compiled to WebAssembly via eecircuit-engine. Each tick performs a full Modified Nodal Analysis solve, so non-linear devices (diodes, BJTs, MOSFETs, op-amps with saturation) behave like real silicon, not idealised approximations.",
-        "q3": "Can I connect a microcontroller to my circuit?",
-        "a3": "Yes — and this is the unique feature. GPIO pins drive SPICE nets as voltage sources, and ADC inputs read the solved analog node voltages back into your firmware. You can build a PWM-driven RC filter, a transistor switch, an op-amp signal chain, or a MOSFET motor driver and watch the firmware and circuit interact in real time.",
-        "q4": "What components are available?",
-        "a4": "Resistors, capacitors, inductors, potentiometers, photoresistors (LDR), photodiodes, NTC thermistors, batteries (9V/AA/coin), 5 BJTs (2N2222, 2N3055, 2N3906, BC547, BC557), 4 MOSFETs (2N7000, IRF540, IRF9540, FQP27P06), 5 op-amps (LM358, LM741, TL072, LM324, ideal), 4 linear regulators (7805, 7812, 7905, LM317), Zener and Schottky diodes, optocouplers (4N25, PC817), relays, L293D dual H-bridge driver, and 7 logic gates plus 7 74HC-series ICs as DIP-14 packages.",
-        "q5": "Does the simulator have an oscilloscope and voltmeter?",
-        "a5": "Yes. Velxio includes a multi-channel oscilloscope, voltmeter, ammeter, and signal generator (sine, square, DC) as live instruments you can drop on the canvas. They probe any node or wire and update in real time as the simulation runs.",
-        "q6": "Is this a Falstad / CircuitLab / Tinkercad alternative?",
-        "a6": "For analog circuits, yes — and a more accurate one, since Velxio runs the real ngspice engine instead of a simplified solver. Unlike those tools, Velxio also runs the firmware on the microcontroller driving the circuit, so you can validate firmware + hardware together without leaving the browser."
+        "heading": "Câu hỏi thường gặp",
+        "q1": "Trình mô phỏng mạch này có thực sự miễn phí không?",
+        "a1": "Có. CVS hoàn toàn miễn phí và mã nguồn mở theo giấy phép GNU AGPLv3. Không cần tài khoản, không đăng ký đám mây, không thành phần trả phí — mọi phần của trình mô phỏng đều chạy trong trình duyệt.",
+        "q2": "CVS sử dụng loại mô phỏng tương tự nào?",
+        "a2": "CVS chạy ngspice — trình mô phỏng SPICE mã nguồn mở được các công cụ EDA chuyên nghiệp sử dụng — biên dịch sang WebAssembly qua eecircuit-engine. Mỗi tick thực hiện giải Modified Nodal Analysis đầy đủ, nên các thiết bị phi tuyến (diode, BJT, MOSFET, op-amp với bão hòa) hoạt động như silicon thực, không phải xấp xỉ lý tưởng.",
+        "q3": "Tôi có thể kết nối vi điều khiển với mạch của mình không?",
+        "a3": "Có — và đây là tính năng độc đáo. Các chân GPIO điều khiển các net SPICE như nguồn áp, và các đầu vào ADC đọc các điện áp node analog đã giải trở lại vào firmware. Bạn có thể xây dựng bộ lọc RC được điều khiển PWM, công tắc transistor, chuỗi tín hiệu op-amp, hoặc driver motor MOSFET và xem firmware và mạch tương tác theo thời gian thực.",
+        "q4": "Những linh kiện nào có sẵn?",
+        "a4": "Điện trở, tụ điện, cuộn cảm, biến trở, quang trở (LDR), photodiode, NTC thermistor, pin (9V/AA/coin), 5 BJT (2N2222, 2N3055, 2N3906, BC547, BC557), 4 MOSFET (2N7000, IRF540, IRF9540, FQP27P06), 5 op-amp (LM358, LM741, TL072, LM324, lý tưởng), 4 bộ điều chỉnh tuyến tính (7805, 7812, 7905, LM317), diode Zener và Schottky, optocouplers (4N25, PC817), relays, driver H-bridge kép L293D, và 7 cổng logic cộng thêm 7 IC series 74HC dạng DIP-14.",
+        "q5": "Trình mô phỏng có oscilloscope và vôn kế không?",
+        "a5": "Có. CVS bao gồm oscilloscope đa kênh, vôn kế, ampe kế, và máy phát tín hiệu (sin, vuông, DC) như các thiết bị đo trực tiếp bạn có thể đặt trên canvas. Chúng đo bất kỳ node hoặc dây nào và cập nhật theo thời gian thực khi mô phỏng chạy.",
+        "q6": "Đây có phải là Falstad / CircuitLab / Tinkercad thay thế không?",
+        "a6": "Cho mạch tương tự, có — và chính xác hơn, vì CVS chạy engine ngspice thực thay vì bộ giải đơn giản. Khác với các công cụ đó, CVS cũng chạy firmware trên vi điều khiển điều khiển mạch, nên bạn có thể kiểm chứng firmware + phần cứng cùng nhau mà không cần rời trình duyệt."
       },
       "bottom": {
-        "title": "Ready to simulate your circuit?",
-        "body": "Open the editor and drop your first SPICE component in seconds — zero setup.",
-        "cta": "Launch Circuit Simulator"
+        "title": "Sẵn sàng mô phỏng mạch của bạn?",
+        "body": "Mở trình soạn thảo và đặt linh kiện SPICE đầu tiên trong vài giây — không cần setup.",
+        "cta": "Khởi chạy Trình mô phỏng mạch"
       }
     },
     "atmega": {
       "hero": {
-        "title": "ATmega328P Simulator",
-        "accent": "Free AVR8 Emulation in Your Browser",
-        "subtitle": "Simulate ATmega328P firmware exactly as it runs on Arduino Uno and Nano — real AVR8 instruction execution at 16 MHz with full GPIO, timer, ADC, and USART emulation. No hardware, no install.",
-        "ctaPrimary": "Open ATmega328P Simulator",
-        "ctaSecondary": "Technical Details",
-        "trust": "Free & open-source · Genuine AVR8 emulation · Runs 100% in your browser"
+        "title": "Trình mô phỏng ATmega328P",
+        "accent": "Mô phỏng AVR8 miễn phí trong trình duyệt",
+        "subtitle": "Mô phỏng firmware ATmega328P chính xác như nó chạy trên Arduino Uno và Nano — thực thi lệnh AVR8 thực tại 16 MHz với GPIO đầy đủ, timer, ADC và USART. Không cần phần cứng, không cần cài đặt.",
+        "ctaPrimary": "Mở Trình mô phỏng ATmega328P",
+        "ctaSecondary": "Chi tiết kỹ thuật",
+        "trust": "Miễn phí & mã nguồn mở · Mô phỏng AVR8 thực · Chạy 100% trong trình duyệt"
       },
       "specs": {
-        "heading": "ATmega328P specification — fully emulated",
-        "lead": "Everything about the ATmega328P is emulated: registers, peripherals, interrupts, and timing. Write bare-metal firmware or use the Arduino core library — both work identically in the simulator.",
+        "heading": "Thông số ATmega328P — được mô phỏng đầy đủ",
+        "lead": "Mọi thứ về ATmega328P đều được mô phỏng: thanh ghi, thiết bị ngoại vi, ngắt và timing. Viết firmware bare-metal hoặc sử dụng thư viện Arduino core — cả hai đều hoạt động giống hệt trong trình mô phỏng.",
         "coreTitle": "CPU Core",
-        "coreBody": "AVR8 (8-bit RISC), 16 MHz, 135 instructions, 32 general-purpose registers, 2-stage pipeline.",
-        "flashTitle": "Flash Memory",
-        "flashBody": "32 KB program flash. Upload any sketch compiled by arduino-cli. Supports self-programming via SPM instruction.",
-        "gpioTitle": "GPIO Ports",
-        "gpioBody": "PORTB (pins 8–13), PORTC (A0–A5), PORTD (0–7). DDR, PORT, PIN registers all emulated. Interrupt-on-change via PCINT.",
-        "timersTitle": "Timers 0 / 1 / 2",
-        "timersBody": "8-bit Timer0 & Timer2, 16-bit Timer1. All PWM modes. Prescaler 1–1024. CTC, Fast PWM, Phase-correct PWM.",
-        "adcTitle": "10-bit ADC",
-        "adcBody": "6 analog input channels (A0–A5). Single conversion and free-running modes. Analog voltage from simulated components.",
+        "coreBody": "AVR8 (8-bit RISC), 16 MHz, 135 lệnh, 32 thanh ghi mục đích chung, pipeline 2 giai đoạn.",
+        "flashTitle": "Bộ nhớ Flash",
+        "flashBody": "32 KB program flash. Upload bất kỳ sketch nào được biên dịch bởi arduino-cli. Hỗ trợ tự lập trình qua lệnh SPM.",
+        "gpioTitle": "Cổng GPIO",
+        "gpioBody": "PORTB (chân 8–13), PORTC (A0–A5), PORTD (0–7). Các thanh ghi DDR, PORT, PIN đều được mô phỏng. Ngắt-on-change qua PCINT.",
+        "timersTitle": "Timer 0 / 1 / 2",
+        "timersBody": "Timer0 & Timer2 8-bit, Timer1 16-bit. Tất cả các mode PWM. Prescaler 1–1024. CTC, Fast PWM, Phase-correct PWM.",
+        "adcTitle": "ADC 10-bit",
+        "adcBody": "6 kênh đầu vào analog (A0–A5). Chế độ chuyển đổi đơn và free-running. Điện áp analog từ các linh kiện được mô phỏng.",
         "usartTitle": "USART0",
-        "usartBody": "Full duplex serial with configurable baud rate. TX, RX, and UDRE interrupts. Works with the built-in Serial Monitor."
+        "usartBody": "Truyền song công đầy đủ với baud rate có thể cấu hình. TX, RX, và ngắt UDRE. Hoạt động với Serial Monitor tích hợp."
       },
       "boards": {
-        "heading": "ATmega328P boards in Velxio",
-        "lead": "The ATmega328P powers several popular Arduino boards — all selectable in Velxio. The broader AVR8 family also includes ATmega2560 (Mega) and ATtiny85.",
+        "heading": "Các board ATmega328P trong CVS",
+        "lead": "ATmega328P là trái tim của nhiều board Arduino phổ biến — tất cả đều có thể chọn trong CVS. Họ AVR8 rộng hơn cũng bao gồm ATmega2560 (Mega) và ATtiny85.",
         "unoTitle": "Arduino Uno R3",
-        "unoBody": "The classic board. 14 digital I/O pins (6 PWM), 6 analog inputs, 32 KB flash. The most widely used ATmega328P board.",
+        "unoBody": "Board cổ điển. 14 chân digital I/O (6 PWM), 6 đầu vào analog, 32 KB flash. Board ATmega328P được sử dụng rộng rãi nhất.",
         "nanoTitle": "Arduino Nano",
-        "nanoBody": "Same ATmega328P in a compact 45×18mm form factor with mini-USB. Same pin count as Uno.",
+        "nanoBody": "Cùng ATmega328P trong form factor nhỏ gọn 45×18mm với mini-USB. Cùng số chân như Uno.",
         "proTitle": "Arduino Pro Mini",
-        "proBody": "Bare-bones ATmega328P without USB chip. Available at 3.3 V/8 MHz and 5 V/16 MHz variants.",
+        "proBody": "ATmega328P không có chip USB cơ bản. Có sẵn ở biến thể 3.3 V/8 MHz và 5 V/16 MHz.",
         "tinyTitle": "ATtiny85",
-        "tinyBody": "Ultra-compact 8-pin AVR. 8 KB flash, 6 I/O pins (PB0–PB5), USI (Wire), Timer0/1, 10-bit ADC. Ideal for embedded minimal projects.",
+        "tinyBody": "AVR 8-chân siêu nhỏ gọn. 8 KB flash, 6 chân I/O (PB0–PB5), USI (Wire), Timer0/1, ADC 10-bit. Lý tưởng cho các dự án nhúng tối giản.",
         "megaTitle": "Arduino Mega 2560",
-        "megaBody": "ATmega2560 with 256 KB flash, 54 digital pins, 16 analog inputs, and 4 hardware USART channels."
+        "megaBody": "ATmega2560 với 256 KB flash, 54 chân digital, 16 đầu vào analog, và 4 kênh USART phần cứng."
       },
       "faq": {
-        "heading": "Frequently Asked Questions",
-        "q1": "What is the ATmega328P?",
-        "a1": "The ATmega328P is an 8-bit AVR microcontroller by Microchip (formerly Atmel). It is the heart of the Arduino Uno and Arduino Nano, running at 16 MHz with 32 KB flash, 2 KB SRAM, and 1 KB EEPROM.",
-        "q2": "Can I simulate ATmega328P register-level code?",
-        "a2": "Yes. Velxio's AVR8 emulation faithfully executes all ATmega328P registers: DDRB/C/D, PORTB/C/D, PINB/C/D, TCCR0/1/2, OCR0/1/2, UBRR, UDR, ADCL/ADCH, and all interrupt vectors — including direct register manipulation without the Arduino abstraction layer.",
-        "q3": "Does it emulate ATmega328P timers correctly?",
-        "a3": "Timer0 (8-bit), Timer1 (16-bit), and Timer2 (8-bit) are all emulated with full prescaler support, PWM modes, overflow interrupts, and Output Compare Match interrupts. millis(), delay(), analogWrite(), and tone() all work correctly.",
-        "q4": "Can I use analogRead() and analogWrite() in the simulator?",
-        "a4": "Yes. The 10-bit ADC (analogRead) and PWM output (analogWrite on pins 3, 5, 6, 9, 10, 11) are fully emulated. You can connect simulated sensors, potentiometers, and any wokwi-elements analog component.",
-        "q5": "Can I simulate USART / Serial on ATmega328P?",
-        "a5": "Yes. USART0 is fully emulated. Serial.begin(), Serial.print(), Serial.println(), and Serial.read() all work. The built-in Serial Monitor shows TX output and lets you send RX data to the running program."
+        "heading": "Câu hỏi thường gặp",
+        "q1": "ATmega328P là gì?",
+        "a1": "ATmega328P là vi điều khiển AVR 8-bit của Microchip (trước đây là Atmel). Nó là trái tim của Arduino Uno và Arduino Nano, chạy ở 16 MHz với 32 KB flash, 2 KB SRAM và 1 KB EEPROM.",
+        "q2": "Tôi có thể mô phỏng code register-level ATmega328P không?",
+        "a2": "Có. Mô phỏng AVR8 của CVS thực thi trung thực tất cả các thanh ghi ATmega328P: DDRB/C/D, PORTB/C/D, PINB/C/D, TCCR0/1/2, OCR0/1/2, UBRR, UDR, ADCL/ADCH, và tất cả vector ngắt — bao gồm thao tác thanh ghi trực tiếp không qua lớp trừu tượng Arduino.",
+        "q3": "Nó có mô phỏng timer ATmega328P đúng không?",
+        "a3": "Timer0 (8-bit), Timer1 (16-bit), và Timer2 (8-bit) đều được mô phỏng với hỗ trợ prescaler đầy đủ, các mode PWM, ngắt overflow, và ngắt Output Compare Match. millis(), delay(), analogWrite(), và tone() đều hoạt động đúng.",
+        "q4": "Tôi có thể sử dụng analogRead() và analogWrite() trong trình mô phỏng không?",
+        "a4": "Có. ADC 10-bit (analogRead) và đầu ra PWM (analogWrite trên các chân 3, 5, 6, 9, 10, 11) được mô phỏng đầy đủ. Bạn có thể kết nối cảm biến được mô phỏng, biến trở, và bất kỳ linh kiện analog wokwi-elements nào.",
+        "q5": "Tôi có thể mô phỏng USART / Serial trên ATmega328P không?",
+        "a5": "Có. USART0 được mô phỏng đầy đủ. Serial.begin(), Serial.print(), Serial.println(), và Serial.read() đều hoạt động. Serial Monitor tích hợp hiển thị đầu ra TX và cho phép bạn gửi dữ liệu RX đến chương trình đang chạy."
       },
       "bottom": {
-        "title": "Simulate your ATmega328P code now",
-        "body": "Open the editor, paste your sketch, and click Simulate — no setup, no hardware purchase required.",
-        "cta": "Launch ATmega328P Simulator"
+        "title": "Mô phỏng code ATmega328P của bạn ngay bây giờ",
+        "body": "Mở trình soạn thảo, dán sketch của bạn, và nhấn Simulate — không cần setup, không cần mua phần cứng.",
+        "cta": "Khởi chạy Trình mô phỏng ATmega328P"
       }
     },
     "esp32c3": {
       "hero": {
-        "title": "Free ESP32-C3 Simulator",
-        "accent": "RISC-V Emulation via QEMU",
-        "subtitle": "Simulate ESP32-C3 and CH32V003 RISC-V code via the QEMU lcgamboa backend (libqemu-riscv32, esp32c3-picsimlab machine). RV32IMC at 160 MHz with 48+ interactive components.",
-        "ctaPrimary": "Open ESP32-C3 Simulator",
-        "ctaSecondary": "C3 Examples",
-        "trust": "Free & open-source · QEMU lcgamboa backend · libqemu-riscv32",
-        "imageAlt": "ESP32-C3 DevKitM-1 board"
+        "title": "Trình mô phỏng ESP32-C3 miễn phí",
+        "accent": "Mô phỏng RISC-V qua QEMU",
+        "subtitle": "Mô phỏng code RISC-V ESP32-C3 và CH32V003 qua backend QEMU lcgamboa (libqemu-riscv32, target machine esp32c3-picsimlab). RV32IMC tại 160 MHz với 48+ linh kiện tương tác.",
+        "ctaPrimary": "Mở Trình mô phỏng ESP32-C3",
+        "ctaSecondary": "Ví dụ C3",
+        "trust": "Miễn phí & mã nguồn mở · Backend QEMU lcgamboa · libqemu-riscv32",
+        "imageAlt": "Board ESP32-C3 DevKitM-1"
       },
       "boards": {
-        "heading": "Supported RISC-V boards",
-        "lead": "Velxio emulates RISC-V microcontrollers through the QEMU lcgamboa fork — the same backend pattern used for Xtensa ESP32 / ESP32-S3, with libqemu-riscv32 instead of libqemu-xtensa.",
+        "heading": "Các board RISC-V được hỗ trợ",
+        "lead": "CVS mô phỏng vi điều khiển RISC-V qua fork QEMU lcgamboa — cùng mẫu backend được dùng cho Xtensa ESP32 / ESP32-S3, với libqemu-riscv32 thay vì libqemu-xtensa.",
         "devkitTitle": "ESP32-C3 DevKitM-1",
-        "devkitBody": "RISC-V RV32IMC at 160 MHz. WiFi + BLE 5.0, 22 GPIO, 400 KB SRAM. The official Espressif dev board.",
+        "devkitBody": "RISC-V RV32IMC tại 160 MHz. WiFi + BLE 5.0, 22 GPIO, 400 KB SRAM. Board dev chính thức của Espressif.",
         "xiaoTitle": "XIAO ESP32-C3",
-        "xiaoBody": "Seeed Studio compact RISC-V board. 11 GPIO, USB-C, battery charging IC. 21×17.5 mm.",
+        "xiaoBody": "Board RISC-V nhỏ gọn của Seeed Studio. 11 GPIO, USB-C, IC sạc pin. 21×17.5 mm.",
         "superTitle": "ESP32-C3 SuperMini",
-        "superBody": "Aitewinrobot ultra-compact board. Same RISC-V core, minimal form factor for embedded projects.",
+        "superBody": "Board siêu nhỏ gọn của Aitewinrobot. Cùng lõi RISC-V, form factor tối giản cho các dự án nhúng.",
         "chTitle": "CH32V003",
-        "chBody": "WCH RISC-V RV32EC at 48 MHz. Ultra-low-cost DIP-8 package, 2 KB SRAM, 16 KB flash. Just cents per chip."
+        "chBody": "RISC-V RV32EC của WCH tại 48 MHz. Gói DIP-8 siêu tiết kiệm, 2 KB SRAM, 16 KB flash. Chỉ vài xu mỗi chip."
       },
       "examples": {
-        "heading": "ESP32-C3 example projects",
-        "lead": "Ready-to-run examples for ESP32-C3 — from basic GPIO to sensor integrations.",
+        "heading": "Dự án ví dụ ESP32-C3",
+        "lead": "Các ví dụ sẵn sàng chạy cho ESP32-C3 — từ GPIO cơ bản đến tích hợp cảm biến.",
         "blinkTitle": "C3 Blink LED",
-        "blinkBody": "Toggle an LED on GPIO 8. Classic blink sketch running on RISC-V.",
+        "blinkBody": "Toggle LED trên GPIO 8. Sketch blink cổ điển chạy trên RISC-V.",
         "rgbTitle": "C3 RGB LED",
-        "rgbBody": "Drive an RGB LED with three PWM channels — smooth color cycling on RISC-V.",
+        "rgbBody": "Điều khiển RGB LED với ba kênh PWM — chuyển màu mượt trên RISC-V.",
         "buttonTitle": "C3 Button + LED",
-        "buttonBody": "Read a pushbutton on GPIO 9 and toggle an LED — digital input/output on ESP32-C3.",
-        "dhtTitle": "C3 DHT22 Sensor",
-        "dhtBody": "Read temperature and humidity from DHT22 on ESP32-C3. Serial Monitor output.",
+        "buttonBody": "Đọc nút bấm trên GPIO 9 và toggle LED — digital input/output trên ESP32-C3.",
+        "dhtTitle": "C3 Cảm biến DHT22",
+        "dhtBody": "Đọc nhiệt độ và độ ẩm từ DHT22 trên ESP32-C3. Đầu ra Serial Monitor.",
         "sonarTitle": "C3 HC-SR04 Ultrasonic",
-        "sonarBody": "Measure distance with ultrasonic sensor. Trigger/echo timing on RISC-V GPIO.",
+        "sonarBody": "Đo khoảng cách với cảm biến siêu âm. Trigger/echo timing trên GPIO RISC-V.",
         "servoTitle": "C3 Servo Motor",
-        "servoBody": "Sweep a servo from 0° to 180° using ESP32-C3 PWM output.",
-        "viewAll": "View All 68+ Examples"
+        "servoBody": "Quét servo từ 0° đến 180° sử dụng đầu ra PWM ESP32-C3.",
+        "viewAll": "Xem tất cả 68+ ví dụ"
       },
       "faq": {
-        "heading": "Frequently Asked Questions",
-        "q1": "What is the ESP32-C3?",
-        "a1": "The ESP32-C3 is a RISC-V single-core microcontroller by Espressif running at 160 MHz (RV32IMC instruction set). It has WiFi + Bluetooth 5.0, 22 GPIO pins, and is one of the first RISC-V MCUs with a mature Arduino ecosystem.",
-        "q2": "Does the ESP32-C3 simulator run in the browser?",
-        "a2": "Yes. Unlike the Xtensa-based ESP32, the ESP32-C3 RISC-V emulation runs entirely in the browser — no QEMU backend needed. This makes it the fastest ESP32 variant to simulate.",
-        "q3": "Is this also a RISC-V simulator?",
-        "a3": "Yes. The ESP32-C3 uses the RISC-V RV32IMC instruction set. Velxio also supports the CH32V003 (RV32EC at 48 MHz) — another popular RISC-V microcontroller.",
-        "q4": "Which ESP32-C3 boards are supported?",
-        "a4": "Velxio supports ESP32-C3 DevKitM-1, Seeed XIAO ESP32-C3, and ESP32-C3 SuperMini (Aitewinrobot). All three use the same RISC-V core.",
-        "q5": "Can I use Arduino code with ESP32-C3?",
-        "a5": "Yes. Velxio compiles your .ino sketch using the official ESP32 Arduino core with the ESP32-C3 board target. All standard Arduino functions work — Serial, GPIO, analogRead, etc."
+        "heading": "Câu hỏi thường gặp",
+        "q1": "ESP32-C3 là gì?",
+        "a1": "ESP32-C3 là vi điều khiển single-core RISC-V của Espressif chạy ở 160 MHz (tập lệnh RV32IMC). Nó có WiFi + Bluetooth 5.0, 22 chân GPIO, và là một trong những MCU RISC-V đầu tiên có hệ sinh thái Arduino trưởng thành.",
+        "q2": "Trình mô phỏng ESP32-C3 có chạy trong trình duyệt không?",
+        "a2": "Có. Khác với ESP32 dựa trên Xtensa, mô phỏng RISC-V ESP32-C3 chạy hoàn toàn trong trình duyệt — không cần backend QEMU. Điều này làm nó trở thành biến thể ESP32 nhanh nhất để mô phỏng.",
+        "q3": "Đây có phải là trình mô phỏng RISC-V không?",
+        "a3": "Có. ESP32-C3 sử dụng tập lệnh RISC-V RV32IMC. CVS cũng hỗ trợ CH32V003 (RV32EC ở 48 MHz) — một vi điều khiển RISC-V phổ biến khác.",
+        "q4": "Những board ESP32-C3 nào được hỗ trợ?",
+        "a4": "CVS hỗ trợ ESP32-C3 DevKitM-1, Seeed XIAO ESP32-C3, và ESP32-C3 SuperMini (Aitewinrobot). Cả ba đều dùng cùng lõi RISC-V.",
+        "q5": "Tôi có thể sử dụng code Arduino với ESP32-C3 không?",
+        "a5": "Có. CVS biên dịch sketch .ino của bạn dùng Arduino core ESP32 chính thức với target board ESP32-C3. Tất cả hàm Arduino tiêu chuẩn đều hoạt động — Serial, GPIO, analogRead, v.v."
       },
       "bottom": {
-        "title": "Ready to simulate ESP32-C3?",
-        "body": "Open the editor, pick an ESP32-C3 board, and start coding — runs instantly in your browser.",
-        "cta": "Launch ESP32-C3 Simulator"
+        "title": "Sẵn sàng mô phỏng ESP32-C3?",
+        "body": "Mở trình soạn thảo, chọn board ESP32-C3, và bắt đầu viết code — chạy ngay lập tức trong trình duyệt.",
+        "cta": "Khởi chạy Trình mô phỏng ESP32-C3"
       }
     }
   }

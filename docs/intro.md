@@ -115,6 +115,6 @@ See [Supported Boards](../README.md#supported-boards) for the full table with CP
 ## Community & Links
 
 - **Live demo:** [velxio.dev](https://velxio.dev)
-- **GitHub:** [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio)
+- **GitHub:** [github.com/viethung20101/dtu-electronics](https://github.com/viethung20101/dtu-electronics)
 - **Discord:** [discord.gg/3mARjJrh4E](https://discord.gg/3mARjJrh4E)
 - **Sponsor:** [github.com/sponsors/davidmonterocrespo24](https://github.com/sponsors/davidmonterocrespo24)

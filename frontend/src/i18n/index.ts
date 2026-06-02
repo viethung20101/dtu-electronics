@@ -17,7 +17,6 @@
 
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
 
 import enCommon from "./locales/en/common.json";
 import enCommon2 from "./locales/en/common2.json";
@@ -38,14 +37,13 @@ type Namespace = (typeof NAMESPACES)[number];
 const SUPPORTED_LANGS = LOCALES as readonly string[];
 
 /**
- * Resolve the locale to start with. Runs once on mount before i18next
- * is initialised. URL beats cookie beats browser locale.
+ * Resolve the locale to start with. URL beats cookie beats browser locale.
  */
 function pickInitialLocale(): Locale {
   if (typeof window !== "undefined") {
-    const fromUrl = getLocaleFromPath(window.location.pathname);
+    const pathname = window.location.pathname;
+    const fromUrl = getLocaleFromPath(pathname);
     if (fromUrl !== DEFAULT_LOCALE) return fromUrl;
-    // URL is at default-locale root — fall through to other signals.
     const fromCookie = readLocaleCookie();
     if (fromCookie) return fromCookie;
     const navLangs = (
@@ -62,49 +60,6 @@ function pickInitialLocale(): Locale {
   return DEFAULT_LOCALE;
 }
 
-// Init is synchronous for the default locale (resources are inlined via
-// the static import above), so we don't need to await the returned
-// Promise for first-paint correctness. Awaiting it would force the
-// project's tsconfig to enable top-level-await for ESM, which we're
-// avoiding to keep build settings minimal.
-void i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: {
-        common: {
-          ...enCommon,
-          ...enCommon2,
-          ...enReleases,
-          seo: {
-            ...enSeo.seo,
-            ...enSeo2.seo,
-            ...enSeo3.seo,
-            ...enSeo4.seo,
-          },
-          docs: { ...enDocs.docs, ...enDocs2.docs },
-        },
-      },
-    },
-    lng: pickInitialLocale(),
-    fallbackLng: DEFAULT_LOCALE,
-    supportedLngs: SUPPORTED_LANGS,
-    ns: NAMESPACES,
-    defaultNS: "common",
-    interpolation: { escapeValue: false }, // React already escapes
-    react: {
-      useSuspense: false, // we register resources synchronously in dev
-    },
-    detection: {
-      // We make the locale decision ourselves in `pickInitialLocale`;
-      // detector is left configured for future fallback paths only.
-      order: ["path", "cookie", "navigator"],
-      lookupCookie: "velxio_locale",
-      caches: [], // we manage the cookie in src/i18n/cookie.ts
-    },
-  });
-
 /**
  * Lazy-load a non-English locale's bundle and register it with i18next.
  * Returns once the resources are available so callers can `await` it
@@ -113,7 +68,8 @@ void i18n
 export async function loadLocale(locale: Locale): Promise<void> {
   if (locale === DEFAULT_LOCALE) return;
   if (i18n.hasResourceBundle(locale, "common")) return;
-  const [
+  try {
+    const [
     commonMod,
     common2Mod,
     releasesMod,
@@ -150,6 +106,59 @@ export async function loadLocale(locale: Locale): Promise<void> {
     docs: { ...docs1Body, ...docs2Body },
   };
   i18n.addResourceBundle(locale, "common", merged, true, true);
+  } catch (err) {
+    console.error('[i18n] Failed to load locale:', locale, err);
+  }
+}
+
+/**
+ * Bootstrap i18next. Must be called and `await`ed in main.tsx BEFORE
+ * createRoot().render(), so that non-English locale bundles are loaded
+ * before the first React render.
+ */
+export async function bootstrapI18n(): Promise<void> {
+  const initialLocale = pickInitialLocale();
+
+  // Register the React plugin first — this unlocks hasResourceBundle().
+  i18n.use(initReactI18next);
+
+  // Always init with English resources (they are inlined and synchronous).
+  // This is fast for English users and provides a working fallback while
+  // non-English bundles load asynchronously.
+  i18n.init({
+    resources: {
+      en: {
+        common: {
+          ...enCommon,
+          ...enCommon2,
+          ...enReleases,
+          seo: {
+            ...enSeo.seo,
+            ...enSeo2.seo,
+            ...enSeo3.seo,
+            ...enSeo4.seo,
+          },
+          docs: { ...enDocs.docs, ...enDocs2.docs },
+        },
+      },
+    },
+    lng: DEFAULT_LOCALE,
+    fallbackLng: DEFAULT_LOCALE,
+    supportedLngs: SUPPORTED_LANGS,
+    ns: NAMESPACES,
+    defaultNS: "common",
+    interpolation: { escapeValue: false },
+    react: {
+      useSuspense: false,
+    },
+  });
+
+  // For non-English locales, load the bundle asynchronously and switch language.
+  // The init() above guarantees hasResourceBundle() / addResourceBundle() exist.
+  if (initialLocale !== DEFAULT_LOCALE) {
+    await loadLocale(initialLocale);
+    await i18n.changeLanguage(initialLocale);
+  }
 }
 
 export { i18n };

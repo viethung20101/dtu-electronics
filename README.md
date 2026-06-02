@@ -1,15 +1,15 @@
-# Velxio: Arduino & Embedded Board Emulator
+# CVS: Center of Visualization & Simulation
 
-**Live at [velxio.dev](https://velxio.dev)**
+**Live at [cvs.local](https://cvs.local)**
 
 A fully local, open-source multi-board emulator. Write Arduino C++ or Python, compile it, and simulate it with real CPU emulation and 48+ interactive electronic components — all running in your browser.
 
 **19 boards &middot; 5 CPU architectures**: AVR8 (ATmega / ATtiny), ARM Cortex-M0+ (RP2040), RISC-V RV32IMC/EC (ESP32-C3 / CH32V003), Xtensa LX6/LX7 (ESP32 / ESP32-S3 via QEMU), and ARM Cortex-A53 (Raspberry Pi 3 Linux via QEMU).
 
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=davidmonterocrespo24/velxio)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-velxio.dev-007acc?style=for-the-badge)](https://velxio.dev)
-[![Docker Image](https://img.shields.io/badge/Docker-ghcr.io%2Fdavidmonterocrespo24%2Fvelxio-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/davidmonterocrespo24/velxio/pkgs/container/velxio)
-[![GitHub stars](https://img.shields.io/github/stars/davidmonterocrespo24/velxio?style=for-the-badge)](https://github.com/davidmonterocrespo24/velxio/stargazers)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=davidmonterocrespo24/cvs)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-cvs.local-007acc?style=for-the-badge)](https://cvs.local)
+[![Docker Image](https://img.shields.io/badge/Docker-ghcr.io%2Fdavidmonterocrespo24%2Fvelxio-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://github.com/viethung20101/dtu-electronics/pkgs/container/velxio)
+[![GitHub stars](https://img.shields.io/github/stars/viethung20101/dtu-electronics?style=for-the-badge)](https://github.com/viethung20101/dtu-electronics/stargazers)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/3mARjJrh4E)
 [![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue?style=for-the-badge)](LICENSE)
 [![Commercial License](https://img.shields.io/badge/Commercial%20License-Available-green?style=for-the-badge)](COMMERCIAL_LICENSE.md)
@@ -22,7 +22,7 @@ A fully local, open-source multi-board emulator. Write Arduino C++ or Python, co
 
 ## Support the Project
 
-Velxio is free and open-source. Building and maintaining a full multi-board emulator takes a lot of time — if it saves you time or you enjoy the project, sponsoring me directly helps keep development going.
+CVS is free and open-source. Building and maintaining a full multi-board emulator takes a lot of time — if it saves you time or you enjoy the project, sponsoring me directly helps keep development going.
 
 | Platform | Link |
 | --- | --- |
@@ -35,7 +35,7 @@ Your support helps cover server costs, library maintenance, and frees up time to
 
 ## Try it now
 
-**[https://velxio.dev](https://velxio.dev)** — no installation needed. Open the editor, write your sketch, and simulate directly in the browser.
+**[https://cvs.local](https://cvs.local)** — no installation needed. Open the editor, write your sketch, and simulate directly in the browser.
 
 To self-host with Docker (single command):
 
@@ -246,12 +246,12 @@ See [docs/RASPBERRYPI3_EMULATION.md](docs/RASPBERRYPI3_EMULATION.md) for full te
   workspace (boards, file groups, components, wires). Download with the
   Save button, restore with the Open `.vlx` button. The format is
   versioned so files round-trip cleanly across versions.
-- **Zero server-side state** — OSS Velxio has no database, no accounts,
+- **Zero server-side state** — OSS CVS has no database, no accounts,
   no login. Your projects live wherever you keep your `.vlx` files
   (local disk, Dropbox, GitHub, Google Drive — your choice).
 - Need accounts, public profiles at `/:username`, server-side project
   URLs and admin panels? Those live in the private overlay used to run
-  velxio.dev — see [velxio-prod](https://github.com/velxio/velxio-prod)
+  cvs.local — see [velxio-prod](https://github.com/velxio/velxio-prod)
   for the open-core split details.
 
 ### Example Projects
@@ -324,7 +324,7 @@ ones). Only `docker rm -v` or `docker volume prune` would wipe them.
 ### Option B: Docker Compose (build from source)
 
 ```bash
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 docker compose up -d --build
 ```
@@ -360,7 +360,7 @@ change the CORS origin used during local development.
 **Prerequisites:** Node.js 18+, Python 3.12+, arduino-cli
 
 ```bash
-git clone https://github.com/davidmonterocrespo24/velxio.git
+git clone https://github.com/viethung20101/dtu-electronics.git
 cd velxio
 ```
 
@@ -509,7 +509,7 @@ Join the Discord server to ask questions, share projects, and follow updates:
 
 ## Contributing
 
-Suggestions, bug reports, and pull requests are welcome at [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio).
+Suggestions, bug reports, and pull requests are welcome at [github.com/viethung20101/dtu-electronics](https://github.com/viethung20101/dtu-electronics).
 
 If you'd like to support the project financially, see the [Support the Project](#support-the-project) section above or sponsor directly at [github.com/sponsors/davidmonterocrespo24](https://github.com/sponsors/davidmonterocrespo24).
 

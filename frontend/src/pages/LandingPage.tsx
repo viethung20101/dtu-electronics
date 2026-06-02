@@ -17,7 +17,7 @@ import { getSeoMeta } from '../seoRoutes';
 import raspberryPi3Svg from '../assets/Raspberry_Pi_3_illustration.svg';
 import './LandingPage.css';
 
-const GITHUB_URL = 'https://github.com/davidmonterocrespo24/velxio';
+const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
 const PAYPAL_URL = 'https://paypal.me/odoonext';
 const GITHUB_SPONSORS_URL = 'https://github.com/sponsors/davidmonterocrespo24';
 
@@ -63,7 +63,7 @@ const CircuitSchematic = () => (
 
     {/* Silkscreen header */}
     <text x="12" y="14" fill="#092010" fontFamily="monospace" fontSize="6.5" letterSpacing="0.8">
-      VELXIO BLINK DEMO
+      CVS BLINK DEMO
     </text>
     <text
       x="388"
@@ -383,7 +383,7 @@ const CircuitSchematic = () => (
       MIT LICENSE
     </text>
     <text x="388" y="263" textAnchor="end" fill="#092010" fontFamily="monospace" fontSize="6">
-      velxio.dev
+      cvs.local
     </text>
   </svg>
 );
@@ -617,18 +617,18 @@ export const LandingPage: React.FC = () => {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'Is Velxio free?',
+          name: 'Is CVS free?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Velxio is completely free and open-source under the GNU AGPLv3 license. No account required, no cloud subscription. Run it at velxio.dev or self-host with one Docker command.',
+            text: 'Yes. CVS is completely free and open-source under the GNU AGPLv3 license. No account required, no cloud subscription. Run it at cvs.local or self-host with one Docker command.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Can Velxio simulate analog circuits?',
+          name: 'Can CVS simulate analog circuits?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Velxio 2.5 includes real-time SPICE analog simulation via ngspice compiled to WebAssembly. You can mix passive and active analog parts (resistors, capacitors, op-amps, BJTs, MOSFETs, regulators, diodes) with Arduino, ESP32, and RP2040 firmware on the same canvas — GPIO drives SPICE nets, ADC reads solved node voltages.',
+            text: 'Yes. CVS 2.5 includes real-time SPICE analog simulation via ngspice compiled to WebAssembly. You can mix passive and active analog parts (resistors, capacitors, op-amps, BJTs, MOSFETs, regulators, diodes) with Arduino, ESP32, and RP2040 firmware on the same canvas — GPIO drives SPICE nets, ADC reads solved node voltages.',
           },
         },
         {
@@ -636,12 +636,12 @@ export const LandingPage: React.FC = () => {
           name: 'Can I create my own custom chips?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Velxio implements the Wokwi Custom Chips API. Write your chip in C, Rust, or AssemblyScript; Velxio compiles it to WebAssembly and runs it on the canvas like any other component, with pin I/O, attribute reads, timers, and I²C/SPI bus integration.',
+            text: 'Yes. CVS implements the Wokwi Custom Chips API. Write your chip in C, Rust, or AssemblyScript; CVS compiles it to WebAssembly and runs it on the canvas like any other component, with pin I/O, attribute reads, timers, and I²C/SPI bus integration.',
           },
         },
         {
           '@type': 'Question',
-          name: 'Does Velxio work offline?',
+          name: 'Does CVS work offline?',
           acceptedAnswer: {
             '@type': 'Answer',
             text: 'The SPICE solver and the AVR / RP2040 CPU emulators run in your browser. Xtensa and RISC-V boards (ESP32, ESP32-S3, ESP32-C3), STM32 (ARM Cortex-M) and Raspberry Pi 3/4/5 Linux run through QEMU, bundled in the Docker image. Compilation of Arduino sketches requires the arduino-cli backend. Self-hosted Docker deployments work fully offline once running.',
@@ -649,18 +649,18 @@ export const LandingPage: React.FC = () => {
         },
         {
           '@type': 'Question',
-          name: 'What boards does Velxio support?',
+          name: 'What boards does CVS support?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Velxio supports 30+ boards across 6 CPU architectures: AVR8 (Arduino Uno, Nano, Mega 2560, ATtiny85), RP2040 (Raspberry Pi Pico, Pico W), Xtensa QEMU (ESP32, ESP32-S3, ESP32-CAM, Nano ESP32), RISC-V QEMU (ESP32-C3, XIAO ESP32-C3), ARM Cortex-M QEMU (STM32 Blue Pill, Black Pill, F401, F4 Discovery, Netduino, Olimex H405), and ARM Cortex-A QEMU (Raspberry Pi 3, 4 and 5 running Linux).',
+            text: 'CVS supports 30+ boards across 6 CPU architectures: AVR8 (Arduino Uno, Nano, Mega 2560, ATtiny85), RP2040 (Raspberry Pi Pico, Pico W), Xtensa QEMU (ESP32, ESP32-S3, ESP32-CAM, Nano ESP32), RISC-V QEMU (ESP32-C3, XIAO ESP32-C3), ARM Cortex-M QEMU (STM32 Blue Pill, Black Pill, F401, F4 Discovery, Netduino, Olimex H405), and ARM Cortex-A QEMU (Raspberry Pi 3, 4 and 5 running Linux).',
           },
         },
         {
           '@type': 'Question',
-          name: 'Is Velxio a Wokwi / Falstad / Tinkercad alternative?',
+          name: 'Is CVS a Wokwi / Falstad / Tinkercad alternative?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes. Velxio is a free, self-hosted alternative to Wokwi for microcontroller simulation, and a more accurate alternative to Falstad and Tinkercad for analog circuits — Velxio runs the real ngspice engine and also runs the firmware on the microcontroller driving the circuit, all in one tool.',
+            text: 'Yes. CVS is a free, self-hosted alternative to Wokwi for microcontroller simulation, and a more accurate alternative to Falstad and Tinkercad for analog circuits — CVS runs the real ngspice engine and also runs the firmware on the microcontroller driving the circuit, all in one tool.',
           },
         },
       ],
@@ -701,7 +701,7 @@ export const LandingPage: React.FC = () => {
             </a>
           </div>
           {/*
-            Slot for the pro overlay's OS-detect Velxio Desktop download
+            Slot for the pro overlay's OS-detect CVS Desktop download
             CTA. Sits BELOW the online-editor CTAs so users see "try
             online" first, then a softer "or download to go faster
             offline" affordance. Pure OSS leaves it empty.
@@ -1094,74 +1094,38 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Free Forever Banner */}
       <section className="landing-section landing-section-alt landing-pricing">
         <div className="section-header">
-          <span className="section-label">{t('landing.pricing.label')}</span>
+          <div className="free-badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3fb950" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>100% Mien phi — Khong gioi han</span>
+          </div>
           <h2 className="section-title">{t('landing.pricing.title')}</h2>
-          <p className="section-sub">{t('landing.pricing.subtitle')}</p>
+          <p className="section-sub">Moi tinh nang deu mien phi. Khong gioi han boards, khong gioi han AI agent, khong can tai khoan.</p>
         </div>
         <div className="pricing-grid">
-          <div className="pricing-card">
-            <div className="pricing-card-name">{t('landing.pricing.tiers.free.name')}</div>
+          <div className="pricing-card pricing-card-featured">
+            <div className="pricing-card-badge">Mien phi</div>
+            <div className="pricing-card-name">Free</div>
             <div className="pricing-card-price">
               <span className="pricing-card-amount">$0</span>
               <span className="pricing-card-period">/mo</span>
             </div>
-            <p className="pricing-card-tagline">{t('landing.pricing.tiers.free.tagline')}</p>
+            <p className="pricing-card-tagline">Tat ca cac tinh nang deu mien phi voi khong gioi han su dung.</p>
             <ul className="pricing-card-features">
-              <li>{t('landing.pricing.tiers.free.f1')}</li>
-              <li>{t('landing.pricing.tiers.free.f2')}</li>
-              <li>{t('landing.pricing.tiers.free.f3')}</li>
+              <li>Tat ca 19 bo mach + 100+ linh kien</li>
+              <li>Khong gioi han boards &amp; components</li>
+              <li>AI agent ho tro day du</li>
+              <li>Export .vlx &amp; .zip</li>
             </ul>
-            <Link to={localize('/editor')} className="pricing-card-cta pricing-card-cta-secondary">
-              {t('landing.pricing.tiers.free.cta')}
+            <Link to={localize('/editor')} className="pricing-card-cta pricing-card-cta-primary">
+              Mo Trinh soan thao
             </Link>
           </div>
-          <div className="pricing-card">
-            <div className="pricing-card-name">{t('landing.pricing.tiers.maker.name')}</div>
-            <div className="pricing-card-price">
-              <span className="pricing-card-amount">$7</span>
-              <span className="pricing-card-period">/mo</span>
-            </div>
-            <p className="pricing-card-tagline">{t('landing.pricing.tiers.maker.tagline')}</p>
-            <ul className="pricing-card-features">
-              <li>{t('landing.pricing.tiers.maker.f1')}</li>
-              <li>{t('landing.pricing.tiers.maker.f2')}</li>
-              <li>{t('landing.pricing.tiers.maker.f3')}</li>
-            </ul>
-            <Link to={localize('/pricing')} className="pricing-card-cta pricing-card-cta-secondary">
-              {t('landing.pricing.tiers.maker.cta')}
-            </Link>
-          </div>
-          <div className="pricing-card pricing-card-featured">
-            <div className="pricing-card-badge">{t('landing.pricing.popular')}</div>
-            <div className="pricing-card-name">{t('landing.pricing.tiers.pro.name')}</div>
-            <div className="pricing-card-price">
-              <span className="pricing-card-amount">$19</span>
-              <span className="pricing-card-period">/mo</span>
-            </div>
-            <p className="pricing-card-tagline">{t('landing.pricing.tiers.pro.tagline')}</p>
-            <ul className="pricing-card-features">
-              <li>{t('landing.pricing.tiers.pro.f1')}</li>
-              <li>{t('landing.pricing.tiers.pro.f2')}</li>
-              <li>{t('landing.pricing.tiers.pro.f3')}</li>
-            </ul>
-            <Link to={localize('/pricing')} className="pricing-card-cta pricing-card-cta-primary">
-              {t('landing.pricing.tiers.pro.cta')}
-            </Link>
-          </div>
-        </div>
-        <div className="pricing-classroom-banner">
-          <span>
-            {t(
-              'landing.pricing.classroomBanner',
-              'Bringing Velxio into a course? Velxio for Classroom gives every student Pro access from $40/year.',
-            )}
-          </span>
-          <Link to={localize('/classroom')} className="pricing-classroom-banner-cta">
-            {t('landing.pricing.classroomCta', 'See classroom plans →')}
-          </Link>
         </div>
       </section>
 
@@ -1219,19 +1183,6 @@ export const LandingPage: React.FC = () => {
               {t('landing.licensing.opensource.cta')}
             </a>
           </div>
-          <div className="licensing-card">
-            <span className="licensing-card-badge licensing-card-badge-commercial">
-              {t('landing.licensing.commercial.badge')}
-            </span>
-            <h3 className="licensing-card-title">{t('landing.licensing.commercial.title')}</h3>
-            <p className="licensing-card-desc">{t('landing.licensing.commercial.desc')}</p>
-            <a
-              href="mailto:info@velxio.dev?subject=Velxio%20commercial%20license"
-              className="licensing-card-link"
-            >
-              {t('landing.licensing.commercial.cta')}
-            </a>
-          </div>
         </div>
       </section>
 
@@ -1239,7 +1190,7 @@ export const LandingPage: React.FC = () => {
       <footer className="landing-footer">
         <div className="footer-brand">
           <IcoChip />
-          <span>Velxio</span>
+          <span>CVS — Center of Visualization & Simulation</span>
         </div>
         <div className="footer-links">
           <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" onClick={trackVisitGitHub}>
@@ -1248,8 +1199,6 @@ export const LandingPage: React.FC = () => {
           <Link to={localize('/docs')}>{t('header.nav.documentation')}</Link>
           <Link to={localize('/examples')}>{t('header.nav.examples')}</Link>
           <Link to={localize('/editor')}>{t('header.nav.editor')}</Link>
-          <Link to={localize('/pricing')}>{t('header.nav.pricing')}</Link>
-          <Link to={localize('/classroom')}>{t('header.nav.classroom', 'For schools')}</Link>
           <Link to={localize('/about')}>{t('header.nav.about')}</Link>
         </div>
         <p className="footer-copy">{t('footer.about')}</p>

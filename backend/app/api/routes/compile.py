@@ -15,7 +15,7 @@ from app.services.espidf_compiler import espidf_compiler
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
-arduino_cli = ArduinoCLIService()
+arduino_cli = ArduinoCLIService(cli_path="C:\\tools\\arduino-cli.exe")
 
 # ── Async compile job registry ───────────────────────────────────────────────
 # In-process job dict for /compile/start + /compile/status/{job_id}. Cold ESP-IDF

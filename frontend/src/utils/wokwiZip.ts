@@ -236,7 +236,7 @@ export async function exportToWokwiZip(
   zip.file('diagram.json', JSON.stringify(diagram, null, 2));
   zip.file(
     'wokwi-project.txt',
-    `Exported from Velxio\n\nSimulate this project on https://velxio.dev\n`,
+    `Exported from CVS\n\nSimulate this project on https://cvs.local\n`,
   );
 
   for (const f of files) {
@@ -247,7 +247,7 @@ export async function exportToWokwiZip(
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${(projectName || 'velxio-project').replace(/[^a-z0-9_-]/gi, '-')}.zip`;
+  a.download = `${(projectName || 'cvs-project').replace(/[^a-z0-9_-]/gi, '-')}.zip`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

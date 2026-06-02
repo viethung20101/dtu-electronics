@@ -15,7 +15,7 @@ import raspberryPi3Svg from '../assets/Raspberry_Pi_3_illustration.svg';
 import './SEOPage.css';
 import './Velxio2Page.css';
 
-const GITHUB_URL = 'https://github.com/davidmonterocrespo24/velxio';
+const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
 const DISCORD_URL = 'https://discord.gg/3mARjJrh4E';
 
 /* ── SVG Icons (no emojis) ─────────────────────────────── */

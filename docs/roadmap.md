@@ -227,6 +227,6 @@ What's shipped, what's underway, what's planned.
 
 ## Contributing
 
-Feature requests, bug reports, and pull requests are welcome at [github.com/davidmonterocrespo24/velxio](https://github.com/davidmonterocrespo24/velxio).
+Feature requests, bug reports, and pull requests are welcome at [github.com/viethung20101/dtu-electronics](https://github.com/viethung20101/dtu-electronics).
 
 All contributors must sign a Contributor License Agreement (CLA); a CLA check runs automatically on PRs so the dual-licensing (AGPLv3 + Commercial) stays valid.

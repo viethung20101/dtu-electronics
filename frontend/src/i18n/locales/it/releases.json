@@ -3,17 +3,17 @@
     "versionBadge": "Versione 2.0",
     "heroAccent": "Simulatore multi-piattaforma per sistemi embedded",
     "heroSubtitle": "Simula Arduino, ESP32, Raspberry Pi Pico e Raspberry Pi 3 nel tuo browser. 19 schede, 68+ esempi pronti all'uso, simulazione realistica di sensori. Gratuito, open-source, nessuna installazione necessaria.",
-    "tryV2": "Prova Velxio 2.0",
+    "tryV2": "Prova CVS 2.0",
     "joinDiscord": "Unisciti a Discord",
     "boardsHeading": "19 schede. 5 architetture. Un unico strumento.",
-    "boardsLead": "Dal AVR a 8 bit al ARM Linux quad-core — Velxio 2.0 emula ogni piattaforma embedded principale in una singola scheda del browser.",
+    "boardsLead": "Dal AVR a 8 bit al ARM Linux quad-core — CVS 2.0 emula ogni piattaforma embedded principale in una singola scheda del browser.",
     "multipleBoards": "Più schede in un unico circuito",
     "mixArchitectures": "Mescola architetture",
     "mixArchitecturesBody": "Collega un ESP32 a un Raspberry Pi 3, collega tre Arduino insieme, o combina un Pico con un ESP32-C3. Qualsiasi combinazione funziona.",
     "realInterBoard": "Comunicazione reale tra schede",
     "realInterBoardBody": "Le schede comunicano tramite connessioni cablate — UART, I2C, SPI o semplici segnali GPIO, proprio come l'hardware reale.",
     "uniqueFeature": "Nessun altro simulatore fa questo",
-    "uniqueFeatureBody": "I simulatori tradizionali emulano una singola scheda in isolamento. Velxio simula interi sistemi con più schede in esecuzione simultanea.",
+    "uniqueFeatureBody": "I simulatori tradizionali emulano una singola scheda in isolamento. CVS simula interi sistemi con più schede in esecuzione simultanea.",
     "whatsNew": "Novità della 2.0",
     "whatsNewLead": "Una trasformazione completa in un simulatore multi-piattaforma per sistemi embedded — più schede, emulazione più accurata, migliore esperienza di sviluppo.",
     "examplesHeading": "68+ esempi pronti all'uso",
@@ -45,7 +45,7 @@
       }
     },
     "outcomeHeading": "Il risultato",
-    "outcomeLead": "Velxio 2.0 trasforma il progetto in un simulatore completo e scalabile per sistemi embedded multi-piattaforma.",
+    "outcomeLead": "CVS 2.0 trasforma il progetto in un simulatore completo e scalabile per sistemi embedded multi-piattaforma.",
     "outcome": {
       "realistic": "Emulazione più realistica",
       "realisticBody": "Emulazione QEMU per Xtensa, RISC-V e ARM. AVR8 ciclo-accurato tramite avr8js. Esecuzione reale del firmware, non approssimazioni.",
@@ -55,9 +55,9 @@
       "devExBody": "Editor Monaco, workspace multi-file, gestore librerie, oscilloscopio, pannello di controllo sensori, design responsive per dispositivi mobili."
     },
     "builtOnOss": "Costruito su open-source",
-    "builtOnOssLead": "Velxio è alimentato da questi progetti open-source. Senza di loro, nulla di tutto ciò sarebbe possibile.",
+    "builtOnOssLead": "CVS è alimentato da questi progetti open-source. Senza di loro, nulla di tutto ciò sarebbe possibile.",
     "bottom": {
-      "title": "Prova Velxio 2.0 ora",
+      "title": "Prova CVS 2.0 ora",
       "body": "Apri l'editor e inizia a simulare — 19 schede, 68+ esempi, zero configurazione.",
       "cta": "Avvia il simulatore"
     }
@@ -66,11 +66,11 @@
     "versionBadge": "Versione 2.5",
     "heroAccent": "Arduino incontra SPICE nel tuo browser",
     "heroSubtitle": "Simulazione circuitale analogica in tempo reale tramite ngspice-WASM, collegata ad Arduino, ESP32 e Raspberry Pi Pico. Resistenze, condensatori, amplificatori operazionali, transistor, amperometri e voltmetri live — co-simulati con il tuo firmware. Gratuito, open-source, nessuna installazione.",
-    "tryV25": "Prova Velxio 2.5",
+    "tryV25": "Prova CVS 2.5",
     "fullEmulation": "Da solo digitale a emulazione circuitale completa",
-    "fullEmulationLead": "Velxio 2.0 simulava perfettamente il tuo firmware. Velxio 2.5 simula il circuito circostante — con lo stesso motore ngspice utilizzato dagli strumenti EDA professionali, eseguito interamente nella scheda del tuo browser.",
+    "fullEmulationLead": "CVS 2.0 simulava perfettamente il tuo firmware. CVS 2.5 simula il circuito circostante — con lo stesso motore ngspice utilizzato dagli strumenti EDA professionali, eseguito interamente nella scheda del tuo browser.",
     "notLinear": "Non un'approssimazione lineare",
-    "notLinearBody": "Velxio risolve l'Analisi Nodale Modificata completa ad ogni tick. I dispositivi non lineari — diodi, BJT, MOSFET, amplificatori operazionali con saturazione — si comportano come quelli reali, non come idealizzazioni da libro di testo.",
+    "notLinearBody": "CVS risolve l'Analisi Nodale Modificata completa ad ogni tick. I dispositivi non lineari — diodi, BJT, MOSFET, amplificatori operazionali con saturazione — si comportano come quelli reali, non come idealizzazioni da libro di testo.",
     "realFirmware": "Firmware reale. Circuito reale. Stessa tela.",
     "realFirmwareBody": "I pin GPIO pilotano le reti SPICE come sorgenti di tensione. Gli ingressi ADC leggono le tensioni dei nodi risolte. analogRead() restituisce ciò che il circuito produce effettivamente — non una scorciatoia simulata.",
     "browserOffline": "100% browser, 100% offline",
@@ -78,7 +78,7 @@
     "catalogHeading": "100+ componenti SPICE-accurati",
     "catalogLead": "Un catalogo elettronico completo — passivi, semiconduttori, logica, strumenti — ognuno modellato con schede di dispositivo ngspice reali, non sostituti comportamentali.",
     "coSimHeading": "Co-simulazione ibrida digitale + analogica",
-    "coSimLead": "La maggior parte dei simulatori browser esegue o il firmware OPPURE un circuito — mai entrambi insieme. Velxio 2.5 li risolve sullo stesso clock.",
+    "coSimLead": "La maggior parte dei simulatori browser esegue o il firmware OPPURE un circuito — mai entrambi insieme. CVS 2.5 li risolve sullo stesso clock.",
     "driveMotor": "Aziona un motore da un pin Arduino",
     "driveMotorBody": "Pin HIGH → gate MOSFET → corrente di drain attraverso un carico induttivo reale → forza controelettromotrice attraverso un diodo flyback. Tutto risolto con SPICE. Visualizza le tensioni di gate e drain affiancate.",
     "readSensor": "Leggi un sensore attraverso un amplificatore operazionale reale",
@@ -114,7 +114,7 @@
       }
     },
     "outcomeHeading": "Il risultato",
-    "outcomeLead": "Velxio 2.5 chiude il cerchio tra firmware e hardware: lo stesso strumento che esegue il tuo sketch ora risolve il circuito circostante.",
+    "outcomeLead": "CVS 2.5 chiude il cerchio tra firmware e hardware: lo stesso strumento che esegue il tuo sketch ora risolve il circuito circostante.",
     "outcome": {
       "teach": "Insegna e impara l'elettronica",
       "teachBody": "Un parco giochi SPICE gratuito basato su browser per studenti — con il vantaggio aggiuntivo di pilotare firmware di microcontrollori reali. Nessuna licenza, nessuna installazione, nessuna prenotazione di laboratorio.",
@@ -123,9 +123,9 @@
       "openSource": "Ancora 100% open source",
       "openSourceBody": "AGPL-3.0 su GitHub. Costruito su ngspice, eecircuit-engine, avr8js, rp2040js, QEMU e wokwi-elements. Fai il fork, ospitalo, estendilo."
     },
-    "builtOnOssLead": "Velxio 2.5 si basa sulle spalle di decenni di strumentazione elettronica. Un enorme ringraziamento ai manutentori di ogni progetto qui sotto.",
+    "builtOnOssLead": "CVS 2.5 si basa sulle spalle di decenni di strumentazione elettronica. Un enorme ringraziamento ai manutentori di ogni progetto qui sotto.",
     "bottom": {
-      "title": "Prova Velxio 2.5 ora",
+      "title": "Prova CVS 2.5 ora",
       "body": "Apri l'editor e inizia a simulare — firmware e circuito analogico, stessa tela, zero configurazione."
     }
   }

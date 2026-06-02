@@ -29,7 +29,7 @@ import { EditorPage } from './EditorPage';
 import { AppHeader } from '../components/layout/AppHeader';
 import { useSEO } from '../utils/useSEO';
 
-const DOMAIN = 'https://velxio.dev';
+const DOMAIN = 'https://cvs.local';
 
 export const ExampleEditorPage: React.FC = () => {
   const { exampleId } = useParams<{ exampleId: string }>();
@@ -47,10 +47,10 @@ export const ExampleEditorPage: React.FC = () => {
 
   useSEO({
     title: example
-      ? `${example.title} — Velxio Arduino Simulator`
-      : 'Example — Velxio',
+      ? `${example.title} — CVS Arduino Simulator`
+      : 'Example — CVS',
     description:
-      example?.description ?? 'Arduino example running on Velxio.',
+      example?.description ?? 'Arduino example running on CVS.',
     url: example
       ? `${DOMAIN}/example/${example.id}`
       : `${DOMAIN}/examples`,

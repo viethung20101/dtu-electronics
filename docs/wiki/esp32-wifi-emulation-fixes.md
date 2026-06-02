@@ -873,7 +873,7 @@ and uploads them as assets to the `qemu-prebuilt` release in the velxio repo.
 # Deploy ESP32 library
 docker exec velxio-app bash -c "
   curl -L -H 'Authorization: token TOKEN' \
-    'https://github.com/davidmonterocrespo24/velxio/releases/download/qemu-prebuilt/libqemu-xtensa.so' \
+    'https://github.com/viethung20101/dtu-electronics/releases/download/qemu-prebuilt/libqemu-xtensa.so' \
     -o /app/lib/libqemu-xtensa.so.new && \
   mv /app/lib/libqemu-xtensa.so.new /app/lib/libqemu-xtensa.so
 "
@@ -881,7 +881,7 @@ docker exec velxio-app bash -c "
 # Deploy ESP32-C3 library
 docker exec velxio-app bash -c "
   curl -L -H 'Authorization: token TOKEN' \
-    'https://github.com/davidmonterocrespo24/velxio/releases/download/qemu-prebuilt/libqemu-riscv32.so' \
+    'https://github.com/viethung20101/dtu-electronics/releases/download/qemu-prebuilt/libqemu-riscv32.so' \
     -o /app/lib/libqemu-riscv32.so.new && \
   mv /app/lib/libqemu-riscv32.so.new /app/lib/libqemu-riscv32.so
 "

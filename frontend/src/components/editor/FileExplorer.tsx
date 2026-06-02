@@ -189,7 +189,7 @@ interface FileExplorerProps {
 
 export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewClick }) => {
   // Hidden <input type="file"> we trigger via ref when the user clicks
-  // the Open project button.  Accepts both .vlx (Velxio native) and .zip
+  // the Open project button.  Accepts both .vlx (CVS native) and .zip
   // (Wokwi bundle); the dispatcher in utils/importProject.ts decides which
   // loader to run based on the file extension.  Kept outside React state so
   // the change event still fires when the user picks the same file twice.
@@ -371,7 +371,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
           </button>
           <button
             className="file-explorer-save-btn"
-            title="Open project (.vlx Velxio or .zip Wokwi)"
+            title="Open project (.vlx CVS or .zip Wokwi)"
             onClick={handleOpenProjectClick}
           >
             <IcoOpen />

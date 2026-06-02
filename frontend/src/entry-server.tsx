@@ -24,8 +24,6 @@ import { Esp32S3SimulatorPage } from './pages/Esp32S3SimulatorPage';
 import { Esp32C3SimulatorPage } from './pages/Esp32C3SimulatorPage';
 import { RaspberryPiPicoSimulatorPage } from './pages/RaspberryPiPicoSimulatorPage';
 import { RaspberryPiSimulatorPage } from './pages/RaspberryPiSimulatorPage';
-import { Velxio2Page } from './pages/Velxio2Page';
-import { Velxio25Page } from './pages/Velxio25Page';
 import { DocsPage } from './pages/DocsPage';
 import { ExampleDetailPage } from './pages/ExampleDetailPage';
 
@@ -42,8 +40,6 @@ const ROUTE_COMPONENTS: Record<string, React.FC> = {
   '/esp32-c3-simulator': Esp32C3SimulatorPage,
   '/raspberry-pi-pico-simulator': RaspberryPiPicoSimulatorPage,
   '/raspberry-pi-simulator': RaspberryPiSimulatorPage,
-  '/v2': Velxio2Page,
-  '/v2-5': Velxio25Page,
   // Docs sections — all use DocsPage with different URL params
   '/docs': DocsPage,
   '/docs/intro': DocsPage,
@@ -93,9 +89,9 @@ export function render(path: string): string {
 export function getPrerenderedExampleRoutes() {
   return exampleProjects.map((e) => ({
     path: `/examples/${e.id}`,
-    title: `${e.title} — Free Arduino Simulator Example | Velxio`,
+    title: `${e.title} — Free Arduino Simulator Example | CVS`,
     description: `${e.description}. Run this example free in your browser — no install, no account required.`,
-    url: `https://velxio.dev/examples/${e.id}`,
+    url: `https://cvs.local/examples/${e.id}`,
   }));
 }
 

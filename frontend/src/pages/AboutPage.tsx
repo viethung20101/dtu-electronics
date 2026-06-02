@@ -6,7 +6,7 @@ import { useSEO } from '../utils/useSEO';
 import { getSeoMeta } from '../seoRoutes';
 import './AboutPage.css';
 
-const GITHUB_URL = 'https://github.com/davidmonterocrespo24/velxio';
+const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
 const LINKEDIN_URL = 'https://www.linkedin.com/in/davidmonterocrespo24';
 const GITHUB_PROFILE = 'https://github.com/davidmonterocrespo24';
 const MEDIUM_URL = 'https://medium.com/@davidmonterocrespo24';
@@ -61,9 +61,9 @@ export const AboutPage: React.FC = () => {
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',
-      name: 'About Velxio',
-      description: 'Learn about Velxio and its creator David Montero Crespo.',
-      url: 'https://velxio.dev/about',
+      name: 'About CVS',
+      description: 'Learn about CVS and its creator David Montero Crespo.',
+      url: 'https://cvs.local/about',
     },
   });
 
@@ -304,13 +304,13 @@ export const AboutPage: React.FC = () => {
           <div className="about-releases">
             <Link to={localize('/v2-5')} className="about-release-card about-release-card-latest">
               <span className="about-release-tag">{t('about.releases.latest')}</span>
-              <h3>Velxio 2.5</h3>
+              <h3>CVS 1.0</h3>
               <p className="about-release-tagline">{t('about.releases.v25Tagline')}</p>
               <p className="about-release-blurb">{t('about.releases.v25Blurb')}</p>
               <span className="about-release-link">{t('about.releases.readNotes')}</span>
             </Link>
             <Link to={localize('/v2')} className="about-release-card">
-              <h3>Velxio 2.0</h3>
+              <h3>CVS 1.0</h3>
               <p className="about-release-tagline">{t('about.releases.v2Tagline')}</p>
               <p className="about-release-blurb">{t('about.releases.v2Blurb')}</p>
               <span className="about-release-link">{t('about.releases.readNotes')}</span>
@@ -430,7 +430,7 @@ export const AboutPage: React.FC = () => {
       <footer className="landing-footer">
         <div className="footer-brand">
           <IcoChip />
-          <span>Velxio</span>
+          <span>CVS</span>
         </div>
         <div className="footer-links">
           <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">

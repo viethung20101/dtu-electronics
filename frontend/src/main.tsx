@@ -1,10 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { loader } from '@monaco-editor/react';
 import './index.css';
-// Side-effect import: initialises i18next BEFORE any component renders so
-// useTranslation() always resolves against a live instance. Must come
-// before App.
-import './i18n';
 import './components/velxio-components/IC74HC595';
 import './components/velxio-components/LogicGateElements';
 import './components/velxio-components/TransistorElements';
@@ -19,29 +15,60 @@ import './components/velxio-components/RaspberryPi3Element';
 import './components/velxio-components/Bmp280Element';
 import './components/velxio-components/EPaperElement';
 import App from './App.tsx';
+import { bootstrapI18n } from './i18n/index';
 
 // Configure monaco-editor for offline use via local static assets
 const monacoVsPath = `${import.meta.env.BASE_URL}monaco/vs`;
 loader.config({ paths: { vs: monacoVsPath } });
 
-createRoot(document.getElementById('root')!).render(<App />);
+/**
+ * Show a minimal loading overlay while i18n bootstraps (non-English locales
+ * need one async import round-trip before the first render). The overlay is
+ * appended before the #root div and removed once React takes over.
+ */
+function showLoadingOverlay() {
+  const overlay = document.createElement('div');
+  overlay.id = 'i18n-boot-overlay';
+  overlay.textContent = 'Loading…';
+  document.body.style.visibility = 'hidden';
+  document.body.appendChild(overlay);
+  return () => {
+    overlay.remove();
+    document.body.style.visibility = '';
+  };
+}
 
-// Tear down the Tauri-only splash now that React has mounted. Wait
-// two animation frames so React's first paint commits before we
-// touch the splash — otherwise users see a black flash between the
-// splash fading and the editor first appearing. Fade via CSS
-// transition for a smoother handoff, then remove the node entirely
-// once the transition finishes.
-requestAnimationFrame(() => {
+async function main() {
+  const hideOverlay = showLoadingOverlay();
+  try {
+    // Must await so non-English locale bundles are registered before
+    // the very first React render — no flash of wrong language.
+    await bootstrapI18n();
+  } finally {
+    hideOverlay();
+  }
+
+  createRoot(document.getElementById('root')!).render(<App />);
+
+  // Tear down the Tauri-only splash now that React has mounted. Wait
+  // two animation frames so React's first paint commits before we
+  // touch the splash — otherwise users see a black flash between the
+  // splash fading and the editor first appearing. Fade via CSS
+  // transition for a smoother handoff, then remove the node entirely
+  // once the transition finishes.
   requestAnimationFrame(() => {
-    const splash = document.getElementById('velxio-splash');
-    if (!splash) return;
-    splash.style.transition = 'opacity 250ms ease-out';
-    splash.style.opacity = '0';
-    splash.style.pointerEvents = 'none';
-    window.setTimeout(() => splash.remove(), 320);
+    requestAnimationFrame(() => {
+      const splash = document.getElementById('velxio-splash');
+      if (!splash) return;
+      splash.style.transition = 'opacity 250ms ease-out';
+      splash.style.opacity = '0';
+      splash.style.pointerEvents = 'none';
+      window.setTimeout(() => splash.remove(), 320);
+    });
   });
-});
+}
+
+main().catch(err => console.error('[main] bootstrap failed:', err));
 
 // Optional pro overlay. The `@pro` import resolves to a no-op stub in the
 // open-source build (see vite.config.ts) and to the real overlay only when
