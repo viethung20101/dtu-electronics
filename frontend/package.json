@@ -1,11 +1,9 @@
 {
-  "name": "velxio",
-  "homepage": "https://velxio.dev",
-  "private": true,
-  "version": "2.0.1",
+  "name": "dtu-electronics",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "generate:metadata": "cd .. && npx tsx scripts/generate-component-metadata.ts",
+    "generate:metadata": "cmd /c \"set NODE_PATH=node_modules&& npx tsx ../scripts/generate-component-metadata.ts\"",
     "generate:favicons": "node ../scripts/generate-favicons.mjs",
     "generate:og-image": "node ../scripts/generate-og-image.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
