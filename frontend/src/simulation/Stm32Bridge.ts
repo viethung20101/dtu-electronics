@@ -27,8 +27,20 @@
 import type { BoardKind } from '../types/board';
 import { generateUUID } from '../utils/uuid';
 
-const API_BASE = (): string =>
-  (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost:8001/api';
+const API_BASE = (): string => {
+  // The desktop shell injects the sidecar URL at runtime (random port) via
+  // window.__VELXIO_API_BASE__; honor it first so the QEMU-board WebSocket
+  // reaches the local Python sidecar instead of the build-time / dev
+  // default. Without this, ESP32 / Pi / STM32 simulations never start in
+  // the desktop app (the WS dialed localhost:8001, not the sidecar port).
+  if (typeof window !== 'undefined') {
+    const injected = (window as { __VELXIO_API_BASE__?: string }).__VELXIO_API_BASE__;
+    if (typeof injected === 'string' && injected) {
+      return injected.replace(/\/+$/, '');
+    }
+  }
+  return (import.meta.env.VITE_API_BASE as string | undefined) ?? 'http://localhost:8001/api';
+};
 
 export function getTabSessionId(): string {
   if (typeof sessionStorage === 'undefined') return generateUUID();

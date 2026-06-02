@@ -5026,7 +5026,7 @@ void loop() {
       {
         id: 'w-btn',
         start: { componentId: 'arduino-uno', pinName: '2' },
-        end: { componentId: 'btn1', pinName: '1a' },
+        end: { componentId: 'btn1', pinName: '1.l' },
         color: '#00aaff',
       },
       {
@@ -5043,7 +5043,7 @@ void loop() {
       },
       {
         id: 'w-btn-gnd',
-        start: { componentId: 'btn1', pinName: '1b' },
+        start: { componentId: 'btn1', pinName: '2.l' },
         end: { componentId: 'arduino-uno', pinName: 'GND' },
         color: '#000000',
       },
