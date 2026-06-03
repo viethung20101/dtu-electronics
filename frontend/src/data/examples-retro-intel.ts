@@ -58,7 +58,10 @@ static void delay(unsigned int loops) {
 
 void main(void) {
     unsigned char bit = 0x01;
-    char dir = 1;          /* +1 = walking left, -1 = walking right */
+    /* MUST be signed: SDCC treats plain \`char\` as unsigned on Z80, so
+       dir=-1 would read back as 255, the "walk right" branch would never
+       run, and the bit would just shift left off the end and stay dark. */
+    signed char dir = 1;   /* +1 = walking left, -1 = walking right */
     while (1) {
         LED_OUT = bit;
         delay(5000);
