@@ -638,7 +638,8 @@ export const retroIntelExamples: ExampleProject[] = [
     difficulty: 'intermediate',
     boardFilter: 'digital',
     tags: ['retro', 'z80', 'zilog', 'cpu', 'leds', 'larson', 'no-board', 'power-supply', 'custom-chip', 'spice', 'programmable'],
-    code: `// Z80 Larson Scanner — NO Arduino, just the chip + a power supply.\n//\n// Velxio runs custom chips as a general-purpose electronics simulator: the\n// programmable Z80 on the canvas executes its ROM and drives the 8 LEDs\n// directly, powered by the regulated supply (no MCU needed). Click Run.\n\nvoid setup() {}\nvoid loop() {}\n`,
+    code: larsonZ80Asm,
+    files: [{ name: 'larson.s', content: larsonZ80Asm }],
     components: [
       {
         type: 'power-supply',
@@ -657,9 +658,8 @@ export const retroIntelExamples: ExampleProject[] = [
           sourceC: z80CpuC,
           chipJson: z80CpuJ,
           wasmBase64: '',
-          // Pre-baked larson.s ROM (LD SP,0xBFFF; rotate a bit across 0xC000).
-          romBytes: 'Mf+/PgEyAMD1zRAA8QcY9Q5QBgAQ/g0g+ck=',
-          programFile: '',
+          romBytes: '',
+          programFile: 'larson.s',
           programTarget: 'z80',
         },
       },

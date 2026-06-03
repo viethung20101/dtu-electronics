@@ -248,10 +248,21 @@ export async function loadExample(
       const filename = isPiBoardKind(liveBoard.boardKind) ? 'main.cpp' : 'sketch.ino';
       editorStore.loadFiles([{ name: filename, content: example.code }]);
     } else {
-      // Truly board-less: write the placeholder code to whatever the editor
-      // currently shows (boardless examples ship a `void setup()/loop()`
-      // stub — content barely matters since the user won't compile it).
-      useEditorStore.getState().setCode(example.code);
+      // Truly board-less. There is no board file-group, so point the editor at
+      // the default group and load the example's files THERE — otherwise the
+      // editor's activeGroupId still points at a deleted board's group and
+      // setCode silently no-ops, leaving the editor blank/uneditable. This is
+      // what lets a board-less custom-chip example show its program (.s/.c) on
+      // the left, editable, just like the board-backed examples.
+      const editorStore = useEditorStore.getState();
+      if (example.files && example.files.length > 0) {
+        editorStore.setActiveGroup('group-arduino-uno'); // = DEFAULT_GROUP_ID
+        editorStore.loadFiles(example.files);
+      } else {
+        // Pure analog/digital circuits ship no editable program — keep the
+        // legacy behaviour (write the placeholder to the current file).
+        editorStore.setCode(example.code);
+      }
     }
 
     const componentsWithoutBoard = example.components.filter(
@@ -269,6 +280,17 @@ export async function loadExample(
         properties: comp.properties,
       })),
     );
+
+    // A board-less example with a custom chip must START STOPPED so the Run
+    // button is enabled: the chip needs an explicit Run to compile its
+    // WASM/ROM and begin executing. Pure analog/digital circuits stay live
+    // (paused=false) as before.
+    if (isBoardless) {
+      const hasCustomChip = componentsWithoutBoard.some(
+        (c) => stripBrandPrefix(c.type) === 'custom-chip',
+      );
+      useElectricalStore.getState().setPaused(hasCustomChip);
+    }
 
     // After possibly removing every board, re-read activeBoardId.
     const liveActiveBoardId = useSimulatorStore.getState().activeBoardId;
