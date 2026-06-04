@@ -22,7 +22,7 @@ import {
   type TriggerEdge,
 } from '../../store/useOscilloscopeStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
-import { BOARD_KIND_LABELS } from '../../types/board';
+import { boardDisplayName } from '../../types/board';
 import type { BoardKind } from '../../types/board';
 import './Oscilloscope.css';
 
@@ -342,16 +342,16 @@ const ChannelPicker: React.FC<ChannelPickerProps> = ({
             key={b.id}
             className={`osc-picker-board-tab${b.id === selectedBoard?.id ? ' active' : ''}`}
             onClick={() => setSelectedBoardId(b.id)}
-            title={BOARD_KIND_LABELS[b.boardKind]}
+            title={boardDisplayName(b)}
           >
-            {b.id}
+            {boardDisplayName(b)}
           </button>
         ))}
       </div>
 
       {/* Board label */}
       {selectedBoard && (
-        <div className="osc-picker-board-label">{BOARD_KIND_LABELS[selectedBoard.boardKind]}</div>
+        <div className="osc-picker-board-label">{boardDisplayName(selectedBoard)}</div>
       )}
 
       {/* Pin grid */}

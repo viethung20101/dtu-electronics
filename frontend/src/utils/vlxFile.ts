@@ -45,6 +45,7 @@ export interface VlxPayload {
   name?: string;
   boards: Array<{
     id: string;
+    name?: string;
     boardKind: string;
     x: number;
     y: number;
@@ -61,6 +62,7 @@ export interface VlxPayload {
 function serialisableBoard(b: BoardInstance) {
   return {
     id: b.id,
+    name: b.name,
     boardKind: b.boardKind,
     x: b.x,
     y: b.y,

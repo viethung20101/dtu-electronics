@@ -31,6 +31,7 @@ function chipGroupIdsWithFiles(): string[] {
 function serialisableBoard(b: BoardInstance) {
   return {
     id: b.id,
+    name: b.name,
     boardKind: b.boardKind,
     x: b.x,
     y: b.y,

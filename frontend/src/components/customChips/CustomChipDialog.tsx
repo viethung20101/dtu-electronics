@@ -64,6 +64,11 @@ function parseAttributes(chipJson: string): AttributeDef[] {
 
 type Tab = 'examples' | 'editor';
 
+// Placeholder chip names that are treated as "not user-named" — chip.json's
+// `name` may seed over any of these. 'My Chip' is the dialog default; 'Custom
+// Chip' is the file-explorer empty-rename fallback. Keep both in sync here.
+const BLANK_CHIP_NAMES = new Set(['', 'My Chip', 'Custom Chip']);
+
 export const CustomChipDialog = ({ initial, onClose, onSave }: CustomChipDialogProps) => {
   const { t } = useTranslation();
   // If the chip already has source code, skip the examples tab on open.
@@ -105,20 +110,32 @@ export const CustomChipDialog = ({ initial, onClose, onSave }: CustomChipDialogP
     return Array.from(m.entries());
   }, []);
 
-  // Pull chipName out of chip.json whenever it changes — keeps a single source
-  // of truth without forcing the user to edit two fields.
+  // Seed chipName from chip.json's `name` ONLY while the chip still has a
+  // blank default name — so editing chip.json names a fresh chip, but a name
+  // the user gave it (renamed in the file explorer) is NOT clobbered. The
+  // display name lives in properties.chipName and wins; chip.json `name` is
+  // just the initial seed. (Switching examples relabels explicitly in
+  // loadExample.) Both blank defaults are recognised so neither sticks.
   useEffect(() => {
-    try {
-      const obj = JSON.parse(chipJson);
-      if (obj && typeof obj.name === 'string' && obj.name.trim()) {
-        setChipName(obj.name);
-      }
-    } catch { /* user is mid-edit, ignore */ }
+    setChipName((prev) => {
+      if (prev && prev.trim() && !BLANK_CHIP_NAMES.has(prev.trim())) return prev;
+      try {
+        const obj = JSON.parse(chipJson);
+        if (obj && typeof obj.name === 'string' && obj.name.trim()) return obj.name;
+      } catch { /* user is mid-edit, ignore */ }
+      return prev;
+    });
   }, [chipJson]);
 
   const loadExample = (e: ChipExample) => {
     setSourceC(e.sourceC);
     setChipJson(e.chipJson);
+    // Loading an example is an explicit "use this chip" — relabel from its
+    // chip.json name even over a previously-loaded example's name.
+    try {
+      const obj = JSON.parse(e.chipJson);
+      if (obj && typeof obj.name === 'string' && obj.name.trim()) setChipName(obj.name);
+    } catch { /* keep current name */ }
     setWasmBase64('');     // force re-compile so the binary matches the loaded source
     setResult(null);
     setTab('editor');

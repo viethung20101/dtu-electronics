@@ -42,7 +42,7 @@ import {
 import { useIsCoarsePointer } from '../../utils/useTouchDevice';
 import type { ComponentMetadata } from '../../types/component-metadata';
 import type { BoardKind } from '../../types/board';
-import { BOARD_KIND_FQBN, BOARD_KIND_LABELS } from '../../types/board';
+import { BOARD_KIND_FQBN, boardDisplayName } from '../../types/board';
 import { boardGateDecision, proBoardFeatureName, triggerProUpgradePrompt } from '../../lib/proBoardGate';
 import { FlashModal } from './FlashModal';
 import { isTauri as isTauriRuntimeFn } from '../../desktop/tauriBridge';
@@ -2066,7 +2066,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               >
                 {boards.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {BOARD_KIND_LABELS[b.boardKind] ?? b.id}
+                    {boardDisplayName(b)}
                   </option>
                 ))}
               </select>
@@ -2607,7 +2607,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           let title = pinPicker.kind === 'board' ? 'Board' : 'Component';
           if (pinPicker.kind === 'board') {
             const b = boards.find((x) => x.id === id);
-            if (b) title = BOARD_KIND_LABELS[b.boardKind] ?? b.boardKind;
+            if (b) title = boardDisplayName(b);
           } else {
             const c = components.find((x) => x.id === id);
             const meta = c ? registry.getById(c.metadataId) : null;
@@ -2809,7 +2809,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       {boardContextMenu &&
         (() => {
           const board = boards.find((b) => b.id === boardContextMenu.boardId);
-          const label = board ? BOARD_KIND_LABELS[board.boardKind] : 'Board';
+          const label = board ? boardDisplayName(board) : 'Board';
           const connectedWires = wires.filter(
             (w) =>
               w.start.componentId === boardContextMenu.boardId ||
@@ -3045,6 +3045,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             <BoardOptionsModal
               isOpen={true}
               boardId={b.id}
+              boardName={b.name}
               boardKind={b.boardKind}
               currentOptions={b.boardOptions}
               spiffsFiles={b.spiffsFiles ?? []}
@@ -3059,7 +3060,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       {boardToRemove &&
         (() => {
           const board = boards.find((b) => b.id === boardToRemove);
-          const label = board ? BOARD_KIND_LABELS[board.boardKind] : t('editor.canvas.removeConfirm.boardFallback');
+          const label = board ? boardDisplayName(board) : t('editor.canvas.removeConfirm.boardFallback');
           const connectedWires = wires.filter(
             (w) => w.start.componentId === boardToRemove || w.end.componentId === boardToRemove,
           ).length;

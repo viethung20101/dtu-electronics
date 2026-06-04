@@ -1277,11 +1277,12 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
       payload.boards.forEach((b) => {
         addBoard(b.boardKind, b.x, b.y, b.id);
         // Apply the rest of the saved fields that addBoard doesn't set.
-        if (b.languageMode && b.languageMode !== 'arduino') {
+        const patch: Partial<BoardInstance> = {};
+        if (b.languageMode && b.languageMode !== 'arduino') patch.languageMode = b.languageMode;
+        if (b.name && b.name.trim()) patch.name = b.name;
+        if (Object.keys(patch).length > 0) {
           set((s) => ({
-            boards: s.boards.map((bb) =>
-              bb.id === b.id ? { ...bb, languageMode: b.languageMode } : bb,
-            ),
+            boards: s.boards.map((bb) => (bb.id === b.id ? { ...bb, ...patch } : bb)),
           }));
         }
       });

@@ -25,6 +25,8 @@ interface BoardOptionsModalProps {
   isOpen: boolean;
   boardId: string;
   boardKind: BoardKind;
+  /** User-given board name (optional); shown in the subtitle when set. */
+  boardName?: string;
   currentOptions: ESP32BoardOptions | undefined;
   spiffsFiles: SpiffsFile[];
   onClose: () => void;
@@ -70,6 +72,7 @@ async function readFileAsBase64(file: File): Promise<string> {
 export const BoardOptionsModal = ({
   isOpen,
   boardId,
+  boardName,
   boardKind,
   currentOptions,
   spiffsFiles,
@@ -85,6 +88,12 @@ export const BoardOptionsModal = ({
   const [draft, setDraft] = useState<ESP32BoardOptions>(seed);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const update = useCallback(
+    (patch: Partial<ESP32BoardOptions>) => setDraft((d) => ({ ...d, ...patch })),
+    [],
+  );
+
+  // Hooks must run on every render — bail out only AFTER all of them.
   if (!isOpen) return null;
 
   const showPsram = boardSupportsPsram(boardKind);
@@ -96,11 +105,6 @@ export const BoardOptionsModal = ({
   const noFsButHasFiles = fsCapacity === 0 && spiffsFiles.length > 0;
   const nonDio = draft.flashMode !== 'dio';
   const sameCore = draft.eventsRunOnCore === draft.arduinoRunsOnCore;
-
-  const update = useCallback(
-    (patch: Partial<ESP32BoardOptions>) => setDraft((d) => ({ ...d, ...patch })),
-    [],
-  );
 
   const handleApply = () => {
     // Strip PSRAM for boards that don't support it (e.g. C3) so a stale
@@ -146,7 +150,7 @@ export const BoardOptionsModal = ({
           <div className="bom-title">
             <div className="bom-title-main">Board Options</div>
             <div className="bom-title-sub">
-              {BOARD_KIND_LABELS[boardKind]} - id {boardId}
+              {boardName?.trim() || BOARD_KIND_LABELS[boardKind]} - id {boardId}
             </div>
           </div>
           <button className="bom-close" onClick={onClose} aria-label="Close">

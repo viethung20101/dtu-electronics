@@ -9,7 +9,7 @@ import { BOARD_PIN_GROUPS } from '../../simulation/spice/boardPinGroups';
 import { CircuitVerificationModal } from '../simulator/CircuitVerificationModal';
 import type { PinSourceState } from '../../simulation/spice/types';
 import type { BoardKind, LanguageMode } from '../../types/board';
-import { BOARD_KIND_FQBN, BOARD_KIND_LABELS, BOARD_SUPPORTS_MICROPYTHON, isPiBoardKind } from '../../types/board';
+import { BOARD_KIND_FQBN, BOARD_SUPPORTS_MICROPYTHON, isPiBoardKind, boardDisplayName } from '../../types/board';
 import { compileCode } from '../../services/compilation';
 import {
   compileRom,
@@ -421,7 +421,7 @@ export const EditorToolbar = ({
     }
 
     const fqbn = kind ? BOARD_KIND_FQBN[kind] : null;
-    const boardLabel = kind ? BOARD_KIND_LABELS[kind] : 'Unknown';
+    const boardLabel = activeBoard ? boardDisplayName(activeBoard) : 'Unknown';
 
     if (!fqbn) {
       addLog({ timestamp: new Date(), type: 'error', message: `No FQBN for board kind: ${kind}` });
@@ -899,7 +899,7 @@ export const EditorToolbar = ({
     let failed = 0;
 
     for (const board of boardsList) {
-      const label = BOARD_KIND_LABELS[board.boardKind] ?? board.boardKind;
+      const label = boardDisplayName(board);
 
       if (isPiBoardKind(board.boardKind)) {
         addLog({
@@ -1168,7 +1168,7 @@ export const EditorToolbar = ({
       // Architecture mismatch warning for ELF files
       if (result.elfInfo?.suggestedBoard && result.elfInfo.suggestedBoard !== boardKind) {
         const detected = result.elfInfo.architectureName;
-        const current = activeBoard ? BOARD_KIND_LABELS[activeBoard.boardKind] : boardKind;
+        const current = activeBoard ? boardDisplayName(activeBoard) : boardKind;
         addLog({
           timestamp: new Date(),
           type: 'info',

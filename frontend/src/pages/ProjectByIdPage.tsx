@@ -152,6 +152,7 @@ export function buildLoadPayload(project: RawProject) {
     if (Array.isArray(parsed) && parsed.length > 0) {
       boards = parsed.map((b: Partial<BoardInstance> & { id: string; boardKind: string }) => ({
         id: b.id,
+        name: b.name,
         boardKind: b.boardKind as BoardKind,
         x: b.x ?? 50,
         y: b.y ?? 50,
