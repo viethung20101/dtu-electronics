@@ -203,12 +203,18 @@ PartSimulationRegistry.register('custom-chip', {
         // exposes the same epoch via vx_sim_now_nanos.
         const tick = () => {
           if (disposed || !instance) return;
-          // When there is no board, the chip is driven by the editor's Run /
-          // Stop, which toggle the electrical "paused" flag — freeze the chip
-          // while paused (but keep the rAF alive so Run resumes instantly).
-          // With a board present, behaviour is unchanged: tick whenever attached.
-          const boardless = useSimulatorStore.getState().boards.length === 0;
-          const runnable = !boardless || !useElectricalStore.getState().paused;
+          // Freeze the chip while the simulation is stopped — but keep the rAF
+          // alive so Run resumes instantly.
+          //   - Board-less: driven by the editor Run/Stop via the electrical
+          //     "paused" flag.
+          //   - With board(s): the chip must ALSO stop when the user hits Stop,
+          //     which sets board.running=false. Gating only on board presence
+          //     (the old `!boardless`) left the chip ticking forever after Stop.
+          const simState = useSimulatorStore.getState();
+          const boardless = simState.boards.length === 0;
+          const runnable = boardless
+            ? !useElectricalStore.getState().paused
+            : simState.boards.some((b) => b.running);
           if (runnable) {
             try {
               instance.tickTimers(BigInt(Math.floor(performance.now() * 1_000_000)));

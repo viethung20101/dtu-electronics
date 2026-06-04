@@ -108,20 +108,37 @@ inner:
         RET
 `;
 
-const larsonZ80Sketch = `// Z80 Larson Scanner -- Arduino Uno companion sketch.
-//
-// The Z80 chip on the canvas runs the larson.s program. This Arduino
-// sketch just keeps Serial alive in case you wire UART later.
-//
-// Just click Run. Velxio automatically compiles the z80-cpu chip to WASM,
-// assembles larson.s into a Z80 ROM, loads it into the chip, and starts the
-// simulation. A single bit then walks across the 8 LEDs.
-//
-// To slow it down or speed it up: change the "LD C, 80" line in larson.s
-// (higher number = slower), then hit Run again.
+const larsonScannerAsm = `; Z80 "comet" scanner — a TWO-LED pair sweeps across the 8 LEDs.
+;
+; Same z80-cpu chip as the single-bit Larson, but the start pattern is
+; 0x03 (two adjacent LEDs) and the sweep is faster. RLCA rotates the pair
+; left and wraps it around the ends — a brighter, quicker Knight Rider.
+; To slow it down, raise the "LD C, 40" delay; to widen the comet, change
+; the "LD A, 0x03" start pattern.
 
-void setup() {}
-void loop() {}
+        ORG 0x0000
+
+        LD   SP, 0xBFFF        ; stack at top of RAM
+        LD   A, 0x03           ; A = two adjacent LEDs (LED0 + LED1)
+
+loop:
+        LD   (0xC000), A       ; write to LED port
+        PUSH AF
+        CALL delay
+        POP  AF
+        RLCA                   ; rotate the pair left (wraps at the ends)
+        JR   loop
+
+; -- delay: faster sweep than the single-bit Larson ---------------------
+delay:
+        LD   C, 40
+outer:
+        LD   B, 0              ; 0 = 256 inner iterations
+inner:
+        DJNZ inner
+        DEC  C
+        JR   NZ, outer
+        RET
 `;
 
 const killbitsAsm = `; Kill the Bit -- Dean McDaniel, May 15, 1975. Public domain.
@@ -158,23 +175,6 @@ beat:
         JMP  beat
 `;
 
-const killbitsSketch = `// Kill the Bit -- Arduino Uno companion sketch.
-//
-// All the action happens in the i8080-cpu chip on the canvas. This sketch
-// just keeps Serial alive in case you wire UART later. Watch the LEDs and
-// press the matching button on each beat.
-//
-// Steps:
-//   1. Open killbits.s in the editor.
-//   2. Click Compile -- the backend assembles the 28-byte ROM and injects
-//      it into the i8080-cpu chip's romBytes property.
-//   3. Click Run. A single LED will start walking across the 8 outputs.
-//   4. Press the button (BTN0..BTN7) below the lit LED to "kill" the bit.
-
-void setup() {}
-void loop() {}
-`;
-
 const replSketch = `// i8080 banner streamer
 //
 // The bundled i8080 chip on the canvas runs its own embedded ROM. All
@@ -202,26 +202,13 @@ void loop() {
 }
 `;
 
-const counterSketch = `// i8080 button counter
+const counterNote = `// Intel 8080 Button Counter — self-contained, no board.
 //
-// The bundled i8080 chip on the canvas runs its own embedded ROM that
-// increments a counter on every BTN_INC press and clears it on BTN_RST.
-// The current value drives LED0..LED7 in binary.
-//
-// Steps:
-//   1. Double-click the chip, switch to the Editor tab, click Compile.
-//   2. Hit Save, then Run.
-//   3. Click BTN_INC repeatedly to count up. Click BTN_RST to clear.
-//      The 8 LEDs show the current count in binary.
-//
-// The Arduino sketch itself does nothing — the 8080 is the brain of
-// this little board.
-
-void setup() {
-}
-
-void loop() {
-}
+// This chip runs its own embedded ROM: BTN_INC counts up in binary on the
+// 8 LEDs, BTN_RST clears. There is no separate program file to edit here —
+// the program lives inside the chip (double-click it, Editor tab, to view
+// its C). Powered by the regulated bench supply. Click Run, then press the
+// buttons.
 `;
 
 export const retroIntelExamples: ExampleProject[] = [
@@ -289,15 +276,22 @@ export const retroIntelExamples: ExampleProject[] = [
       'inside the single chip on the canvas.',
     category: 'circuits',
     difficulty: 'intermediate',
-    boardType: 'arduino-uno',
-    tags: ['retro', '8080', 'cpu', 'leds', 'buttons', 'wasm', 'custom-chip'],
-    code: counterSketch,
+    boardFilter: 'digital',
+    tags: ['retro', '8080', 'cpu', 'leds', 'buttons', 'no-board', 'power-supply', 'wasm', 'custom-chip', 'spice'],
+    code: counterNote,
     components: [
+      {
+        type: 'power-supply',
+        id: 'psu',
+        x: 180,
+        y: 240,
+        properties: { mode: 'dc', voltage: 5, currentLimit: 2, frequency: 50 },
+      },
       {
         type: 'custom-chip',
         id: 'i8080c',
-        x: 380,
-        y: 120,
+        x: 440,
+        y: 150,
         properties: {
           chipName: 'i8080 Button Counter',
           sourceC: i8080CounterC,
@@ -305,46 +299,70 @@ export const retroIntelExamples: ExampleProject[] = [
           wasmBase64: '',
         },
       },
-      // 8 LEDs for the binary readout
+      // 8 LEDs for the binary readout, each through a series resistor
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        type: 'wokwi-resistor',
+        id: `r-${i}`,
+        x: 760,
+        y: 110 + i * 50,
+        properties: { value: '220' },
+      })),
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
         type: 'wokwi-led',
         id: `led-${i}`,
-        x: 700 + i * 50,
-        y: 120,
+        x: 900,
+        y: 110 + i * 50,
         properties: { color: i < 4 ? 'red' : 'orange' },
       })),
       // 2 buttons
       {
         type: 'wokwi-pushbutton',
         id: 'btn-inc',
-        x: 380,
-        y: 420,
+        x: 300,
+        y: 470,
         properties: { color: 'green' },
       },
       {
         type: 'wokwi-pushbutton',
         id: 'btn-rst',
-        x: 540,
-        y: 420,
+        x: 480,
+        y: 470,
         properties: { color: 'red' },
       },
     ],
     wires: [
-      // LED data wires
+      {
+        id: 'psu-vcc',
+        start: { componentId: 'psu', pinName: 'SIG' },
+        end: { componentId: 'i8080c', pinName: 'VCC' },
+        color: '#e74c3c',
+      },
+      {
+        id: 'psu-gnd',
+        start: { componentId: 'psu', pinName: 'GND' },
+        end: { componentId: 'i8080c', pinName: 'GND' },
+        color: '#000000',
+      },
+      // LED data wires: chip -> resistor -> LED anode -> supply GND
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}`,
+        id: `w-led-${i}`,
         start: { componentId: 'i8080c', pinName: `LED${i}` },
+        end: { componentId: `r-${i}`, pinName: '1' },
+        color: '#facc15',
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `w-r-${i}`,
+        start: { componentId: `r-${i}`, pinName: '2' },
         end: { componentId: `led-${i}`, pinName: 'A' },
         color: '#facc15',
       })),
-      // LED GNDs
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}-gnd`,
+        id: `w-gnd-${i}`,
         start: { componentId: `led-${i}`, pinName: 'C' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
+        end: { componentId: 'psu', pinName: 'GND' },
         color: '#000000',
       })),
-      // Buttons
+      // Buttons: signal to the chip, other side to the supply rail
       {
         id: 'wire-btn-inc',
         start: { componentId: 'btn-inc', pinName: '1.l' },
@@ -360,26 +378,14 @@ export const retroIntelExamples: ExampleProject[] = [
       {
         id: 'wire-btn-inc-pwr',
         start: { componentId: 'btn-inc', pinName: '2.r' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
+        end: { componentId: 'psu', pinName: 'SIG' },
         color: '#e74c3c',
       },
       {
         id: 'wire-btn-rst-pwr',
         start: { componentId: 'btn-rst', pinName: '2.r' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
+        end: { componentId: 'psu', pinName: 'SIG' },
         color: '#e74c3c',
-      },
-      {
-        id: 'wire-i8080c-vcc',
-        start: { componentId: 'i8080c', pinName: 'VCC' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
-        color: '#e74c3c',
-      },
-      {
-        id: 'wire-i8080c-gnd',
-        start: { componentId: 'i8080c', pinName: 'GND' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
-        color: '#000000',
       },
     ],
   },
@@ -389,24 +395,29 @@ export const retroIntelExamples: ExampleProject[] = [
     id: 'i8080-killbits',
     title: 'Kill the Bit (1975)',
     description:
-      "Dean McDaniel's iconic 1975 Altair 8800 reflex game, running on a programmable Intel 8080 chip. " +
-      'A single LED walks across 8 LEDs; press the matching button at the right moment to kill it. ' +
-      'The ROM lives in killbits.s as a project file — click Compile to assemble it, then Run.',
+      "Dean McDaniel's iconic 1975 Altair 8800 reflex game, running on a programmable Intel 8080 chip " +
+      'with NO Arduino — powered by a regulated bench supply. A single LED walks across 8 LEDs; press ' +
+      'the matching button at the right moment to kill it. The ROM is killbits.s (the chip\'s editable ' +
+      'program); click Run.',
     category: 'games',
     difficulty: 'advanced',
-    boardType: 'arduino-uno',
-    tags: ['retro', '8080', 'cpu', 'leds', 'buttons', 'game', 'altair', 'wasm', 'custom-chip', 'asm', 'programmable'],
-    code: killbitsSketch,
-    files: [
-      { name: 'sketch.ino', content: killbitsSketch },
-      { name: 'killbits.s', content: killbitsAsm },
-    ],
+    boardFilter: 'digital',
+    tags: ['retro', '8080', 'cpu', 'leds', 'buttons', 'game', 'altair', 'no-board', 'power-supply', 'wasm', 'custom-chip', 'asm', 'spice', 'programmable'],
+    code: killbitsAsm,
+    files: [{ name: 'killbits.s', content: killbitsAsm }],
     components: [
+      {
+        type: 'power-supply',
+        id: 'psu',
+        x: 180,
+        y: 240,
+        properties: { mode: 'dc', voltage: 5, currentLimit: 2, frequency: 50 },
+      },
       {
         type: 'custom-chip',
         id: 'i8080cpu',
-        x: 380,
-        y: 120,
+        x: 440,
+        y: 150,
         properties: {
           chipName: 'i8080 CPU (programmable)',
           sourceC: i8080CpuC,
@@ -417,31 +428,56 @@ export const retroIntelExamples: ExampleProject[] = [
         },
       },
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        type: 'wokwi-resistor',
+        id: `r-${i}`,
+        x: 760,
+        y: 110 + i * 50,
+        properties: { value: '220' },
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
         type: 'wokwi-led',
         id: `led-${i}`,
-        x: 700 + i * 50,
-        y: 120,
+        x: 900,
+        y: 110 + i * 50,
         properties: { color: i < 4 ? 'yellow' : 'orange' },
       })),
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
         type: 'wokwi-pushbutton',
         id: `btn-${i}`,
-        x: 700 + i * 50,
-        y: 380,
+        x: 1080,
+        y: 110 + i * 50,
         properties: { color: 'green' },
       })),
     ],
     wires: [
+      {
+        id: 'psu-vcc',
+        start: { componentId: 'psu', pinName: 'SIG' },
+        end: { componentId: 'i8080cpu', pinName: 'VCC' },
+        color: '#e74c3c',
+      },
+      {
+        id: 'psu-gnd',
+        start: { componentId: 'psu', pinName: 'GND' },
+        end: { componentId: 'i8080cpu', pinName: 'GND' },
+        color: '#000000',
+      },
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}`,
+        id: `w-led-${i}`,
         start: { componentId: 'i8080cpu', pinName: `LED${i}` },
+        end: { componentId: `r-${i}`, pinName: '1' },
+        color: '#facc15',
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `w-r-${i}`,
+        start: { componentId: `r-${i}`, pinName: '2' },
         end: { componentId: `led-${i}`, pinName: 'A' },
         color: '#facc15',
       })),
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}-gnd`,
+        id: `w-gnd-${i}`,
         start: { componentId: `led-${i}`, pinName: 'C' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
+        end: { componentId: 'psu', pinName: 'GND' },
         color: '#000000',
       })),
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
@@ -453,89 +489,95 @@ export const retroIntelExamples: ExampleProject[] = [
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
         id: `wire-btn-${i}-pwr`,
         start: { componentId: `btn-${i}`, pinName: '2.r' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
+        end: { componentId: 'psu', pinName: 'SIG' },
         color: '#e74c3c',
       })),
-      {
-        id: 'wire-cpu-vcc',
-        start: { componentId: 'i8080cpu', pinName: 'VCC' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
-        color: '#e74c3c',
-      },
-      {
-        id: 'wire-cpu-gnd',
-        start: { componentId: 'i8080cpu', pinName: 'GND' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
-        color: '#000000',
-      },
     ],
   },
 
   // ── Z80 Larson Scanner — first example on the programmable z80-cpu ──
   {
     id: 'z80-larson-scanner',
-    title: 'Z80 Larson Scanner',
+    title: 'Z80 Comet Scanner',
     description:
-      'A single LED walks left across 8 LEDs, Knight-Rider style. Z80 program lives in larson.s ' +
-      '(JR + DJNZ + RLCA — instructions the 8080 emulator can\'t run). Click Compile, then Run.',
+      'A faster, TWO-LED "comet" sweeps across 8 LEDs on a programmable Z80 chip — a brighter twist on ' +
+      'the single-bit Larson. Written in Z80 assembly (scanner.s), NO Arduino: the chip runs standalone ' +
+      'on a regulated supply. Click Run.',
     category: 'circuits',
     difficulty: 'intermediate',
-    boardType: 'arduino-uno',
-    tags: ['retro', 'z80', 'zilog', 'cpu', 'leds', 'larson', 'knight-rider', 'wasm', 'custom-chip', 'asm', 'programmable'],
-    code: larsonZ80Sketch,
-    files: [
-      { name: 'sketch.ino', content: larsonZ80Sketch },
-      { name: 'larson.s',   content: larsonZ80Asm },
-    ],
+    boardFilter: 'digital',
+    tags: ['retro', 'z80', 'zilog', 'cpu', 'leds', 'larson', 'knight-rider', 'comet', 'no-board', 'power-supply', 'wasm', 'custom-chip', 'asm', 'spice', 'programmable'],
+    code: larsonScannerAsm,
+    files: [{ name: 'scanner.s', content: larsonScannerAsm }],
     components: [
+      {
+        type: 'power-supply',
+        id: 'psu',
+        x: 180,
+        y: 200,
+        properties: { mode: 'dc', voltage: 5, currentLimit: 2, frequency: 50 },
+      },
       {
         type: 'custom-chip',
         id: 'z80cpu',
-        x: 380,
-        y: 120,
+        x: 440,
+        y: 150,
         properties: {
           chipName: 'Z80 CPU (programmable)',
           sourceC: z80CpuC,
           chipJson: z80CpuJ,
           wasmBase64: '',
           romBytes: '',
-          programFile: 'larson.s',
+          programFile: 'scanner.s',
           programTarget: 'z80',
         },
       },
       ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        type: 'wokwi-resistor',
+        id: `r-${i}`,
+        x: 760,
+        y: 110 + i * 50,
+        properties: { value: '220' },
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
         type: 'wokwi-led',
         id: `led-${i}`,
-        x: 700 + i * 50,
-        y: 120,
-        properties: { color: i % 2 === 0 ? 'red' : 'orange' },
+        x: 900,
+        y: 110 + i * 50,
+        properties: { color: i % 2 === 0 ? 'green' : 'blue' },
       })),
     ],
     wires: [
-      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}`,
-        start: { componentId: 'z80cpu', pinName: `LED${i}` },
-        end: { componentId: `led-${i}`, pinName: 'A' },
-        color: '#ef4444',
-      })),
-      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
-        id: `wire-led-${i}-gnd`,
-        start: { componentId: `led-${i}`, pinName: 'C' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
-        color: '#000000',
-      })),
       {
-        id: 'wire-z80-vcc',
-        start: { componentId: 'z80cpu', pinName: 'VCC' },
-        end: { componentId: 'arduino-uno', pinName: '5V' },
+        id: 'psu-vcc',
+        start: { componentId: 'psu', pinName: 'SIG' },
+        end: { componentId: 'z80cpu', pinName: 'VCC' },
         color: '#e74c3c',
       },
       {
-        id: 'wire-z80-gnd',
-        start: { componentId: 'z80cpu', pinName: 'GND' },
-        end: { componentId: 'arduino-uno', pinName: 'GND' },
+        id: 'psu-gnd',
+        start: { componentId: 'psu', pinName: 'GND' },
+        end: { componentId: 'z80cpu', pinName: 'GND' },
         color: '#000000',
       },
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `w-led-${i}`,
+        start: { componentId: 'z80cpu', pinName: `LED${i}` },
+        end: { componentId: `r-${i}`, pinName: '1' },
+        color: '#22c55e',
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `w-r-${i}`,
+        start: { componentId: `r-${i}`, pinName: '2' },
+        end: { componentId: `led-${i}`, pinName: 'A' },
+        color: '#22c55e',
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `w-gnd-${i}`,
+        start: { componentId: `led-${i}`, pinName: 'C' },
+        end: { componentId: 'psu', pinName: 'GND' },
+        color: '#000000',
+      })),
     ],
   },
 

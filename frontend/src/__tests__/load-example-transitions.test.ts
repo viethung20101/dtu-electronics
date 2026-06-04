@@ -16,7 +16,7 @@ import { useEditorStore } from '../store/useEditorStore';
 import { useSimulatorStore } from '../store/useSimulatorStore';
 import { useElectricalStore } from '../store/useElectricalStore';
 import { loadExample } from '../utils/loadExample';
-import { exampleProjects } from '../data/examples';
+import { exampleProjects, type ExampleProject } from '../data/examples';
 import { isProgrammableChip } from '../services/romCompileService';
 
 function resetStores() {
@@ -108,21 +108,54 @@ describe('loadExample — programmable-chip program lives in its own group', () 
     expect(activeSketchContent(), 'editor shows the larson.s program').toBe(larson?.content);
   });
 
-  it('board + chip example keeps the chip program OUT of the board sketch group', async () => {
-    await loadExample(findExample('z80-larson-scanner'));
+  it('board + chip routing keeps the chip program OUT of the board sketch group', async () => {
+    // The gallery's chip examples are all board-less now, but the board+chip
+    // routing path still applies when a user drops a programmable chip onto a
+    // board project — exercise it with an inline synthetic example.
+    const boardChip: ExampleProject = {
+      id: 'test-board-chip',
+      title: 'Board + chip',
+      description: '',
+      category: 'circuits',
+      difficulty: 'beginner',
+      boardType: 'arduino-uno',
+      code: 'void setup(){}\nvoid loop(){}',
+      files: [
+        { name: 'sketch.ino', content: 'void setup(){}\nvoid loop(){}' },
+        { name: 'prog.s', content: '; chip program' },
+      ],
+      components: [
+        {
+          type: 'custom-chip',
+          id: 'tchip',
+          x: 100,
+          y: 100,
+          properties: {
+            chipName: 'T',
+            sourceC: '',
+            chipJson: JSON.stringify({ programTargets: ['z80'] }),
+            programFile: 'prog.s',
+            programTarget: 'z80',
+          },
+        },
+      ],
+      wires: [],
+    } as unknown as ExampleProject;
+
+    await loadExample(boardChip);
 
     const ed = useEditorStore.getState();
     const sim = useSimulatorStore.getState();
 
-    // Board group shows only the sketch — larson.s is NOT a sibling tab.
+    // Board group shows only the sketch — prog.s is NOT a sibling tab.
     const board = sim.boards.find((b) => b.id === sim.activeBoardId) ?? sim.boards[0];
     const boardFiles = (ed.fileGroups[board.activeFileGroupId] ?? []).map((f) => f.name);
     expect(boardFiles).toContain('sketch.ino');
-    expect(boardFiles, 'larson.s must not pollute the board group').not.toContain('larson.s');
+    expect(boardFiles, 'prog.s must not pollute the board group').not.toContain('prog.s');
 
     // The chip program lives in its own group instead.
-    const chipGroupId = 'group-chip-z80cpu';
-    expect(ed.fileGroups[chipGroupId]?.map((f) => f.name)).toContain('larson.s');
+    const chipGroupId = 'group-chip-tchip';
+    expect(ed.fileGroups[chipGroupId]?.map((f) => f.name)).toContain('prog.s');
 
     // With a board present the board sketch stays the active group.
     expect(ed.activeGroupId).toBe(board.activeFileGroupId);

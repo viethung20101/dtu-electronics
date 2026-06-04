@@ -18,6 +18,8 @@ import {
   targetForChip,
 } from '../../services/romCompileService';
 import { compileChip } from '../../services/chipCompileService';
+import { clearChipDrives } from '../../simulation/customChips/chipPinDrives';
+import { requestElectricalResolve } from '../../simulation/spice/electricalResolveHook';
 import { reportRunEvent } from '../../services/metricsService';
 import { useProjectStore } from '../../store/useProjectStore';
 import { LibraryManagerModal } from '../simulator/LibraryManagerModal';
@@ -35,6 +37,24 @@ import {
   trackOpenLibraryManager,
 } from '../../utils/analytics';
 import './EditorToolbar.css';
+
+/**
+ * Clear the output drives of every custom chip on the canvas and re-solve, so
+ * chip-driven LEDs go dark on Stop. A chip drives its nets via its own SPICE
+ * voltage sources (registered in chipPinDrives); stopBoard / electrical-pause
+ * don't touch those, so without this the LEDs would freeze at their last frame.
+ */
+function clearAllChipDrives(): void {
+  const comps = useSimulatorStore.getState().components;
+  let any = false;
+  for (const c of comps) {
+    if (c.metadataId === 'custom-chip') {
+      clearChipDrives(c.id);
+      any = true;
+    }
+  }
+  if (any) requestElectricalResolve();
+}
 
 interface EditorToolbarProps {
   consoleOpen: boolean;
@@ -817,14 +837,18 @@ export const EditorToolbar = ({
   const handleStop = () => {
     trackStopSimulation();
     if (isBoardless) {
-      // Freeze the SPICE solver — every LED stays at its current brightness
-      // and switch clicks stop re-triggering ngspice until the user hits Run.
+      // Freeze the chip tick (the paused flag) AND clear the chip's output
+      // drives so its LEDs go dark on Stop — not frozen at their last frame.
       setElectricalPaused(true);
+      clearAllChipDrives();
       setMessage(null);
       return;
     }
     if (activeBoardId) stopBoard(activeBoardId);
     else stopSimulation();
+    // A chip wired to a board drives its LEDs via its own SPICE sources, which
+    // stopBoard doesn't touch — clear them so those LEDs also go dark.
+    clearAllChipDrives();
     setMessage(null);
   };
 
