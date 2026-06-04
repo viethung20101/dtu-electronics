@@ -56,6 +56,28 @@ function clearAllChipDrives(): void {
   if (any) requestElectricalResolve();
 }
 
+/**
+ * Boards whose firmware runs in a QEMU worker rather than a client-side AVR
+ * core. They can start without a pre-stored `compiledProgram`. Shared by
+ * handleRun and handleRunAll so the two paths can't drift.
+ */
+function isQemuBoardKind(kind: BoardKind | undefined): boolean {
+  if (!kind) return false;
+  return (
+    isPiBoardKind(kind) ||
+    kind === 'esp32' ||
+    kind === 'esp32-s3' ||
+    kind === 'esp32-cam' ||
+    kind === 'esp32-c3' ||
+    kind === 'esp32-devkit-c-v4' ||
+    kind === 'wemos-lolin32-lite' ||
+    kind === 'xiao-esp32-s3' ||
+    kind === 'arduino-nano-esp32' ||
+    kind === 'xiao-esp32-c3' ||
+    kind === 'aitewinrobot-esp32c3-supermini'
+  );
+}
+
 interface EditorToolbarProps {
   consoleOpen: boolean;
   setConsoleOpen: (open: boolean | ((v: boolean) => boolean)) => void;
@@ -157,6 +179,29 @@ export const EditorToolbar = ({
   const setElectricalPaused = useElectricalStore((s) => s.setPaused);
   const isBoardless = boards.length === 0;
   const digitalRunning = isBoardless && !electricalPaused;
+  // Any board actually running — the correct multi-target signal for the
+  // Run-All / Stop buttons (the flat `running` flag only tracks the ACTIVE
+  // board, so it misreports a multi-board or non-active-board run).
+  const anyBoardRunning = boards.some((b) => b.running);
+
+  // A "run target" is a board OR a programmable custom-chip (a CPU that runs a
+  // ROM). When there is more than one target — two boards, a board + a chip, or
+  // several chips — the unified Compile-All / Run-All buttons appear and act on
+  // every target, the same way multiple Arduinos behave. Resolved as a number
+  // so the toolbar only re-renders when the count changes. The predicate is a
+  // cheap string test (no JSON.parse) since this selector runs on every store
+  // change, including high-frequency simulation churn. (The compile/run paths
+  // deliberately act on ALL custom chips, not just programmable ones.)
+  const targetCount = useSimulatorStore((s) => {
+    let chips = 0;
+    for (const c of s.components) {
+      if (c.metadataId !== 'custom-chip') continue;
+      const p = c.properties as Record<string, unknown>;
+      if (String(p?.programFile ?? '').trim() || String(p?.chipJson ?? '').includes('"programTargets"'))
+        chips++;
+    }
+    return s.boards.length + chips;
+  });
 
   // Circuit-verification modal state. When `pendingRun` is non-null we've
   // already paid the cost of solving + analysing — the user can either
@@ -231,6 +276,7 @@ export const EditorToolbar = ({
     ) => {
       const codeChanged = useEditorStore.getState().codeChangedSinceLastCompile;
       const updateComponent = useSimulatorStore.getState().updateComponent;
+      let failed = 0;
 
       for (const chip of chips) {
         // Re-read the freshest properties each iteration (an earlier chip's
@@ -265,6 +311,7 @@ export const EditorToolbar = ({
                 type: 'error',
                 message: `Chip "${chipLabel}" WASM compile failed: ${r.error || r.stderr || 'unknown error'}`,
               });
+              failed++;
             }
           } catch (e) {
             addLog({
@@ -272,6 +319,7 @@ export const EditorToolbar = ({
               type: 'error',
               message: `Chip "${chipLabel}" WASM compile error: ${e instanceof Error ? e.message : String(e)}`,
             });
+            failed++;
           }
         }
 
@@ -295,6 +343,7 @@ export const EditorToolbar = ({
               type: 'error',
               message: `Chip "${chipLabel}": program file "${programFile}" not found in the chip's files.`,
             });
+            failed++;
           } else {
             const target = targetForChip(chipJson);
             const fmt = formatForFile(programFile);
@@ -320,6 +369,7 @@ export const EditorToolbar = ({
                   type: 'error',
                   message: `ROM compile failed for "${programFile}": ${rr.error || rr.stderr || 'unknown error'}`,
                 });
+                failed++;
               }
             } catch (e) {
               addLog({
@@ -327,6 +377,7 @@ export const EditorToolbar = ({
                 type: 'error',
                 message: `ROM compile error for "${programFile}": ${e instanceof Error ? e.message : String(e)}`,
               });
+              failed++;
             }
           }
         }
@@ -335,6 +386,7 @@ export const EditorToolbar = ({
           updateComponent(chip.id, { properties: props } as any);
         }
       }
+      return { failed };
     },
     [addLog],
   );
@@ -722,18 +774,7 @@ export const EditorToolbar = ({
         return;
       }
 
-      const isQemuBoard =
-        board?.boardKind && isPiBoardKind(board.boardKind) ||
-        board?.boardKind === 'esp32' ||
-        board?.boardKind === 'esp32-s3' ||
-        board?.boardKind === 'esp32-cam' ||
-        board?.boardKind === 'esp32-c3' ||
-        board?.boardKind === 'esp32-devkit-c-v4' ||
-        board?.boardKind === 'wemos-lolin32-lite' ||
-        board?.boardKind === 'xiao-esp32-s3' ||
-        board?.boardKind === 'arduino-nano-esp32' ||
-        board?.boardKind === 'xiao-esp32-c3' ||
-        board?.boardKind === 'aitewinrobot-esp32c3-supermini';
+      const isQemuBoard = isQemuBoardKind(board?.boardKind);
 
       // QEMU boards: auto-compile if no firmware available yet
       if (isQemuBoard) {
@@ -844,7 +885,11 @@ export const EditorToolbar = ({
       setMessage(null);
       return;
     }
-    if (activeBoardId) stopBoard(activeBoardId);
+    // Stop EVERY running board — Run-All can start several, and leaving any
+    // running keeps chips ticking (their gate is boards.some(running)).
+    const runningBoards = useSimulatorStore.getState().boards.filter((b) => b.running);
+    if (runningBoards.length > 0) runningBoards.forEach((b) => stopBoard(b.id));
+    else if (activeBoardId) stopBoard(activeBoardId);
     else stopSimulation();
     // A chip wired to a board drives its LEDs via its own SPICE sources, which
     // stopBoard doesn't touch — clear them so those LEDs also go dark.
@@ -867,36 +912,46 @@ export const EditorToolbar = ({
    */
   const compileAllBoards = async (): Promise<{ ok: number; failed: number }> => {
     const boardsList = useSimulatorStore.getState().boards;
-    if (boardsList.length === 0) return { ok: 0, failed: 0 };
+    // Every custom-chip is a target too — Compile-All / Run-All build chips
+    // (WASM + ROM) alongside boards, so the flow works for a board + chip, for
+    // several chips with no board, etc.
+    const allCustomChips = useSimulatorStore
+      .getState()
+      .components.filter((c) => c.metadataId === 'custom-chip');
+    if (boardsList.length === 0 && allCustomChips.length === 0) return { ok: 0, failed: 0 };
 
     setCompileAllRunning(true);
     setConsoleOpen(true);
+    const targetSummary = [
+      boardsList.length ? `${boardsList.length} board${boardsList.length === 1 ? '' : 's'}` : '',
+      allCustomChips.length ? `${allCustomChips.length} chip${allCustomChips.length === 1 ? '' : 's'}` : '',
+    ]
+      .filter(Boolean)
+      .join(' + ');
     addLog({
       timestamp: new Date(),
       type: 'info',
-      message: `Compiling all ${boardsList.length} board${boardsList.length === 1 ? '' : 's'}...`,
+      message: `Compiling all targets (${targetSummary})...`,
     });
 
     // Make every custom-chip live (WASM + ROM) before compiling the boards,
     // mirroring the single-board Compile path, and collect their program file
     // names so they stay out of the arduino-cli builds below.
-    const allCustomChips = useSimulatorStore
-      .getState()
-      .components.filter((c) => c.metadataId === 'custom-chip');
     const chipProgramFiles = new Set<string>();
     for (const chip of allCustomChips) {
       const pf = String((chip.properties as any)?.programFile ?? '').trim();
       if (pf) chipProgramFiles.add(pf);
     }
+    let chipFailed = 0;
     if (allCustomChips.length > 0) {
       const everyFile = boardsList.flatMap((b) =>
         useEditorStore.getState().getGroupFiles(b.activeFileGroupId),
       );
-      await prepareCustomChips(allCustomChips, everyFile);
+      chipFailed = (await prepareCustomChips(allCustomChips, everyFile)).failed;
     }
 
     let ok = 0;
-    let failed = 0;
+    let boardFailed = 0;
 
     for (const board of boardsList) {
       const label = boardDisplayName(board);
@@ -918,7 +973,7 @@ export const EditorToolbar = ({
           type: 'error',
           message: `${label}: no FQBN configured`,
         });
-        failed++;
+        boardFailed++;
         continue;
       }
 
@@ -968,7 +1023,7 @@ export const EditorToolbar = ({
           }
           ok++;
         } else {
-          failed++;
+          boardFailed++;
         }
       } catch (err) {
         addLog({
@@ -976,16 +1031,23 @@ export const EditorToolbar = ({
           type: 'error',
           message: `${label}: ${err instanceof Error ? err.message : String(err)}`,
         });
-        failed++;
+        boardFailed++;
       }
     }
 
+    const failed = boardFailed + chipFailed;
+    const chipOk = allCustomChips.length - chipFailed;
+    const doneParts = [];
+    if (boardsList.length)
+      doneParts.push(`${ok} board${ok === 1 ? '' : 's'} ok${boardFailed > 0 ? `, ${boardFailed} failed` : ''}`);
+    if (allCustomChips.length)
+      doneParts.push(`${chipOk} chip${chipOk === 1 ? '' : 's'} ok${chipFailed > 0 ? `, ${chipFailed} failed` : ''}`);
     addLog({
       timestamp: new Date(),
-      type: ok > 0 && failed === 0 ? 'success' : failed > 0 ? 'error' : 'info',
-      message: `Done — ${ok} succeeded, ${failed} failed`,
+      type: failed > 0 ? 'error' : 'success',
+      message: `Done — ${doneParts.join('; ')}`,
     });
-    if (ok > 0 && failed === 0) markCompiled();
+    if (failed === 0) markCompiled();
     setCompileAllRunning(false);
     return { ok, failed };
   };
@@ -995,14 +1057,28 @@ export const EditorToolbar = ({
     void compileAllBoards();
   };
 
-  /** Run All = compile all (if needed) + start every board, mirroring single Run. */
+  /**
+   * Run All = compile every target (boards + chips) if needed, then start every
+   * one: boards via startBoard, chips via restartParts (re-attach with the
+   * fresh WASM/ROM) + resuming the electrical solver when there's no board.
+   * Mirrors single Run, generalised across all targets.
+   */
   const handleRunAll = async () => {
-    const boardsList = useSimulatorStore.getState().boards;
-    if (boardsList.length === 0) return;
+    const sim = useSimulatorStore.getState();
+    const boardsList = sim.boards;
+    const chips = sim.components.filter((c) => c.metadataId === 'custom-chip');
+    if (boardsList.length === 0 && chips.length === 0) return;
 
-    // Compile if anything is missing a program or code changed since last compile
+    // A chip needs compiling when it has no WASM yet, or it references a program
+    // file but hasn't been assembled to ROM.
+    const chipNeedsCompile = chips.some((c) => {
+      const p = c.properties as Record<string, unknown>;
+      const programFile = String(p?.programFile ?? '').trim();
+      return !String(p?.wasmBase64 ?? '') || (programFile && !String(p?.romBytes ?? ''));
+    });
     const needsCompile =
       codeChangedSinceLastCompile ||
+      chipNeedsCompile ||
       boardsList.some(
         (b) =>
           !isPiBoardKind(b.boardKind) &&
@@ -1012,22 +1088,28 @@ export const EditorToolbar = ({
 
     if (needsCompile) {
       const { failed } = await compileAllBoards();
-      if (failed > 0) return; // Don't start anything if any board failed
+      if (failed > 0) return; // a board failed — don't start anything
     }
 
-    // Refresh list after compile (compiledProgram may have changed)
+    // Start every board (compiledProgram may have changed during compile).
     const refreshed = useSimulatorStore.getState().boards;
     for (const board of refreshed) {
       if (board.running) continue;
-      const isQemu =
-        isPiBoardKind(board.boardKind) ||
-        board.boardKind === 'esp32' ||
-        board.boardKind === 'esp32-s3';
-      if (isQemu || board.compiledProgram || board.languageMode === 'micropython') {
+      if (isQemuBoardKind(board.boardKind) || board.compiledProgram || board.languageMode === 'micropython') {
         trackRunSimulation(board.boardKind);
         reportRun(board.boardKind);
         startBoard(board.id);
       }
+    }
+
+    // Run the chips: re-attach so they pick up the freshly compiled WASM/ROM.
+    // The chip tick gates on a running board, so when NO board actually started
+    // (board-less, or a board that compiled to nothing) resume the electrical
+    // solver instead, otherwise the chips would stay frozen.
+    if (chips.length > 0) {
+      useSimulatorStore.getState().restartParts();
+      const anyBoardRunning = useSimulatorStore.getState().boards.some((b) => b.running);
+      if (!anyBoardRunning) setElectricalPaused(false);
     }
   };
 
@@ -1332,7 +1414,7 @@ export const EditorToolbar = ({
             {/* Stop */}
             <button
               onClick={handleStop}
-              disabled={isBoardless ? !digitalRunning : !running}
+              disabled={isBoardless ? !digitalRunning : !anyBoardRunning}
               className="tb-btn tb-btn-stop"
               title={isBoardless ? 'Freeze digital simulation' : t('editor.toolbar.stop')}
             >
@@ -1363,11 +1445,11 @@ export const EditorToolbar = ({
               </svg>
             </button>
 
-            {boards.length > 1 && (
+            {targetCount > 1 && (
               <>
                 <div className="tb-divider" />
 
-                {/* Compile All */}
+                {/* Compile All — boards + programmable chips */}
                 <button
                   onClick={handleCompileAll}
                   disabled={compileAllRunning}
@@ -1392,7 +1474,7 @@ export const EditorToolbar = ({
                 {/* Run All */}
                 <button
                   onClick={handleRunAll}
-                  disabled={running}
+                  disabled={compileAllRunning || anyBoardRunning || digitalRunning}
                   className="tb-btn tb-btn-run-all"
                   title={t('editor.toolbar.runAll')}
                 >
