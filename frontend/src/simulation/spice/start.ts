@@ -30,6 +30,7 @@ import {
   type ElectricalSnapshot,
 } from './CircuitSimulationService';
 import { connectAnalogInputsToMcu } from './connectAnalogInputsToMcu';
+import { connectChipInputsToSolve } from './connectChipInputsToSolve';
 import { connectMcuEdgesToService } from './connectMcuEdgesToService';
 import { setElectricalResolveHook } from './electricalResolveHook';
 import { collectPinStates } from './collectPinStates';
@@ -81,6 +82,7 @@ export function startSimulation(): () => void {
 
   const unsubService = service.start();
   const unsubAdc = connectAnalogInputsToMcu();
+  const unsubChipIn = connectChipInputsToSolve();
   const unsubEdges = connectMcuEdgesToService(service);
 
   // Let custom chips request a re-solve when they toggle an output pin, so
@@ -136,6 +138,7 @@ export function startSimulation(): () => void {
     setElectricalResolveHook(null);
     unsubService();
     unsubAdc();
+    unsubChipIn();
     unsubEdges();
   };
 }

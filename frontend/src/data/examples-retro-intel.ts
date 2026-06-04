@@ -314,7 +314,8 @@ export const retroIntelExamples: ExampleProject[] = [
         y: 110 + i * 50,
         properties: { color: i < 4 ? 'red' : 'orange' },
       })),
-      // 2 buttons
+      // 2 buttons, each with a pull-down so the chip pin reads a clean LOW
+      // when the button is open (the button ties the pin to +5V when pressed).
       {
         type: 'wokwi-pushbutton',
         id: 'btn-inc',
@@ -328,6 +329,20 @@ export const retroIntelExamples: ExampleProject[] = [
         x: 480,
         y: 470,
         properties: { color: 'red' },
+      },
+      {
+        type: 'wokwi-resistor',
+        id: 'rpd-inc',
+        x: 300,
+        y: 580,
+        properties: { value: '10000' },
+      },
+      {
+        type: 'wokwi-resistor',
+        id: 'rpd-rst',
+        x: 480,
+        y: 580,
+        properties: { value: '10000' },
       },
     ],
     wires: [
@@ -386,6 +401,31 @@ export const retroIntelExamples: ExampleProject[] = [
         start: { componentId: 'btn-rst', pinName: '2.r' },
         end: { componentId: 'psu', pinName: 'SIG' },
         color: '#e74c3c',
+      },
+      // Pull-downs: chip BTN pin -> 10k -> GND (clean LOW when not pressed)
+      {
+        id: 'pd-inc-sig',
+        start: { componentId: 'rpd-inc', pinName: '1' },
+        end: { componentId: 'i8080c', pinName: 'BTN_INC' },
+        color: '#000000',
+      },
+      {
+        id: 'pd-inc-gnd',
+        start: { componentId: 'rpd-inc', pinName: '2' },
+        end: { componentId: 'psu', pinName: 'GND' },
+        color: '#000000',
+      },
+      {
+        id: 'pd-rst-sig',
+        start: { componentId: 'rpd-rst', pinName: '1' },
+        end: { componentId: 'i8080c', pinName: 'BTN_RST' },
+        color: '#000000',
+      },
+      {
+        id: 'pd-rst-gnd',
+        start: { componentId: 'rpd-rst', pinName: '2' },
+        end: { componentId: 'psu', pinName: 'GND' },
+        color: '#000000',
       },
     ],
   },
@@ -448,6 +488,14 @@ export const retroIntelExamples: ExampleProject[] = [
         y: 110 + i * 50,
         properties: { color: 'green' },
       })),
+      // Pull-downs so each chip BTN pin reads a clean LOW when not pressed.
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        type: 'wokwi-resistor',
+        id: `rpd-${i}`,
+        x: 1240,
+        y: 110 + i * 50,
+        properties: { value: '10000' },
+      })),
     ],
     wires: [
       {
@@ -491,6 +539,19 @@ export const retroIntelExamples: ExampleProject[] = [
         start: { componentId: `btn-${i}`, pinName: '2.r' },
         end: { componentId: 'psu', pinName: 'SIG' },
         color: '#e74c3c',
+      })),
+      // Pull-downs: each chip BTN pin -> 10k -> GND
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `pd-${i}-sig`,
+        start: { componentId: `rpd-${i}`, pinName: '1' },
+        end: { componentId: 'i8080cpu', pinName: `BTN${i}` },
+        color: '#000000',
+      })),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({
+        id: `pd-${i}-gnd`,
+        start: { componentId: `rpd-${i}`, pinName: '2' },
+        end: { componentId: 'psu', pinName: 'GND' },
+        color: '#000000',
       })),
     ],
   },
