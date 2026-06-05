@@ -720,6 +720,25 @@ export class ChipInstance {
     return this._framebuffer !== null;
   }
 
+  // ── Keyboard (chips that export set_key, e.g. galaksija-keyboard) ─────────
+
+  /** True if the chip exposes a host-driven keyboard via an exported
+   *  `set_key(offset, down)`. The host (CustomChipPart) bridges browser key
+   *  events into it. */
+  get hasKeyboard(): boolean {
+    return typeof this.exports?.set_key === 'function';
+  }
+
+  /** Push a key state into the chip's key table. `offset` is the chip-specific
+   *  matrix offset; `down` is press/release. No-op if the chip has no keyboard. */
+  setKey(offset: number, down: boolean): void {
+    try {
+      this.exports?.set_key?.(offset, down ? 1 : 0);
+    } catch {
+      /* swallow chip errors */
+    }
+  }
+
   // ── Timers ───────────────────────────────────────────────────────────────
 
   private _timer_create(cbIdx: number, userData: number): number {
