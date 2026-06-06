@@ -703,6 +703,23 @@ class ESPIDFCompiler:
         arches = {a.strip().lower() for a in arch.split(',') if a.strip()}
         return '*' in arches or self._ESP32_LIB_ARCH in arches
 
+    @staticmethod
+    def _norm_lib_name(name: str) -> str:
+        """Normalise a library name for manifest matching: lowercased, only
+        alphanumerics. So "Adafruit GFX Library", "Adafruit_GFX_Library" and
+        "adafruitgfxlibrary" all compare equal — the Library Manager display
+        name and the on-disk folder name differ only by separators/case."""
+        return ''.join(ch for ch in (name or '').lower() if ch.isalnum())
+
+    def _library_in_manifest(self, lib_root: Path, allowed_norm: set[str]) -> bool:
+        """True if this library is in the project's declared manifest.
+        Matches on the on-disk folder name OR the library.properties `name=`
+        (the Library Manager display name), both normalised."""
+        if self._norm_lib_name(lib_root.name) in allowed_norm:
+            return True
+        props_name = self._parse_library_properties(lib_root).get('name', '')
+        return bool(props_name) and self._norm_lib_name(props_name) in allowed_norm
+
     def _resolve_library_components(
         self,
         ext_headers: list[str],
@@ -710,10 +727,21 @@ class ESPIDFCompiler:
         esp32_libs: Path | None,
         arduino_comp_name: str,
         user_libs_dir: Path,
+        allowed_libraries: set[str] | None = None,
     ) -> tuple[list[str], dict[str, str]]:
         """
         BFS over ext_headers (and transitive includes) to discover all external
         Arduino libraries and merge them into a single 'user_libs_all' IDF component.
+
+        `allowed_libraries` (P2 — project library manifest / scope): when not
+        None, a USER-installed library (from arduino_libs) is merged only if its
+        name is in this set. This makes the project's declared manifest the
+        resolution SCOPE — the compiler never picks up an unrelated library from
+        the shared dir (another user's install, or a same-named clash). When
+        None (no manifest supplied) the behaviour is the legacy scan-all, so
+        existing callers and un-migrated projects are unaffected. Core
+        arduino-esp32 libs and bundled esp32_libs are always allowed (they are
+        platform-provided, not user installs).
 
         All library files are copied flat into one directory, so every header is
         visible to every other header and source file without any cross-component
@@ -733,6 +761,14 @@ class ESPIDFCompiler:
         logger.info(f'[espidf] ext_headers detected: {ext_headers}')
         logger.info(f'[espidf] arduino_libs: {arduino_libs}')
         logger.info(f'[espidf] esp32_libs: {esp32_libs}')
+
+        # P2 manifest scope: normalise the allowed set once (None = scan-all).
+        allowed_norm: set[str] | None = (
+            {self._norm_lib_name(a) for a in allowed_libraries}
+            if allowed_libraries is not None else None
+        )
+        if allowed_norm is not None:
+            logger.info(f'[espidf] library manifest scope active: {sorted(allowed_libraries)}')
 
         comp_dir = user_libs_dir / 'user_libs_all'
         comp_dir.mkdir(exist_ok=True)
@@ -781,6 +817,20 @@ class ESPIDFCompiler:
                     logger.warning(
                         f'[espidf] <{header}> resolved to "{_lib_root.name}" but its '
                         f'library.properties architectures exclude esp32 — skipping'
+                    )
+                    src_root = None
+
+            # P2 manifest scope. A user-installed library is merged only if it's
+            # in the project's declared manifest. Anything else from the shared
+            # dir is out of scope — drop it (the header then falls through to the
+            # core check, or to the "not found" path so install-on-missing can
+            # offer to add it to the manifest). Core/bundled libs aren't gated.
+            if src_root is not None and allowed_norm is not None:
+                _lr = src_root.parent if src_root.name == 'src' else src_root
+                if not self._library_in_manifest(_lr, allowed_norm):
+                    logger.info(
+                        f'[espidf] <{header}> resolves to "{_lr.name}" but it is not in '
+                        f'the project library manifest — not merging (scope)'
                     )
                     src_root = None
 
@@ -1574,6 +1624,7 @@ class ESPIDFCompiler:
         progress_callback: Optional[ProgressCallback] = None,
         board_options: dict | None = None,
         spiffs_files: list[dict] | None = None,
+        allowed_libraries: set[str] | None = None,
     ) -> dict:
         """
         Compile Arduino sketch using ESP-IDF.
@@ -1641,6 +1692,7 @@ class ESPIDFCompiler:
             return await self._compile_in_dir(
                 project_dir, files, idf_target, is_c3,
                 progress_callback, normalized_opts, spiffs_files,
+                allowed_libraries=allowed_libraries,
             )
 
         with tempfile.TemporaryDirectory(prefix='espidf_') as temp_dir:
@@ -1650,6 +1702,7 @@ class ESPIDFCompiler:
             return await self._compile_in_dir(
                 project_dir, files, idf_target, is_c3,
                 progress_callback, normalized_opts, spiffs_files,
+                allowed_libraries=allowed_libraries,
             )
 
     async def _compile_in_dir(
@@ -1661,6 +1714,7 @@ class ESPIDFCompiler:
         progress_callback: Optional[ProgressCallback] = None,
         board_options: dict | None = None,
         spiffs_files: list[dict] | None = None,
+        allowed_libraries: set[str] | None = None,
     ) -> dict:
         """Inner compile body: writes sketch + libs into `project_dir`,
         runs cmake + ninja, merges binaries. Caller is responsible for
@@ -1774,6 +1828,7 @@ class ESPIDFCompiler:
                 component_names, _ = self._resolve_library_components(
                     ext_headers, arduino_libs, esp32_libs,
                     arduino_comp_name, user_libs_dir,
+                    allowed_libraries=allowed_libraries,
                 )
 
             # Patch main/CMakeLists.txt — REQUIRES and INCLUDE_DIRS for user_libs_all.

@@ -55,6 +55,7 @@ def _job_key(
     board_fqbn: str,
     board_options: dict | None = None,
     spiffs_files: list[dict] | None = None,
+    libraries: list[str] | None = None,
 ) -> str:
     """Stable content hash of (files, board, options, spiffs) used as the
     deduplication key.
@@ -83,6 +84,12 @@ def _job_key(
             h.update(f["name"].encode())
             h.update(b"\0")
             h.update(f["content_b64"].encode())
+            h.update(b"\0")
+    if libraries:
+        # Manifest changes the resolved library set → different binary, so it
+        # must not dedup to a job built with a different manifest.
+        for name in sorted(libraries):
+            h.update(name.encode())
             h.update(b"\0")
     return h.hexdigest()
 
@@ -136,6 +143,11 @@ class CompileRequest(BaseModel):
     # User-uploaded files to bake into the SPIFFS partition (#162). Empty /
     # None means the SPIFFS region stays blank (current behaviour).
     spiffs_files: list[SpiffsFileBody] | None = None
+    # P2 — project library manifest (declared library names). When provided,
+    # ESP-IDF library resolution is SCOPED to this set: a user-installed lib is
+    # merged only if it's declared here, so a sketch never picks up an unrelated
+    # library from the shared dir. None / omitted = legacy scan-all (unchanged).
+    libraries: list[str] | None = None
 
 
 class CompileResponse(BaseModel):
@@ -202,6 +214,7 @@ async def _run_compile(
             progress_callback=progress_callback,
             board_options=request.board_options,
             spiffs_files=spiffs_dicts,
+            allowed_libraries=set(request.libraries) if request.libraries is not None else None,
         )
         return CompileResponse(
             success=result["success"],
@@ -470,7 +483,7 @@ async def compile_start(
     spiffs_dicts = (
         [f.model_dump() for f in request.spiffs_files] if request.spiffs_files else None
     )
-    key = _job_key(files, request.board_fqbn, request.board_options, spiffs_dicts)
+    key = _job_key(files, request.board_fqbn, request.board_options, spiffs_dicts, request.libraries)
     existing_id = JOB_BY_KEY.get(key)
     if existing_id is not None:
         existing = COMPILE_JOBS.get(existing_id)

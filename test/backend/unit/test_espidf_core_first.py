@@ -88,5 +88,56 @@ class TestCoreFirstResolution(unittest.TestCase):
         self.assertNotIn("Foo.h", hdr2comp)
 
 
+class TestManifestScope(unittest.TestCase):
+    """P2: when a project declares a library manifest, only declared libraries
+    are merged — a user-installed lib outside the manifest is never picked up,
+    even if its header is included. None manifest = legacy scan-all (unchanged)."""
+
+    def setUp(self) -> None:
+        self.tmp = Path(tempfile.mkdtemp())
+        self.ulibs = self.tmp / "Arduino" / "libraries"
+        # In-manifest lib, declared by Library Manager display name; on-disk
+        # folder name differs by separators/case (the realistic shape).
+        _mk(self.ulibs / "DHT_sensor_library" / "library.properties",
+            "name=DHT sensor library\n")
+        _mk(self.ulibs / "DHT_sensor_library" / "DHT.h")
+        _mk(self.ulibs / "DHT_sensor_library" / "DHT.cpp")
+        # Out-of-manifest lib (e.g. another user's install / a clash).
+        _mk(self.ulibs / "RandomOtherLib" / "Foo.h")
+        _mk(self.ulibs / "RandomOtherLib" / "Foo.cpp")
+        self.c = ESPIDFCompiler()
+        self.c.arduino_path = ""
+        self.c._core_headers_cache = None
+        self.out = self.tmp / "project" / "user_libs"
+        self.out.mkdir(parents=True)
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _resolve(self, headers, allowed):
+        return self.c._resolve_library_components(
+            headers, arduino_libs=self.ulibs, esp32_libs=None,
+            arduino_comp_name="arduino-esp32", user_libs_dir=self.out,
+            allowed_libraries=allowed,
+        )
+
+    def test_only_manifest_libs_merge(self):
+        # Manifest declares DHT (by display name) but not Foo's lib.
+        _, hdr2comp = self._resolve(["DHT.h", "Foo.h"], {"DHT sensor library"})
+        self.assertEqual(hdr2comp.get("DHT.h"), "user_libs_all")  # declared → merged
+        self.assertNotIn("Foo.h", hdr2comp)                       # undeclared → dropped
+
+    def test_none_manifest_is_scan_all(self):
+        # No manifest → legacy behaviour: both resolve.
+        _, hdr2comp = self._resolve(["DHT.h", "Foo.h"], None)
+        self.assertEqual(hdr2comp.get("DHT.h"), "user_libs_all")
+        self.assertEqual(hdr2comp.get("Foo.h"), "user_libs_all")
+
+    def test_match_by_folder_name(self):
+        # Manifest may also reference the on-disk folder name directly.
+        _, hdr2comp = self._resolve(["Foo.h"], {"RandomOtherLib"})
+        self.assertEqual(hdr2comp.get("Foo.h"), "user_libs_all")
+
+
 if __name__ == "__main__":
     unittest.main()
