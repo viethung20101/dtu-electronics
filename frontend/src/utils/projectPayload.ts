@@ -11,6 +11,7 @@ import type { BoardInstance } from '../types/board';
 import type { Wire } from '../types/wire';
 import { useEditorStore, chipFileGroupId } from '../store/useEditorStore';
 import { useSimulatorStore } from '../store/useSimulatorStore';
+import { useLibraryManifestStore } from '../store/useLibraryManifestStore';
 
 /**
  * Editor groups owned by programmable custom-chips on the canvas (those whose
@@ -107,6 +108,9 @@ export function buildSavePayload(meta: SnapshotInputs = {}): ProjectSaveData {
     components_json: JSON.stringify(sim.components),
     wires_json: JSON.stringify(sim.wires),
     boards_json: JSON.stringify(sim.boards.map(serialisableBoard)),
+    // P2.4 — persist the declared library manifest (compile scope) so reloading
+    // the project re-sends it. Empty when the project declares no libraries.
+    libraries_json: JSON.stringify(useLibraryManifestStore.getState().libraries ?? []),
   };
 }
 

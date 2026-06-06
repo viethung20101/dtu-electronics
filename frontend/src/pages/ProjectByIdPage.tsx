@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getProjectById } from '../services/projectService';
 import { useSimulatorStore } from '../store/useSimulatorStore';
 import { useProjectStore } from '../store/useProjectStore';
+import { useLibraryManifestStore } from '../store/useLibraryManifestStore';
 import { useSEO } from '../utils/useSEO';
 import { EditorPage } from './EditorPage';
 import type { BoardInstance, BoardKind } from '../types/board';
@@ -56,6 +57,14 @@ export const ProjectByIdPage: React.FC = () => {
       .then((project) => {
         const payload = buildLoadPayload(project);
         loadProjectState(payload);
+        // P2.4 — restore the declared library manifest (compile scope), also
+        // clearing any stale example manifest from before this load.
+        try {
+          const libs = JSON.parse(project.libraries_json || '[]');
+          useLibraryManifestStore.getState().setLibraries(Array.isArray(libs) ? libs : null);
+        } catch {
+          useLibraryManifestStore.getState().setLibraries(null);
+        }
         setCurrentProject({
           id: project.id,
           slug: project.slug,
