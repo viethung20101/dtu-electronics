@@ -128,4 +128,18 @@ describe('digital-gate-engine Phase 1 — real examples on the engine', () => {
       expect(r.cout, `${label} carry`).toBe(cout);
     }
   });
+
+  it('digital-ripple-counter-4bit: clocking the switch counts up in binary', () => {
+    const ex = byId('digital-ripple-counter-4bit');
+    const net = buildDigitalNetwork(ex.components, ex.wires);
+    expect(net.ok).toBe(true);
+    const read = () => [0, 1, 2, 3].reduce((acc, i) => acc + (net.readLed(`cnt_led${i}`) << i), 0);
+    expect(read(), 'starts at 0').toBe(0);
+    // Each LOW->HIGH on the clock switch advances the count. Wrap at 16.
+    for (let n = 1; n <= 17; n++) {
+      net.setSwitch('cnt_clk', 1);
+      net.setSwitch('cnt_clk', 0);
+      expect(read(), `after ${n} clocks`).toBe(n % 16);
+    }
+  });
 });
