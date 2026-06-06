@@ -298,3 +298,123 @@ export function buildDigitalNetwork(
     ledIds,
   };
 }
+
+// ── Phase 3: mixed digital/analog boundary ──────────────────────────────────
+
+export interface MixedNetwork {
+  ok: boolean;
+  pinManager: PinManager;
+  netOf(componentId: string, pin: string): number | undefined;
+  readNet(net: number): 0 | 1;
+  setSwitch(switchId: string, value: 0 | 1): void;
+  /** Nets that bridge a digital pin (gate/switch) and an analog pin. These are
+   *  where the two motors hand off. */
+  boundaryNets: number[];
+  /** Digital-side level of a boundary net — what to drive into ngspice as a
+   *  0 / Vcc voltage source on that node (digital -> analog). */
+  readBoundary(net: number): 0 | 1;
+  /** Push an analog-side level (ngspice's threshold-converted node voltage) onto
+   *  a boundary net so the gates downstream re-evaluate (analog -> digital). */
+  setBoundaryInput(net: number, level: 0 | 1): void;
+}
+
+/**
+ * Build the digital half of a MIXED circuit and expose its boundary with the
+ * analog (ngspice) domain. Unlike buildDigitalNetwork it does NOT bail on
+ * non-primitive components — those are the analog side; their pins simply mark
+ * the nets they touch as boundary. The caller (the ngspice coupler) reads the
+ * digital-driven boundary nets to seed voltage sources, and pushes ngspice's
+ * solved+thresholded boundary voltages back via setBoundaryInput, iterating to a
+ * fixed point. Settle on the digital side is the same exact kernel as the
+ * all-digital path.
+ *
+ * Phase 3 core: the boundary handoff + digital settle, verifiable headlessly
+ * (the analog side is supplied by the test). Wiring it to the live ngspice
+ * netlist is the follow-up (needs the browser solver; the node loader is broken
+ * by a pre-existing path bug).
+ */
+export function buildMixedNetwork(
+  components: DigitalComponent[],
+  wires: DigitalWire[],
+  pinManager?: PinManager,
+): MixedNetwork {
+  const pm = pinManager ?? new PinManager();
+  const byId = new Map(components.map((c) => [c.id, c]));
+  const uf = new UnionFind();
+  for (const w of wires) uf.union(epKey(w.start.componentId, w.start.pinName), epKey(w.end.componentId, w.end.pinName));
+  const pinNet = (id: string, pin: string) => uf.find(epKey(id, pin));
+
+  const gndRoots = new Set<string>();
+  const railRoots = new Set<string>();
+  for (const c of components) {
+    if (isPower(kindOf(c))) { gndRoots.add(pinNet(c.id, 'GND')); railRoots.add(pinNet(c.id, 'SIG')); }
+  }
+  const isGnd = (r: string) => gndRoots.has(r);
+  const isRail = (r: string) => railRoots.has(r);
+
+  const keyOf = new Map<string, number>();
+  let nextKey = 1;
+  const netKey = (id: string, pin: string): number => {
+    const root = pinNet(id, pin);
+    let k = keyOf.get(root);
+    if (k === undefined) { k = nextKey++; keyOf.set(root, k); }
+    return k;
+  };
+  const netOf = (id: string, pin: string): number | undefined => (byId.has(id) ? netKey(id, pin) : undefined);
+
+  // Classify each net root by who touches it, walking wire endpoints.
+  const hasDigital = new Set<string>();
+  const hasAnalog = new Set<string>();
+  const mark = (compId: string, pin: string) => {
+    const c = byId.get(compId);
+    if (!c) return;
+    const k = kindOf(c);
+    const root = pinNet(compId, pin);
+    if (isGate(k) || isSwitch(k) || isLed(k)) hasDigital.add(root);
+    else if (!isPower(k) && !isResistor(k)) hasAnalog.add(root); // non-primitive = analog
+  };
+  for (const w of wires) { mark(w.start.componentId, w.start.pinName); mark(w.end.componentId, w.end.pinName); }
+
+  // Static rail/gnd + switches + gates (same model as the all-digital path).
+  for (const c of components) {
+    if (isPower(kindOf(c))) {
+      setBusDrive(pm, netKey(c.id, 'SIG'), `${c.id}::SIG`, STRONG(1));
+      setBusDrive(pm, netKey(c.id, 'GND'), `${c.id}::GND`, STRONG(0));
+    }
+  }
+  const switchState = new Map<string, 0 | 1>();
+  const driveSwitch = (c: DigitalComponent) => {
+    const closed = switchState.get(c.id) ?? (Number(c.properties?.value) === 1 ? 1 : 0);
+    const n1 = netKey(c.id, '1'), n2 = netKey(c.id, '2');
+    const [src, dst] = isRail(pinNet(c.id, '1')) ? [n1, n2] : [n2, n1];
+    if (closed) setBusDrive(pm, dst, `${c.id}::pass`, STRONG(pm.getPinState(src) ? 1 : 0));
+    else setBusDrive(pm, dst, `${c.id}::pass`, { value: 0, strength: Strength.HIGHZ });
+  };
+  for (const c of components) if (isSwitch(kindOf(c))) driveSwitch(c);
+  for (const c of components) {
+    if (!isGate(kindOf(c))) continue;
+    const spec = parseGate(kindOf(c));
+    if (!spec) continue;
+    const inNets = spec.inputs.map((p) => netKey(c.id, p));
+    const outNet = netKey(c.id, 'Y');
+    const st = inNets.map((n) => pm.getPinState(n));
+    const update = () => setBusDrive(pm, outNet, `${c.id}::Y`, STRONG(spec.fn(st) ? 1 : 0));
+    inNets.forEach((n, i) => pm.onPinChange(n, (_p, s) => { st[i] = s; update(); }));
+    update();
+  }
+  for (const c of components) if (isSwitch(kindOf(c))) driveSwitch(c);
+
+  const boundaryRoots = [...hasDigital].filter((r) => hasAnalog.has(r));
+  const boundaryNets = boundaryRoots.map((root) => { const k = keyOf.get(root); return k ?? (keyOf.set(root, nextKey).get(root), nextKey++); });
+
+  return {
+    ok: true,
+    pinManager: pm,
+    netOf,
+    readNet: (net) => (pm.getPinState(net) ? 1 : 0),
+    setSwitch: (switchId, value) => { switchState.set(switchId, value); const c = byId.get(switchId); if (c) driveSwitch(c); },
+    boundaryNets,
+    readBoundary: (net) => (pm.getPinState(net) ? 1 : 0),
+    setBoundaryInput: (net, level) => setBusDrive(pm, net, `analog::${net}`, STRONG(level)),
+  };
+}
