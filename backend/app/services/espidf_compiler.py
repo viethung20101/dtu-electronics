@@ -766,6 +766,31 @@ class ESPIDFCompiler:
                 headers.append(h)
         return headers
 
+    @staticmethod
+    def _is_transient_build_failure(result: dict) -> bool:
+        """True if a failed compile looks like infrastructure flakiness (cmake
+        configure, ESP-IDF nested bootloader / managed-components, a missing
+        generated sdkconfig.h, a failed CORE esp-idf object) rather than the
+        user's sketch. Such failures hit occasionally on a cold variant build
+        and clear on a retry — and are NEVER caused by user code, so retrying
+        is safe."""
+        if result.get('success'):
+            return False
+        text = (
+            str(result.get('error') or '') + '\n'
+            + str(result.get('stderr') or '') + '\n'
+            + str(result.get('stdout') or '')
+        ).lower()
+        markers = (
+            'managed_components_list.temp.cmake',
+            'cmake configure failed',
+            'sdkconfig.h: no such file',
+            'ninja: error',
+            'esp-idf/bootloader',
+            'cmake error',
+        )
+        return any(m in text for m in markers)
+
     def _suggest_libraries_for_headers(self, headers: list[str]) -> dict:
         """For each missing header, the installed libraries that provide it
         (by Library Manager display name, else folder name). Returns
@@ -1797,7 +1822,21 @@ class ESPIDFCompiler:
                     allowed_libraries=allowed,
                 )
 
-        result = await _attempt(allowed_libraries)
+        async def _attempt_safe(allowed: set[str] | None) -> dict:
+            # Retry ONCE on a clearly-transient infrastructure failure (cmake /
+            # nested bootloader / managed-components / sdkconfig) — never on a
+            # user-code error. These hit occasionally on a cold variant build;
+            # a retry resumes the now-warmer build dir and succeeds. Cheap via
+            # ccache + ninja incremental.
+            r = await _attempt(allowed)
+            if not r.get('success') and self._is_transient_build_failure(r):
+                logger.warning('[espidf] transient build failure; retrying once')
+                r2 = await _attempt(allowed)
+                if r2.get('success') or not self._is_transient_build_failure(r2):
+                    return r2
+            return r
+
+        result = await _attempt_safe(allowed_libraries)
 
         # Graceful fallback (P2). A manifest-scoped compile that fails because a
         # header isn't in the manifest (an undeclared / transitive dependency)
@@ -1813,7 +1852,7 @@ class ESPIDFCompiler:
                     f'[espidf] scoped compile missing {missing} (not in manifest) — '
                     f'retrying scan-all'
                 )
-                retry = await _attempt(None)
+                retry = await _attempt_safe(None)
                 if retry.get('success'):
                     retry['manifest_incomplete'] = True
                     retry['manifest_suggested_libraries'] = (
