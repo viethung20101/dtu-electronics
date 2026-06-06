@@ -859,39 +859,42 @@ void loop() {
   {
     id: 'and-gate-alarm',
     title: 'AND Gate Alarm',
-    description: 'Buzzer sounds only when BOTH buttons are pressed (AND logic).',
+    description:
+      'Two arming switches feed an AND gate — the alarm LED lights ONLY when BOTH ' +
+      'are ON (e.g. both doors closed). They are slide switches, so they latch: ' +
+      'slide each one ON and it stays, so you can hold both at once. Pure logic, ' +
+      'no MCU — runs on the digital gate engine.',
     category: 'circuits',
     difficulty: 'beginner',
-    code: `// AND gate alarm — MCU buffers buttons, physical AND gate drives LED
-void setup() {
-  pinMode(2, INPUT_PULLUP); pinMode(3, INPUT_PULLUP);
-  pinMode(5, OUTPUT);       pinMode(6, OUTPUT);
-}
-void loop() {
-  digitalWrite(5, !digitalRead(2)); // HIGH when btn1 pressed
-  digitalWrite(6, !digitalRead(3)); // HIGH when btn2 pressed
-}`,
+    boardFilter: 'digital',
+    code: `// Pure digital circuit — no MCU. Slide BOTH switches ON to arm the alarm.
+void setup() {}
+void loop()  {}`,
     components: [
-      UNO,
-      { type: 'wokwi-pushbutton', id: 'btn1', x: 260, y: 80, properties: {} },
-      { type: 'wokwi-pushbutton', id: 'btn2', x: 260, y: 180, properties: {} },
-      { type: 'velxio-logic-gate-and', id: 'u1', x: 400, y: 130, properties: {} },
-      { type: 'wokwi-resistor', id: 'rl', x: 520, y: 60, properties: { value: '220' } },
-      { type: 'wokwi-led', id: 'led1', x: 520, y: 160, properties: { color: 'red' } },
+      { type: 'wokwi-signal-generator', id: 'src', x: 40, y: 200, properties: { waveform: 'dc', offset: 5, amplitude: 0, frequency: 1 } },
+      { type: 'wokwi-slide-switch', id: 'sw1', x: 220, y: 90, properties: { value: 0 } },
+      { type: 'wokwi-slide-switch', id: 'sw2', x: 220, y: 250, properties: { value: 0 } },
+      { type: 'wokwi-resistor', id: 'rpd1', x: 340, y: 140, properties: { value: '10000' } },
+      { type: 'wokwi-resistor', id: 'rpd2', x: 340, y: 300, properties: { value: '10000' } },
+      { type: 'velxio-logic-gate-and', id: 'u1', x: 470, y: 170, properties: {} },
+      { type: 'wokwi-resistor', id: 'rl', x: 620, y: 130, properties: { value: '220' } },
+      { type: 'wokwi-led', id: 'led1', x: 620, y: 220, properties: { color: 'red' } },
     ],
     wires: [
-      // Buttons → MCU inputs (pin 2 / 3)
-      w('w1', ['arduino-uno', '2'], ['btn1', '1.l']),
-      w('w2', ['btn1', '2.l'], ['arduino-uno', 'GND'], '#000000'),
-      w('w3', ['arduino-uno', '3'], ['btn2', '1.l']),
-      w('w4', ['btn2', '2.l'], ['arduino-uno', 'GND'], '#000000'),
-      // MCU output pins drive gate inputs
-      w('w5', ['arduino-uno', '5'], ['u1', 'A']),
-      w('w6', ['arduino-uno', '6'], ['u1', 'B']),
-      // Gate Y → Rl → LED → GND
-      w('w7', ['u1', 'Y'], ['rl', '1']),
-      w('w8', ['rl', '2'], ['led1', 'A']),
-      w('w9', ['led1', 'C'], ['arduino-uno', 'GND'], '#000000'),
+      // Switch 1 → AND input A (slide ON = rail HIGH; pull-down holds it LOW when OFF)
+      w('w1', ['src', 'SIG'], ['sw1', '1'], '#ff3030'),
+      w('w2', ['sw1', '2'], ['u1', 'A']),
+      w('w3', ['sw1', '2'], ['rpd1', '1']),
+      w('w4', ['rpd1', '2'], ['src', 'GND'], '#000000'),
+      // Switch 2 → AND input B
+      w('w5', ['src', 'SIG'], ['sw2', '1'], '#ff3030'),
+      w('w6', ['sw2', '2'], ['u1', 'B']),
+      w('w7', ['sw2', '2'], ['rpd2', '1']),
+      w('w8', ['rpd2', '2'], ['src', 'GND'], '#000000'),
+      // AND output → series resistor → alarm LED → GND
+      w('w9', ['u1', 'Y'], ['rl', '1']),
+      w('w10', ['rl', '2'], ['led1', 'A']),
+      w('w11', ['led1', 'C'], ['src', 'GND'], '#000000'),
     ],
   },
 
