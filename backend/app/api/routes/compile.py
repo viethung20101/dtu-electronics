@@ -205,6 +205,7 @@ async def _run_compile(
     request: CompileRequest,
     files: list[dict[str, str]],
     progress_callback: Any = None,
+    requester_id: str | None = None,
 ) -> CompileResponse:
     """Do the actual compile (ESP-IDF for esp32:*, arduino-cli otherwise).
 
@@ -234,10 +235,13 @@ async def _run_compile(
             project_libs = await get_project_libraries(request.project_id)
             if project_libs:
                 allowed_libraries = set(project_libs)
-        # P2.2 — the OWNER of the project (not the requester) owns any per-user
-        # custom libraries the manifest references, so resolve the owner so the
-        # scope materializer can find them. None for unsaved/anon compiles.
+        # P2.2 — resolve whose per-user custom libraries the manifest may
+        # reference: the project OWNER for a saved project (so a shared/embed
+        # compile finds that owner's libs), else the REQUESTER for an unsaved
+        # compile (the libs they just uploaded are their own). None for anon.
         owner_id = await get_project_owner(request.project_id)
+        if owner_id is None:
+            owner_id = requester_id
         result = await espidf_compiler.compile(
             files, request.board_fqbn,
             progress_callback=progress_callback,
@@ -368,6 +372,7 @@ async def _compile_job(
                 COMPILE_JOBS[job_id]["state"] = "running"
                 response = await _run_compile(
                     request, files, progress_callback=on_progress_line,
+                    requester_id=user_id,
                 )
         COMPILE_JOBS[job_id] = {
             "state": "done",
@@ -440,7 +445,7 @@ async def compile_sketch(
     files = _resolve_files(request)
     started = time.monotonic()
     try:
-        response = await _run_compile(request, files)
+        response = await _run_compile(request, files, requester_id=user_id)
     except Exception as e:
         await record_compile(
             user_id=user_id,

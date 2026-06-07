@@ -256,6 +256,22 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
     return () => window.removeEventListener('velxio-open-library-manager', toProject);
   }, []);
 
+  // P2.2 — a custom .zip upload lands in the user's PER-USER store (not the
+  // shared dir), so auto-declare it on the active board (velxio.json) and show
+  // the Project tab; the compile then resolves it via the owner per-user path.
+  useEffect(() => {
+    const onUploaded = (e: Event) => {
+      const name = (e as CustomEvent).detail?.library;
+      if (name) {
+        addToManifest(name);
+        setActiveTab('project');
+      }
+      fetchInstalled();
+    };
+    window.addEventListener('velxio-custom-library-installed', onUploaded);
+    return () => window.removeEventListener('velxio-custom-library-installed', onUploaded);
+  }, [addToManifest, fetchInstalled]);
+
   // Keep the raw velxio.json draft in sync with the manifest while not editing.
   useEffect(() => {
     setJsonDraft(JSON.stringify({ libraries: manifestLibs ?? [] }, null, 2));
