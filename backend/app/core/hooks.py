@@ -175,30 +175,39 @@ def materialize_library_scope(
         return None
 
 
-# ── get_project_owner ─────────────────────────────────────────────────────────
-# Resolve a project's OWNER user-id from its id (the value stored as user_id on
-# the project record). Used so a compile resolves the OWNER's per-user custom
-# libraries, not the requester's. Returns None for an unknown project or when no
-# overlay is loaded.
+# ── resolve_compile_owner ─────────────────────────────────────────────────────
+# Resolve WHOSE per-user custom libraries a compile may resolve for a project —
+# applying a VISIBILITY gate. A compile of a saved project resolves the OWNER's
+# custom libraries (so a shared / embed compile of someone's PUBLIC project still
+# finds that owner's uploaded libs), but a requester must NOT be able to pull
+# another user's PRIVATE custom libraries by supplying that user's project_id.
+# The overlay returns the project owner ONLY when the requester IS the owner OR
+# the project is shareable (public / unlisted); otherwise None, and the caller
+# falls back to the requester's OWN store. `requester_id` is the authenticated
+# caller (None for anon). Returns None for an unknown project or no overlay.
 
-GetProjectOwnerHook = Callable[[str], Awaitable[Optional[str]]]
+ResolveCompileOwnerHook = Callable[[str, Optional[str]], Awaitable[Optional[str]]]
 
-_get_project_owner_hook: Optional[GetProjectOwnerHook] = None
-
-
-def register_get_project_owner(hook: GetProjectOwnerHook) -> None:
-    """Install the project-owner resolver. Called by overlays in register_pro."""
-    global _get_project_owner_hook
-    _get_project_owner_hook = hook
+_resolve_compile_owner_hook: Optional[ResolveCompileOwnerHook] = None
 
 
-async def get_project_owner(project_id: Optional[str]) -> Optional[str]:
-    if _get_project_owner_hook is None or not project_id:
+def register_resolve_compile_owner(hook: ResolveCompileOwnerHook) -> None:
+    """Install the visibility-gated compile-owner resolver. Called in register_pro."""
+    global _resolve_compile_owner_hook
+    _resolve_compile_owner_hook = hook
+
+
+async def resolve_compile_owner(
+    project_id: Optional[str], requester_id: Optional[str]
+) -> Optional[str]:
+    if _resolve_compile_owner_hook is None or not project_id:
         return None
     try:
-        return await _get_project_owner_hook(project_id)
+        return await _resolve_compile_owner_hook(project_id, requester_id)
     except Exception:
-        logger.exception("get_project_owner hook failed (treating as no owner)")
+        # Fail closed: on any error resolve no foreign owner (caller falls back
+        # to the requester's own store), never leak another user's libraries.
+        logger.exception("resolve_compile_owner hook failed (treating as requester-only)")
         return None
 
 

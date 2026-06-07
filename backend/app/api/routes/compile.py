@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from app.core.hooks import (
     get_current_user_id,
     get_project_libraries,
-    get_project_owner,
+    resolve_compile_owner,
     record_compile,
 )
 from app.services.arduino_cli import ArduinoCLIService
@@ -234,19 +234,29 @@ async def _resolve_compile_scope(
 
     Owner = whose per-user custom libraries the manifest may reference: the
     project OWNER for a saved project (so a shared/embed compile finds that
-    owner's libs), else the REQUESTER for an unsaved compile (the libs they just
-    uploaded are their own). None for anon.
+    owner's libs) — but ONLY when the requester is the owner or the project is
+    shareable (public/unlisted), so a private project's custom libs are never
+    reachable by another user (resolve_compile_owner enforces this gate). Falls
+    back to the REQUESTER for an unsaved / private-non-owner / anon compile (the
+    libs they just uploaded are their own).
     """
+    # Resolve the visibility-gated owner FIRST: a non-None result means the
+    # requester may read THIS project's server-side state (it is their own, or
+    # public/unlisted). That same gate decides whether the saved-project manifest
+    # may be honored — so a PRIVATE project's declared library NAMES are never
+    # exposed to a non-owner via the server-side fallback (symmetry with the
+    # owner-bytes gate; P2.2-sec).
+    gated_owner = await resolve_compile_owner(request.project_id, requester_id)
+
     allowed_libraries: set[str] | None = None
     if request.libraries:
         allowed_libraries = set(request.libraries)
-    else:
+    elif gated_owner is not None:
         project_libs = await get_project_libraries(request.project_id)
         if project_libs:
             allowed_libraries = set(project_libs)
-    owner_id = await get_project_owner(request.project_id)
-    if owner_id is None:
-        owner_id = requester_id
+
+    owner_id = gated_owner if gated_owner is not None else requester_id
     return allowed_libraries, owner_id
 
 
