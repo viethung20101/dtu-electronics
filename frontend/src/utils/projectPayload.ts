@@ -97,6 +97,13 @@ export function buildSavePayload(meta: SnapshotInputs = {}): ProjectSaveData {
   }));
   const fileGroups = [...boardGroups, ...chipGroups];
 
+  // P2.4 — declared library manifest (compile scope). Persist it ONLY when it
+  // is explicitly known (non-null). null means "unknown" — e.g. a reloaded
+  // project whose manifest wasn't restored into the store — so we OMIT the
+  // field and the backend preserves the saved manifest instead of clobbering
+  // it to []. The compiler reads the saved manifest server-side regardless.
+  const manifestLibs = useLibraryManifestStore.getState().libraries;
+
   return {
     name: meta.name ?? '',
     description: meta.description,
@@ -108,9 +115,7 @@ export function buildSavePayload(meta: SnapshotInputs = {}): ProjectSaveData {
     components_json: JSON.stringify(sim.components),
     wires_json: JSON.stringify(sim.wires),
     boards_json: JSON.stringify(sim.boards.map(serialisableBoard)),
-    // P2.4 — persist the declared library manifest (compile scope) so reloading
-    // the project re-sends it. Empty when the project declares no libraries.
-    libraries_json: JSON.stringify(useLibraryManifestStore.getState().libraries ?? []),
+    ...(manifestLibs !== null ? { libraries_json: JSON.stringify(manifestLibs) } : {}),
   };
 }
 
