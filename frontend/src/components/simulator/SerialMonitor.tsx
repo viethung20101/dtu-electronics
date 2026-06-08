@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
 import { getTabSessionId } from '../../simulation/Esp32Bridge';
 import type { BoardKind } from '../../types/board';
-import { BOARD_KIND_LABELS } from '../../types/board';
+import { boardDisplayName } from '../../types/board';
 
 // Short labels for tabs
 const BOARD_SHORT_LABEL: Partial<Record<string, string>> = {
@@ -207,12 +207,12 @@ export const SerialMonitor: React.FC = () => {
                 ...(isActive ? { ...styles.tabActive, borderBottomColor: color, color } : {}),
               }}
               onClick={() => handleTabClick(board.id)}
-              title={BOARD_KIND_LABELS[board.boardKind]}
+              title={boardDisplayName(board)}
             >
               <span style={{ fontSize: 9, marginRight: 3, color: isActive ? color : '#888' }}>
                 {BOARD_ICON[board.boardKind] ?? '●'}
               </span>
-              {BOARD_SHORT_LABEL[board.boardKind] ?? board.boardKind}
+              {board.name?.trim() || BOARD_SHORT_LABEL[board.boardKind] || board.boardKind}
               {hasUnread && !isActive && <span style={styles.unreadDot} />}
             </button>
           );

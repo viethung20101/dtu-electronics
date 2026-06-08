@@ -25,6 +25,8 @@ import {
   type PinResolver,
 } from '../simulation/PinResolver';
 import { BOARD_PIN_GROUPS } from '../simulation/spice/boardPinGroups';
+import { syntheticChipPin } from '../simulation/customChips/syntheticPins';
+import { resolveChipNetKey } from '../simulation/customChips/chipNets';
 import { getMixedModeScheduler } from '../simulation/spice/MixedModeScheduler';
 import { getBoardLogicFamily } from '../simulation/LogicFamilies';
 
@@ -99,10 +101,18 @@ for (const [preset, base] of Object.entries(PRESET_TO_BASE)) {
 
 type TraceState = ReturnType<typeof useSimulatorStore.getState>;
 
+// Custom-chip output pins get stable synthetic pin numbers from
+// simulation/customChips/syntheticPins so the chip is a first-class pin source.
+
 // Depth-limited BFS: trace from (fromId, fromPin) through wires, traversing
 // through passive components to reach a board pin.  Returns the arduino pin
 // plus a `crossedActiveDevice` flag so the resolver factory can decide
 // between digital fast-path and SPICE-resolved per-pin.
+//
+// A real board pin always wins (digital GPIO semantics are unchanged). Only
+// when NO board pin is reachable do we fall back to a custom-chip pin on the
+// net — either a neighbour chip pin, or (when the trace itself started at a
+// chip pin) the starting chip pin — resolving it to its synthetic number.
 //
 // Lifted to module scope (was inside getArduinoPin) so that getPinResolver
 // can call it too — the previous nested-scope version caused a runtime
@@ -122,6 +132,10 @@ function traceDetailed(
       (w.end.componentId === fromId && w.end.pinName === fromPin),
   );
 
+  // Remember a custom-chip neighbour on this net (if any) as a fallback —
+  // a real board pin found in any branch still takes priority over it.
+  let chipNeighbour: { id: string; pin: string } | null = null;
+
   for (const w of wires) {
     const selfEp =
       w.start.componentId === fromId && w.start.pinName === fromPin ? w.start : w.end;
@@ -135,6 +149,9 @@ function traceDetailed(
       if (pin !== null) return { arduinoPin: pin, crossedActiveDevice: activeSeen };
     } else {
       const comp = state.components.find((c) => c.id === otherEp.componentId);
+      if (!chipNeighbour && comp?.metadataId === 'custom-chip') {
+        chipNeighbour = { id: otherEp.componentId, pin: otherEp.pinName };
+      }
       const pair = comp && PASSIVE_PIN_PAIRS[comp.metadataId];
       if (pair) {
         const [p1, p2] = pair;
@@ -151,6 +168,35 @@ function traceDetailed(
         if (result.arduinoPin !== null) return result;
       }
     }
+  }
+
+  // No board pin reachable. Multi-chip digital bus (chipbus flag, Phase 0 of
+  // project/multichip-bus/): when this net has two or more chip endpoints and
+  // no board pin, collapse every endpoint onto ONE net-canonical synthetic key
+  // so a write on one chip is visible to another through the synchronous
+  // PinManager fan-out (fixes root cause A: per-endpoint keys never matching).
+  // resolveChipNetKey returns null when the flag is off, when a board owns the
+  // net, or when there is a single chip endpoint — so the chip-to-component
+  // rules below (2 and 3) are left exactly as-is. Scoped to depth 0 (the
+  // starting chip pin); the key is net-bound, so a pin flipping INPUT<->OUTPUT
+  // keeps the same key with no re-trace.
+  if (depth === 0) {
+    const netKey = resolveChipNetKey(state, fromId, fromPin);
+    if (netKey !== null) {
+      return { arduinoPin: netKey, crossedActiveDevice: activeSeen };
+    }
+  }
+
+  // No board pin reachable. Fall back to a custom-chip pin on this net so the
+  // chip can still drive / read it through the synthetic-pin PinManager key.
+  if (chipNeighbour) {
+    return {
+      arduinoPin: syntheticChipPin(chipNeighbour.id, chipNeighbour.pin),
+      crossedActiveDevice: activeSeen,
+    };
+  }
+  if (depth === 0 && state.components.find((c) => c.id === fromId)?.metadataId === 'custom-chip') {
+    return { arduinoPin: syntheticChipPin(fromId, fromPin), crossedActiveDevice: activeSeen };
   }
   return { arduinoPin: null, crossedActiveDevice: activeSeen };
 }
@@ -399,10 +445,17 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
         ({
           setPinState: () => {},
           isRunning: () => false,
-          pinManager: {
-            onPinChange: () => () => {},
-            triggerPinChange: () => {},
-          } as any,
+          // Board-less circuits have no MCU simulator, but a custom chip still
+          // needs a real PinManager so its digital pin writes/reads reach the
+          // components wired to it (LEDs, buttons, other chips). Hand it the
+          // shared flat PinManager that SimulatorCanvas subscribes LEDs to, so
+          // both sides talk on the same numeric/synthetic pin ids. Falls back
+          // to a no-op only if even that isn't ready yet.
+          pinManager:
+            (useSimulatorStore.getState().pinManager as any) ?? {
+              onPinChange: () => () => {},
+              triggerPinChange: () => {},
+            },
         } as any);
       // Helper to find Arduino pin connected to a component pin.
       // Traces through electrically-transparent passive components so that a

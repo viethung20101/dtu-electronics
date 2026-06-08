@@ -75,6 +75,10 @@ export interface BleStatus {
 
 export interface BoardInstance {
   id: string; // unique in canvas, e.g. 'arduino-uno', 'raspberry-pi-3'
+  /** Optional user-given display name. Falls back to the kind label when
+   *  empty. Lets the user tell two same-kind boards apart in the file
+   *  explorer, the compile console, and the canvas selector. */
+  name?: string;
   boardKind: BoardKind;
   x: number;
   y: number;
@@ -94,6 +98,11 @@ export interface BoardInstance {
   // Types live in `./boardOptions` to avoid a circular import.
   boardOptions?: import('./boardOptions').ESP32BoardOptions;
   spiffsFiles?: import('./boardOptions').SpiffsFile[];
+  // P2.4 — this board's declared library manifest (its velxio.json). The ESP32
+  // compile scope: each board resolves ONLY its own declared libraries, so two
+  // boards in the same project can use different (even conflicting) libraries
+  // without clashing. Undefined for pre-feature boards (-> legacy scan-all).
+  libraries?: string[];
 }
 
 export const BOARD_KIND_LABELS: Record<BoardKind, string> = {
@@ -128,6 +137,13 @@ export const BOARD_KIND_LABELS: Record<BoardKind, string> = {
   'stm32-netduino2': 'Netduino 2',
   attiny85: 'ATtiny85',
 };
+
+/** Display name for a board instance: the user's custom name if set, else the
+ *  kind label. Route every user-facing board label through this so renamed
+ *  boards show their name everywhere (file explorer, compile console, canvas). */
+export function boardDisplayName(board: Pick<BoardInstance, 'name' | 'boardKind'>): string {
+  return board.name?.trim() || BOARD_KIND_LABELS[board.boardKind];
+}
 
 export const BOARD_KIND_FQBN: Record<BoardKind, string | null> = {
   'arduino-uno': 'arduino:avr:uno',

@@ -22,6 +22,7 @@ import { BoardOnCanvas } from './BoardOnCanvas';
 import { CanvasMinimap } from './CanvasMinimap';
 import { PartSimulationRegistry } from '../../simulation/parts';
 import { PROPERTY_CHANGE_EVENT, type PropertyChangeDetail } from '../../simulation/parts/partUtils';
+import { mountDigitalGateEngine } from '../../simulation/digital/digitalGateController';
 import { isSpiceMapped } from '../../simulation/spice/componentToSpice';
 import { PinOverlay } from './PinOverlay';
 import { isBoardComponent, boardPinToNumber } from '../../utils/boardPinMapping';
@@ -42,7 +43,7 @@ import {
 import { useIsCoarsePointer } from '../../utils/useTouchDevice';
 import type { ComponentMetadata } from '../../types/component-metadata';
 import type { BoardKind } from '../../types/board';
-import { BOARD_KIND_FQBN, BOARD_KIND_LABELS } from '../../types/board';
+import { BOARD_KIND_FQBN, boardDisplayName } from '../../types/board';
 import { boardGateDecision, proBoardFeatureName, triggerProUpgradePrompt } from '../../lib/proBoardGate';
 import { FlashModal } from './FlashModal';
 import { isTauri as isTauriRuntimeFn } from '../../desktop/tauriBridge';
@@ -286,6 +287,16 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   runningRef.current = running;
   const interactionRunningRef = useRef(interactionRunning);
   interactionRunningRef.current = interactionRunning;
+
+  // When a run starts the canvas becomes interact-only — drop any edit
+  // selection so leftover wire/segment handles don't linger over the circuit.
+  useEffect(() => {
+    if (interactionRunning) {
+      setSelectedWire(null);
+      setSelectedComponentId(null);
+    }
+  }, [interactionRunning, setSelectedWire]);
+
   const componentsRef = useRef(components);
   componentsRef.current = components;
   const boardPositionRef = useRef(boardPosition);
@@ -422,6 +433,12 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     window.addEventListener(PROPERTY_CHANGE_EVENT, onPropertyChange);
     return () => window.removeEventListener(PROPERTY_CHANGE_EVENT, onPropertyChange);
   }, []);
+
+  // Digital-gate engine (project/digital-gate-engine): when ?digitalgates=on and
+  // the board-less circuit is all-digital, evaluate the logic gates on the
+  // event-driven settle kernel and paint the LEDs, instead of ngspice B-sources.
+  // No-op when the flag is off (default).
+  useEffect(() => mountDigitalGateEngine(), []);
 
   // Auto-start/stop Pi bridges when simulation state changes
   const startBoard = useSimulatorStore((s) => s.startBoard);
@@ -941,7 +958,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       }
 
       // ── Short tap on empty canvas: wire selection + double-tap inserts waypoint ──
-      if (isShortTap) {
+      // Disabled while running — the canvas is interact-only then.
+      if (isShortTap && !interactionRunningRef.current) {
         const now = Date.now();
         const world = toWorld(changed.clientX, changed.clientY);
         const baseThreshold = isTouchDeviceRef.current ? 20 : 8;
@@ -1434,8 +1452,9 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       return;
     }
 
-    // Wire hover detection (when not dragging anything)
-    if (!draggedComponentId) {
+    // Wire hover detection (when not dragging anything). Skipped while running —
+    // wires aren't selectable then, so they shouldn't highlight as hoverable.
+    if (!draggedComponentId && !interactionRunningRef.current) {
       const world = toWorld(e.clientX, e.clientY);
       const threshold = 8 / zoomRef.current;
       const wire = findWireNearPoint(wiresRef.current, world.x, world.y, threshold);
@@ -1614,6 +1633,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     (e: React.MouseEvent, segIndex: number) => {
       e.stopPropagation();
       e.preventDefault();
+      if (interactionRunningRef.current) return; // interact-only while running
       if (!selectedWireId) return;
       const wire = wiresRef.current.find((w) => w.id === selectedWireId);
       if (!wire) return;
@@ -1636,6 +1656,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   const handleHandleTouchStart = useCallback(
     (e: React.TouchEvent, segIndex: number) => {
       e.stopPropagation();
+      if (interactionRunningRef.current) return;
       if (!selectedWireId) return;
       const wire = wiresRef.current.find((w) => w.id === selectedWireId);
       if (!wire) return;
@@ -1659,6 +1680,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
     (e: React.MouseEvent, waypointIndex: number) => {
       e.stopPropagation();
       e.preventDefault();
+      if (interactionRunningRef.current) return; // interact-only while running
       if (!selectedWireId) return;
       const wire = wiresRef.current.find((w) => w.id === selectedWireId);
       if (!wire) return;
@@ -1676,6 +1698,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
   const handleWaypointTouchStart = useCallback(
     (e: React.TouchEvent, waypointIndex: number) => {
       e.stopPropagation();
+      if (interactionRunningRef.current) return;
       if (!selectedWireId) return;
       const wire = wiresRef.current.find((w) => w.id === selectedWireId);
       if (!wire) return;
@@ -1723,6 +1746,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
 
   // Wire creation via pin clicks
   const handlePinClick = (componentId: string, pinName: string, x: number, y: number) => {
+    // No making connections while the simulation runs — interact-only.
+    if (interactionRunningRef.current) return;
     // Close property dialog when starting wire creation
     if (showPropertyDialog) {
       setShowPropertyDialog(false);
@@ -1928,7 +1953,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               isSelected={isSelected}
               onMouseDown={(e) => handleComponentMouseDown(component.id, e)}
             />
-            {!running && (
+            {!interactionRunning && (
               <PinOverlay
                 componentId={component.id}
                 componentX={component.x}
@@ -1984,8 +2009,8 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             }}
           />
 
-          {/* Pin overlay for wire creation - hide when running */}
-          {!running && (
+          {/* Pin overlay for wire creation - hide while interacting/running */}
+          {!interactionRunning && (
             <PinOverlay
               componentId={component.id}
               componentX={component.x}
@@ -2066,7 +2091,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               >
                 {boards.map((b) => (
                   <option key={b.id} value={b.id}>
-                    {BOARD_KIND_LABELS[b.boardKind] ?? b.id}
+                    {boardDisplayName(b)}
                   </option>
                 ))}
               </select>
@@ -2383,6 +2408,10 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
               segmentDragJustCommittedRef.current = false;
               return;
             }
+            // While the simulation runs the canvas is interact-only: a click on
+            // a button must press it (its own handler), not select the wire
+            // underneath it for editing.
+            if (interactionRunning) return;
             // Wire selection via canvas-level hit detection
             const world = toWorld(e.clientX, e.clientY);
             const threshold = 8 / zoomRef.current;
@@ -2395,7 +2424,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             }
           }}
           onDoubleClick={(e) => {
-            if (wireInProgress) return;
+            if (wireInProgress || interactionRunning) return;
             const world = toWorld(e.clientX, e.clientY);
             const threshold = 8 / zoomRef.current;
             const wire = findWireNearPoint(wiresRef.current, world.x, world.y, threshold);
@@ -2533,7 +2562,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
                 the right-click menu — the floating bar covered nearby pins
                 and intercepted clicks on buttons during simulation)
               - while the simulator is running (canvas is read-only). */}
-          {!wireInProgress && isTouchDevice && !running &&
+          {!wireInProgress && isTouchDevice && !interactionRunning &&
             (() => {
               if (selectedWireId) {
                 const wire = wires.find((w) => w.id === selectedWireId);
@@ -2607,7 +2636,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
           let title = pinPicker.kind === 'board' ? 'Board' : 'Component';
           if (pinPicker.kind === 'board') {
             const b = boards.find((x) => x.id === id);
-            if (b) title = BOARD_KIND_LABELS[b.boardKind] ?? b.boardKind;
+            if (b) title = boardDisplayName(b);
           } else {
             const c = components.find((x) => x.id === id);
             const meta = c ? registry.getById(c.metadataId) : null;
@@ -2809,7 +2838,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       {boardContextMenu &&
         (() => {
           const board = boards.find((b) => b.id === boardContextMenu.boardId);
-          const label = board ? BOARD_KIND_LABELS[board.boardKind] : 'Board';
+          const label = board ? boardDisplayName(board) : 'Board';
           const connectedWires = wires.filter(
             (w) =>
               w.start.componentId === boardContextMenu.boardId ||
@@ -3045,6 +3074,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
             <BoardOptionsModal
               isOpen={true}
               boardId={b.id}
+              boardName={b.name}
               boardKind={b.boardKind}
               currentOptions={b.boardOptions}
               spiffsFiles={b.spiffsFiles ?? []}
@@ -3059,7 +3089,7 @@ export const SimulatorCanvas = ({ headerSlot }: SimulatorCanvasProps = {}) => {
       {boardToRemove &&
         (() => {
           const board = boards.find((b) => b.id === boardToRemove);
-          const label = board ? BOARD_KIND_LABELS[board.boardKind] : t('editor.canvas.removeConfirm.boardFallback');
+          const label = board ? boardDisplayName(board) : t('editor.canvas.removeConfirm.boardFallback');
           const connectedWires = wires.filter(
             (w) => w.start.componentId === boardToRemove || w.end.componentId === boardToRemove,
           ).length;

@@ -76,6 +76,7 @@ try:
     from app.services.esp32_spi_slaves import (
         Ssd168xEpaperSlave as _Ssd168xEpaperSlave,
         Uc8159cEpaperSlave as _Uc8159cEpaperSlave,
+        Uc8179EpaperSlave as _Uc8179EpaperSlave,
     )
 except ImportError:
     import importlib.util, pathlib, sys as _sys
@@ -87,6 +88,7 @@ except ImportError:
     _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
     _Ssd168xEpaperSlave = _mod.Ssd168xEpaperSlave  # type: ignore[assignment]
     _Uc8159cEpaperSlave = _mod.Uc8159cEpaperSlave  # type: ignore[assignment]
+    _Uc8179EpaperSlave = _mod.Uc8179EpaperSlave  # type: ignore[assignment]
 
 # ─── stdout helpers ──────────────────────────────────────────────────────────
 
@@ -140,6 +142,11 @@ _RMT_EVENT = ctypes.CFUNCTYPE(None,            ctypes.c_uint8, ctypes.c_uint32, 
 # burn-in window confirms parity. Requires libqemu-{xtensa,riscv32}
 # 1.1.0+; older binaries omit the field and the placeholder runs.
 _GPIO_MATRIX_CB = ctypes.CFUNCTYPE(None,        ctypes.c_int, ctypes.c_int)
+# Batched write-only SPI: (id, const uint8_t *mosi, int len). Collapses the
+# per-byte picsimlab_spi_event ctypes crossing for TFT-style bulk writes.
+# Trailing field — older libqemu builds (without the C-side batch path) simply
+# never call it and fall back to per-byte picsimlab_spi_event.
+_SPI_BATCH = ctypes.CFUNCTYPE(None, ctypes.c_uint8, ctypes.POINTER(ctypes.c_uint8), ctypes.c_int)
 
 
 class _CallbacksT(ctypes.Structure):
@@ -152,6 +159,7 @@ class _CallbacksT(ctypes.Structure):
         ('pinmap',                      ctypes.c_void_p),
         ('picsimlab_rmt_event',         _RMT_EVENT),
         ('picsimlab_gpio_matrix_cb',    _GPIO_MATRIX_CB),
+        ('picsimlab_spi_event_batch',   _SPI_BATCH),
     ]
 
 
@@ -690,6 +698,14 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             return
         gpio = int(_PINMAP[slot]) if 1 <= slot <= _GPIO_COUNT else slot
         _pin_state[gpio] = value & 1
+        # Flush pending SPI bytes BEFORE announcing this pin change so the
+        # frontend processes them under the pin state (e.g. the ILI9341 DC line)
+        # that was in effect when they were sent. With CS events gated off for
+        # pure-display sims, this — plus the buffer cap / timer — is what keeps
+        # the SPI byte stream correctly ordered against the DC gpio_change on the
+        # single WS channel (the per-CS flush used to do it).
+        with _spi_buf_lock:
+            _flush_spi_batch_locked()
         _emit({'type': 'gpio_change', 'pin': gpio, 'state': value})
 
         # Dispatch to any custom-chip runtime that has a vx_pin_watch on this
@@ -1021,6 +1037,18 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             _emit({'type': 'spi_batch', 'b64': b64})
             _spi_byte_buf.clear()
 
+    def _sync_cs_events():
+        """Tell QEMU whether to forward SPI chip-select toggles to us. Only
+        ePaper / custom-chip SPI slaves consume CS; pure-display sims (DC pin +
+        batched data) do not, so turning CS off there removes ~9k C->Python
+        crossings/sec for a TFT redraw. No-op on older libqemu builds without
+        the symbol (CS events stay on, as before)."""
+        try:
+            lib.qemu_picsimlab_enable_spi_cs_events(
+                1 if (_epaper_state or _chip_spi_runtimes) else 0)
+        except Exception:
+            pass
+
     def _spi_flush_timer_loop():
         """Background thread: flushes any pending SPI bytes every
         _SPI_BATCH_PERIOD_S so partial transactions reach the frontend
@@ -1102,6 +1130,52 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
             _emit({'type': 'spi_event', 'bus': bus_id, 'event': event, 'response': resp})
         return resp
 
+    def _on_spi_batch(bus_id: int, mosi_ptr, length: int) -> None:
+        """Batched write-only SPI transfer — the whole MOSI buffer arrives in a
+        single call instead of one picsimlab_spi_event per byte. libqemu only
+        invokes this for rx==0 (MISO-ignored) transfers on the host SPI shim, so
+        nothing is returned. Mirrors the per-byte _on_spi_event side effects in
+        bulk: custom-chip runtimes first, then ePaper, then the spi_batch buffer.
+        This is the path that removes ~150k C->Python crossings/frame for TFTs."""
+        if length <= 0 or _stopped.is_set():
+            return
+        try:
+            data = ctypes.string_at(mosi_ptr, length)
+        except Exception:
+            return
+        # Custom-chip SPI runtimes get first dibs (replay per byte; the chip's
+        # MISO return is discarded because this transfer is write-only).
+        if _chip_spi_runtimes:
+            rt = _chip_spi_runtimes[0]
+            for mb in data:
+                try:
+                    rt.spi_transfer_byte(mb)
+                except Exception as e:
+                    _log(f'[custom-chip spi_batch] error: {e!r}')
+            return
+        # ePaper SSD168x: feed each byte under the current DC to every active
+        # slave (DC is constant for a write-only transaction).
+        if _epaper_state:
+            any_active = False
+            for st in _epaper_state.values():
+                if st['cs_low']:
+                    any_active = True
+                    slave = st['slave']
+                    dc = st['dc_high']
+                    for mb in data:
+                        try:
+                            slave.feed(mb, dc)
+                        except Exception as e:
+                            _log(f'[epaper spi_batch] error: {e!r}')
+            if any_active:
+                return
+        # Fast path: bulk-append to the spi_batch buffer (same buffer/flush the
+        # per-byte path uses, so frontend ordering is unchanged).
+        with _spi_buf_lock:
+            _spi_byte_buf.extend(data)
+            if len(_spi_byte_buf) >= _SPI_BATCH_FLUSH_AT:
+                _flush_spi_batch_locked()
+
     # Keep callback struct alive (prevent GC from freeing ctypes closures)
     _cbs_ref = _CallbacksT(
         picsimlab_write_pin      = _WRITE_PIN(_on_pin_change),
@@ -1112,6 +1186,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
         pinmap                   = ctypes.cast(_PINMAP, ctypes.c_void_p).value,
         picsimlab_rmt_event      = _RMT_EVENT(_on_rmt_event),
         picsimlab_gpio_matrix_cb = _GPIO_MATRIX_CB(_on_gpio_matrix),
+        picsimlab_spi_event_batch = _SPI_BATCH(_on_spi_batch),
     )
     lib.qemu_picsimlab_register_callbacks(ctypes.byref(_cbs_ref))
     # Log whether the new symbol is present in this libqemu build.
@@ -1219,12 +1294,12 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                 # polarity, because the two controller families use opposite
                 # active levels in GxEPD2:
                 #
-                #   SSD168x family (1.54 / 2.13 / 2.9 / 4.2 / 7.5"):
+                #   SSD168x family (1.54 / 2.13 / 2.9 / 4.2"):
                 #     `_busy_level = HIGH` → BUSY=HIGH means "busy",
                 #                            BUSY=LOW means "ready".
                 #
-                #   UC8159c family (5.65" 7-colour ACeP GDEP0565D90):
-                #     `_busy_level = LOW`  → BUSY=LOW  means "busy",
+                #   UltraChip family — UC8159c (5.65" ACeP) and UC8179/GD7965
+                #   (7.5" 800x480): `_busy_level = LOW` → BUSY=LOW means "busy",
                 #                            BUSY=HIGH means "ready".
                 #
                 # Pick the IDLE level per family and (a) seed the pin to IDLE
@@ -1240,7 +1315,9 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                 # Read controller_family early; default to ssd168x for
                 # back-compat with old frontends that didn't send it.
                 ctl_family_early = str(s.get('controller_family', 'ssd168x'))
-                busy_idle_level = 1 if ctl_family_early == 'uc8159c' else 0
+                # UltraChip controllers (uc8159c, uc8179) idle BUSY HIGH; the
+                # SSD168x family idles BUSY LOW.
+                busy_idle_level = 1 if ctl_family_early in ('uc8159c', 'uc8179') else 0
                 busy_busy_level = 1 - busy_idle_level
                 if busy_pin is not None and busy_pin >= 0:
                     try:
@@ -1264,15 +1341,20 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                             frame_b64 = base64.b64encode(frame.pixels).decode('ascii')
                         except Exception:
                             return
+                        # NOTE: emit FLAT (fields at top level), like every other
+                        # worker event. The backend's qemu_callback re-wraps the
+                        # post-'type' payload under 'data' (simulation.py), so a
+                        # nested 'data' here would double-wrap and the frontend's
+                        # msg.data.component_id would be undefined (panel never
+                        # renders). This was the long-standing "ESP32 ePaper is
+                        # blank" bug.
                         _emit({
                             'type': 'epaper_update',
-                            'data': {
-                                'component_id': _comp_id,
-                                'width': _w,
-                                'height': _h,
-                                'frame_b64': frame_b64,
-                                'refresh_ms': _refresh,
-                            },
+                            'component_id': _comp_id,
+                            'width': _w,
+                            'height': _h,
+                            'frame_b64': frame_b64,
+                            'refresh_ms': _refresh,
                         })
                         if _busy is not None and _busy >= 0:
                             try:
@@ -1298,10 +1380,16 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                         component_id=comp_id, width=width, height=height,
                         on_flush=_flush_factory(),
                     )
-                else:
-                    slave = _Ssd168xEpaperSlave(
+                elif ctl_family == 'uc8179':
+                    slave = _Uc8179EpaperSlave(
                         component_id=comp_id, width=width, height=height,
                         on_flush=_flush_factory(),
+                    )
+                else:
+                    _is_bwr = 'bwr' in str(s.get('panel_kind', '')).lower()
+                    slave = _Ssd168xEpaperSlave(
+                        component_id=comp_id, width=width, height=height,
+                        on_flush=_flush_factory(), is_bwr=_is_bwr,
                     )
                 state = {
                     'slave': slave,
@@ -1316,6 +1404,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                 }
                 _epaper_slaves[comp_id] = slave
                 _epaper_state[comp_id] = state
+                _sync_cs_events()
                 sensor_data['epaper_component_id'] = comp_id
                 _log(f"[epaper:{ctl_family}] registered '{comp_id}' "
                      f"({width}x{height}) "
@@ -1423,6 +1512,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                             _log("[custom-chip] UART chip registered on UART0")
                         if runtime.spi_config is not None:
                             _chip_spi_runtimes.append(runtime)
+                            _sync_cs_events()
                             _log("[custom-chip] SPI chip registered")
                         if runtime.has_pin_watches():
                             _chip_pin_watch_runtimes.append(runtime)
@@ -1439,6 +1529,9 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
     _log(f'_i2c_slaves registered: {list(_i2c_slaves.keys())}')
 
     _emit({'type': 'system', 'event': 'booted'})
+    # Now that the initial components are registered, tell QEMU whether to
+    # forward SPI CS toggles (only ePaper/custom-chip need them).
+    _sync_cs_events()
     _log(f'QEMU started: machine={machine} firmware={firmware_path}')
     _log(f'QEMU args: {[a.decode() for a in args_list]}')
 
@@ -1657,15 +1750,16 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                                 frame_b64 = base64.b64encode(frame.pixels).decode('ascii')
                             except Exception:
                                 return
+                            # Emit FLAT (see the _init_sensors path) — the backend
+                            # re-wraps under 'data', so a nested 'data' here would
+                            # double-wrap and the frontend would never render.
                             _emit({
                                 'type': 'epaper_update',
-                                'data': {
-                                    'component_id': _comp_id,
-                                    'width': _w,
-                                    'height': _h,
-                                    'frame_b64': frame_b64,
-                                    'refresh_ms': _refresh,
-                                },
+                                'component_id': _comp_id,
+                                'width': _w,
+                                'height': _h,
+                                'frame_b64': frame_b64,
+                                'refresh_ms': _refresh,
                             })
                             if _busy is not None and _busy >= 0:
                                 try:
@@ -1688,10 +1782,16 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                             component_id=comp_id, width=width, height=height,
                             on_flush=_flush_factory_rt(),
                         )
-                    else:
-                        slave = _Ssd168xEpaperSlave(
+                    elif ctl_family == 'uc8179':
+                        slave = _Uc8179EpaperSlave(
                             component_id=comp_id, width=width, height=height,
                             on_flush=_flush_factory_rt(),
+                        )
+                    else:
+                        _is_bwr = 'bwr' in str(cmd.get('panel_kind', '')).lower()
+                        slave = _Ssd168xEpaperSlave(
+                            component_id=comp_id, width=width, height=height,
+                            on_flush=_flush_factory_rt(), is_bwr=_is_bwr,
                         )
                     state = {
                         'slave': slave,
@@ -1706,6 +1806,7 @@ def main() -> None:  # noqa: C901  (complexity OK for inline worker)
                     }
                     _epaper_slaves[comp_id] = slave
                     _epaper_state[comp_id] = state
+                    _sync_cs_events()
                     sensor_data['epaper_component_id'] = comp_id
                 _sensors[gpio] = sensor_data
             _log(f'Sensor {sensor_type} attached on GPIO {gpio}')

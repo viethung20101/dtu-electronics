@@ -4,10 +4,14 @@ import {
   searchLibraries,
   installLibrary,
   getInstalledLibraries,
+  getCustomLibraries,
+  deleteCustomLibrary,
   uninstallLibrary,
 } from '../../services/libraryService';
 import type { ArduinoLibrary, InstalledLibrary } from '../../services/libraryService';
 import { trackInstallLibrary } from '../../utils/analytics';
+import { useSimulatorStore } from '../../store/useSimulatorStore';
+import { boardDisplayName } from '../../types/board';
 import './LibraryManagerModal.css';
 
 interface LibraryManagerModalProps {
@@ -15,11 +19,38 @@ interface LibraryManagerModalProps {
   onClose: () => void;
 }
 
-type Tab = 'search' | 'installed';
+type Tab = 'project' | 'search' | 'installed';
+
+/** Case/separator-insensitive name match, matching the backend's
+ *  _norm_lib_name (lowercased, alphanumerics only) so the UI's "in project"
+ *  state agrees with what the compiler scopes. */
+const normLib = (s: string): string =>
+  (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>('search');
+  // P2.4 — manifests are PER-BOARD: the velxio.json edited here belongs to the
+  // ACTIVE board, so two boards in one project can scope to different libraries.
+  const boards = useSimulatorStore((s) => s.boards);
+  const activeBoardId = useSimulatorStore((s) => s.activeBoardId);
+  const updateBoard = useSimulatorStore((s) => s.updateBoard);
+  const activeBoard = boards.find((b) => b.id === activeBoardId) ?? boards[0];
+  const manifestLibs = activeBoard?.libraries ?? null;
+  const setLibraries = useCallback(
+    (libs: string[] | null) => {
+      if (!activeBoard) return;
+      updateBoard(activeBoard.id, { libraries: libs && libs.length ? libs : undefined });
+    },
+    [activeBoard, updateBoard],
+  );
+  // Raw velxio.json editor draft + parse error (the Wokwi-style view).
+  const [jsonDraft, setJsonDraft] = useState('');
+  const [jsonError, setJsonError] = useState<string | null>(null);
+  const [newLibName, setNewLibName] = useState('');
+  // Autocomplete suggestions for the "add library" field (index search).
+  const [addSuggestions, setAddSuggestions] = useState<string[]>([]);
+  const addDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<ArduinoLibrary[]>([]);
   const [installedLibraries, setInstalledLibraries] = useState<InstalledLibrary[]>([]);
@@ -37,8 +68,16 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
   const fetchInstalled = useCallback(async () => {
     setLoadingInstalled(true);
     try {
-      const libs = await getInstalledLibraries();
-      setInstalledLibraries(libs);
+      // P2.2c — the shared global list (index libs) PLUS the user's per-user
+      // custom uploads (which live in their per-user store, not the global
+      // list). Custom first so they're easy to find; de-duped by name.
+      const [libs, custom] = await Promise.all([getInstalledLibraries(), getCustomLibraries()]);
+      const customNames = new Set(custom.map((c) => (c.name || '').toLowerCase()));
+      const merged = [
+        ...custom,
+        ...libs.filter((l) => !customNames.has((l.library?.name || l.name || '').toLowerCase())),
+      ];
+      setInstalledLibraries(merged);
     } catch (e: unknown) {
       setStatusMsg({
         type: 'error',
@@ -99,10 +138,14 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
       const result = await installLibrary(libName, version);
       if (result.success) {
         trackInstallLibrary(libName);
+        // P2.4 — installing a library declares it for THIS project (adds it to
+        // velxio.json), so the compile is scoped to it and it never clashes
+        // with another project's libs. The user can remove it in the Project tab.
+        addToManifest(libName);
         if (result.fallback) {
-          setStatusMsg({ type: 'success', text: `"${libName}" installed (latest — requested @${result.requested_version} was not available)` });
+          setStatusMsg({ type: 'success', text: `"${libName}" installed and added to this project (latest — requested @${result.requested_version} was not available)` });
         } else {
-          setStatusMsg({ type: 'success', text: `"${libName}${version ? ' @' + version : ''}" installed successfully!` });
+          setStatusMsg({ type: 'success', text: `"${libName}${version ? ' @' + version : ''}" installed and added to this project!` });
         }
         fetchInstalled();
       } else {
@@ -132,6 +175,137 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
       setUninstallingLib(null);
     }
   };
+
+  // P2.2c — a CUSTOM lib lives in the user's per-user store, not the shared
+  // arduino-cli dir, so removing it hits the per-user delete endpoint.
+  const handleRemoveCustom = async (libName: string) => {
+    setUninstallingLib(libName);
+    setStatusMsg(null);
+    try {
+      const result = await deleteCustomLibrary(libName);
+      if (result.success) {
+        setStatusMsg({ type: 'success', text: `Removed your custom "${libName}".` });
+        removeFromManifest(libName);
+        fetchInstalled();
+      } else {
+        setStatusMsg({ type: 'error', text: result.error || `Failed to remove "${libName}"` });
+      }
+    } finally {
+      setUninstallingLib(null);
+    }
+  };
+
+  // ── Project manifest (velxio.json) editing ──────────────────────────────
+  const declared = manifestLibs ?? [];
+
+  const inManifest = useCallback(
+    (name: string): boolean => declared.some((l) => normLib(l) === normLib(name)),
+    [declared],
+  );
+
+  const addToManifest = useCallback(
+    (name: string) => {
+      const clean = name.trim();
+      if (!clean) return;
+      const cur = manifestLibs ?? [];
+      if (cur.some((l) => normLib(l) === normLib(clean))) return;
+      setLibraries([...cur, clean]);
+    },
+    [manifestLibs, setLibraries],
+  );
+
+  const removeFromManifest = useCallback(
+    (name: string) => {
+      const cur = manifestLibs ?? [];
+      const next = cur.filter((l) => normLib(l) !== normLib(name));
+      setLibraries(next.length ? next : null);
+    },
+    [manifestLibs, setLibraries],
+  );
+
+  // Autocomplete: debounced index search for the "add library" field. Combined
+  // with instant matches from the installed list in `addOptions` below.
+  useEffect(() => {
+    if (addDebounceRef.current) clearTimeout(addDebounceRef.current);
+    const q = newLibName.trim();
+    if (q.length < 2) {
+      setAddSuggestions([]);
+      return;
+    }
+    addDebounceRef.current = setTimeout(async () => {
+      try {
+        const results = await searchLibraries(q);
+        setAddSuggestions(results.map((r) => r.name).filter(Boolean));
+      } catch {
+        setAddSuggestions([]);
+      }
+    }, 300);
+    return () => {
+      if (addDebounceRef.current) clearTimeout(addDebounceRef.current);
+    };
+  }, [newLibName]);
+
+  // Merged, de-duped suggestions: installed libs first (instant), then index
+  // results, excluding what's already declared. Capped for a tidy dropdown.
+  const addOptions = (() => {
+    const q = normLib(newLibName);
+    if (!q) return [];
+    const installedNames = installedLibraries
+      .map((il) => il.library?.name || il.name || '')
+      .filter(Boolean);
+    const merged: string[] = [];
+    for (const n of [...installedNames, ...addSuggestions]) {
+      if (!normLib(n).includes(q)) continue;
+      if (declared.some((d) => normLib(d) === normLib(n))) continue;
+      if (merged.some((m) => normLib(m) === normLib(n))) continue;
+      merged.push(n);
+    }
+    return merged.slice(0, 8);
+  })();
+
+  const applyJsonDraft = useCallback(() => {
+    try {
+      const parsed = JSON.parse(jsonDraft || '{}');
+      const libs = Array.isArray(parsed) ? parsed : parsed.libraries;
+      if (!Array.isArray(libs) || !libs.every((x) => typeof x === 'string')) {
+        setJsonError('Expected {"libraries": ["Name", ...]}');
+        return;
+      }
+      setJsonError(null);
+      setLibraries(libs.length ? (libs as string[]) : null);
+    } catch (e) {
+      setJsonError(e instanceof Error ? e.message : 'Invalid JSON');
+    }
+  }, [jsonDraft, setLibraries]);
+
+  // Open the Project (velxio.json) tab when launched from the explorer entry.
+  useEffect(() => {
+    const toProject = () => setActiveTab('project');
+    window.addEventListener('velxio-open-library-manager', toProject);
+    return () => window.removeEventListener('velxio-open-library-manager', toProject);
+  }, []);
+
+  // P2.2 — a custom .zip upload lands in the user's PER-USER store (not the
+  // shared dir), so auto-declare it on the active board (velxio.json) and show
+  // the Project tab; the compile then resolves it via the owner per-user path.
+  useEffect(() => {
+    const onUploaded = (e: Event) => {
+      const name = (e as CustomEvent).detail?.library;
+      if (name) {
+        addToManifest(name);
+        setActiveTab('project');
+      }
+      fetchInstalled();
+    };
+    window.addEventListener('velxio-custom-library-installed', onUploaded);
+    return () => window.removeEventListener('velxio-custom-library-installed', onUploaded);
+  }, [addToManifest, fetchInstalled]);
+
+  // Keep the raw velxio.json draft in sync with the manifest while not editing.
+  useEffect(() => {
+    setJsonDraft(JSON.stringify({ libraries: manifestLibs ?? [] }, null, 2));
+    setJsonError(null);
+  }, [manifestLibs, isOpen]);
 
   const handleClose = () => {
     onClose();
@@ -198,6 +372,12 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
         {/* Tabs */}
         <div className="lib-tabs">
           <button
+            className={`lib-tab ${activeTab === 'project' ? 'active' : ''}`}
+            onClick={() => setActiveTab('project')}
+          >
+            In project ({declared.length})
+          </button>
+          <button
             className={`lib-tab ${activeTab === 'search' ? 'active' : ''}`}
             onClick={() => setActiveTab('search')}
           >
@@ -245,6 +425,157 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
               </svg>
             )}
             {statusMsg.text}
+          </div>
+        )}
+
+        {/* Project Tab — velxio.json: the libraries THIS project declares.
+            These (plus the arduino-esp32 core) are the ESP32 compile scope, so
+            the project never picks up another project's or user's libraries. */}
+        {activeTab === 'project' && (
+          <div className="lib-content">
+            <div style={{ padding: '10px 14px', color: '#9d9d9d', fontSize: 12, lineHeight: 1.5 }}>
+              Libraries used by{' '}
+              <strong style={{ color: '#a5d6a7' }}>
+                {activeBoard ? boardDisplayName(activeBoard) : 'this board'}
+              </strong>{' '}
+              (its <strong style={{ color: '#ffd60a' }}>velxio.json</strong>). Each
+              board has its own list, so two boards can use different libraries
+              without clashing. Installing a library adds it here automatically;
+              start typing below to add more.
+            </div>
+
+            {/* Declared libraries as removable rows */}
+            <div className="lib-list" style={{ maxHeight: 220 }}>
+              {declared.length === 0 && (
+                <div className="lib-empty">
+                  <p>No libraries declared.</p>
+                  <p className="lib-empty-sub">
+                    Core libraries (WiFi, Wire, SPI, WebServer…) are always
+                    available. Add external libraries from the Search tab or below.
+                  </p>
+                </div>
+              )}
+              {declared.map((name, i) => (
+                <div key={i} className="lib-item">
+                  <div className="lib-item-info">
+                    <div className="lib-item-header">
+                      <span className="lib-item-name">{name}</span>
+                    </div>
+                  </div>
+                  <div className="lib-item-actions">
+                    <button
+                      className="lib-uninstall-btn"
+                      onClick={() => removeFromManifest(name)}
+                      title="Remove from this project (velxio.json)"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Add a library — autocomplete (installed + index search) so the
+                user picks from a list instead of typing the exact name. */}
+            <div style={{ position: 'relative', marginTop: 8 }}>
+              <div className="lib-search-bar" style={{ margin: 0 }}>
+                <input
+                  type="text"
+                  placeholder="Add a library — start typing to search…"
+                  value={newLibName}
+                  onChange={(e) => setNewLibName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      const pick = addOptions[0] ?? newLibName;
+                      if (pick.trim()) {
+                        addToManifest(pick);
+                        setNewLibName('');
+                        setAddSuggestions([]);
+                      }
+                    } else if (e.key === 'Escape') {
+                      setNewLibName('');
+                      setAddSuggestions([]);
+                    }
+                  }}
+                />
+              </div>
+              {addOptions.length > 0 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    right: 0,
+                    zIndex: 5,
+                    background: '#252526',
+                    border: '1px solid #3c3c3c',
+                    borderRadius: 4,
+                    marginTop: 2,
+                    maxHeight: 200,
+                    overflowY: 'auto',
+                    boxShadow: '0 6px 16px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  {addOptions.map((opt) => (
+                    <button
+                      key={opt}
+                      onClick={() => {
+                        addToManifest(opt);
+                        setNewLibName('');
+                        setAddSuggestions([]);
+                      }}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        textAlign: 'left',
+                        padding: '7px 12px',
+                        background: 'transparent',
+                        border: 'none',
+                        color: '#d4d4d4',
+                        fontSize: 13,
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#094771')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Raw velxio.json editor (Wokwi-style) for power users */}
+            <details style={{ padding: '6px 14px 14px', color: '#9d9d9d', fontSize: 12 }}>
+              <summary style={{ cursor: 'pointer', userSelect: 'none' }}>
+                Edit velxio.json directly
+              </summary>
+              <textarea
+                value={jsonDraft}
+                onChange={(e) => setJsonDraft(e.target.value)}
+                spellCheck={false}
+                style={{
+                  width: '100%',
+                  minHeight: 110,
+                  marginTop: 8,
+                  background: '#1e1e1e',
+                  color: '#d4d4d4',
+                  border: '1px solid #2d2d2d',
+                  borderRadius: 4,
+                  fontFamily: 'monospace',
+                  fontSize: 12,
+                  padding: 8,
+                  boxSizing: 'border-box',
+                }}
+              />
+              {jsonError && (
+                <div className="lib-status error" style={{ marginTop: 6 }}>
+                  {jsonError}
+                </div>
+              )}
+              <button className="lib-install-btn" style={{ marginTop: 8 }} onClick={applyJsonDraft}>
+                Apply velxio.json
+              </button>
+            </details>
           </div>
         )}
 
@@ -427,12 +758,38 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                         </svg>
                       </span>
                     )}
+                    {inManifest(getInstalledName(lib)) ? (
+                      <button
+                        className="lib-uninstall-btn"
+                        onClick={() => removeFromManifest(getInstalledName(lib))}
+                        title="Remove from this project (velxio.json)"
+                      >
+                        In project ✓
+                      </button>
+                    ) : (
+                      <button
+                        className="lib-install-btn"
+                        onClick={() => addToManifest(getInstalledName(lib))}
+                        title="Add to this project (velxio.json)"
+                      >
+                        Add to project
+                      </button>
+                    )}
                     <button
                       className="lib-uninstall-btn"
-                      onClick={() => handleUninstall(getInstalledName(lib))}
+                      onClick={() =>
+                        lib.custom
+                          ? handleRemoveCustom(getInstalledName(lib))
+                          : handleUninstall(getInstalledName(lib))
+                      }
                       disabled={uninstallingLib !== null}
+                      title={lib.custom ? 'Remove your custom upload' : 'Uninstall library'}
                     >
-                      {uninstallingLib === getInstalledName(lib) ? 'Uninstalling...' : 'UNINSTALL'}
+                      {uninstallingLib === getInstalledName(lib)
+                        ? 'Removing...'
+                        : lib.custom
+                          ? 'Remove'
+                          : 'UNINSTALL'}
                     </button>
                   </div>
                 </div>

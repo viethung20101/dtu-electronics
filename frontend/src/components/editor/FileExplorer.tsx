@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useEditorStore } from '../../store/useEditorStore';
+import { useEditorStore, chipFileGroupId } from '../../store/useEditorStore';
 import { useSimulatorStore } from '../../store/useSimulatorStore';
+import {
+  isProgrammableChip,
+  targetForChip,
+  DEFAULT_CHIP_PROGRAM_FILE,
+  DEFAULT_CHIP_PROGRAM_C,
+} from '../../services/romCompileService';
 import type { BoardKind } from '../../types/board';
-import { BOARD_KIND_LABELS } from '../../types/board';
+import { boardDisplayName } from '../../types/board';
 import { importProjectFile, PROJECT_FILE_ACCEPT } from '../../utils/importProject';
 import './FileExplorer.css';
 
@@ -126,6 +132,48 @@ const IcoChevron = ({ open }: { open: boolean }) => (
     style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.15s' }}
   >
     <polyline points="9 18 15 12 9 6" />
+  </svg>
+);
+
+// Pencil icon — the rename affordance on a board/chip section header.
+const IcoPencil = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+  </svg>
+);
+
+// Integrated-circuit (chip) icon — a DIP package with pins. Marks a
+// programmable custom-chip's program section, distinct from board sections.
+const IcoChip = () => (
+  <svg
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="7" y="7" width="10" height="10" rx="1" />
+    <line x1="10" y1="3" x2="10" y2="7" />
+    <line x1="14" y1="3" x2="14" y2="7" />
+    <line x1="10" y1="17" x2="10" y2="21" />
+    <line x1="14" y1="17" x2="14" y2="21" />
+    <line x1="3" y1="10" x2="7" y2="10" />
+    <line x1="3" y1="14" x2="7" y2="14" />
+    <line x1="17" y1="10" x2="21" y2="10" />
+    <line x1="17" y1="14" x2="21" y2="14" />
   </svg>
 );
 
@@ -254,10 +302,63 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
   const boards = useSimulatorStore((s) => s.boards);
   const activeBoardId = useSimulatorStore((s) => s.activeBoardId);
   const setActiveBoardId = useSimulatorStore((s) => s.setActiveBoardId);
+  const updateBoard = useSimulatorStore((s) => s.updateBoard);
+  const updateComponent = useSimulatorStore((s) => s.updateComponent);
+  const components = useSimulatorStore((s) => s.components);
+
+  // Programmable custom-chips (CPU emulators whose chip.json declares
+  // programTargets) own a program the user can edit — a ROM source / C —
+  // shown as its own section below the boards. Behaviour/driver chips and
+  // predefined chips declare no programTargets and don't appear here (they're
+  // edited in the chip designer).
+  const programmableChips = components.filter(
+    (c) => c.metadataId === 'custom-chip' && isProgrammableChip(c.properties as Record<string, unknown>),
+  );
+
+  // Ensure each programmable chip has an editable program AND its editor group.
+  // loadExample seeds groups from an example's files; THIS is the path for a
+  // chip dropped fresh from the gallery (and older projects): a fresh chip has
+  // no program yet, so seed a default program.c the user can edit and persist
+  // programFile/programTarget onto the component so Compile/Run can build it.
+  useEffect(() => {
+    const ed = useEditorStore.getState();
+    const updateComponent = useSimulatorStore.getState().updateComponent;
+    for (const chip of programmableChips) {
+      const gid = chipFileGroupId(chip.id);
+      if (ed.fileGroups[gid]) continue;
+      const props = chip.properties as Record<string, unknown>;
+      const existing = String(props.programFile ?? '').trim();
+      if (existing) {
+        // Chip already names its program (e.g. an example) — seed from its
+        // saved source if any, else empty (loadExample usually filled it).
+        ed.createFileGroup(gid, [
+          { name: existing, content: String(props.programSource ?? '') },
+        ]);
+      } else {
+        // Fresh chip from the gallery — give it a starter program.c and
+        // remember its target CPU for the ROM compiler.
+        const target = targetForChip(String(props.chipJson ?? '{}'));
+        updateComponent(chip.id, {
+          properties: { ...props, programFile: DEFAULT_CHIP_PROGRAM_FILE, programTarget: target },
+        });
+        ed.createFileGroup(gid, [
+          { name: DEFAULT_CHIP_PROGRAM_FILE, content: DEFAULT_CHIP_PROGRAM_C },
+        ]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [components]);
 
   const [contextMenu, setContextMenu] = useState<ContextMenu | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  // Inline rename of a SECTION header (a board or a chip). Kept separate from
+  // file rename (renamingId) so the two never collide.
+  const [renamingSection, setRenamingSection] = useState<{
+    id: string;
+    kind: 'board' | 'chip';
+  } | null>(null);
+  const [sectionRenameValue, setSectionRenameValue] = useState('');
   // Track which board group is creating a file: boardGroupId or null
   const [creatingInGroup, setCreatingInGroup] = useState<string | null>(null);
   const [newFileName, setNewFileName] = useState('');
@@ -265,6 +366,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const renameInputRef = useRef<HTMLInputElement>(null);
+  const sectionRenameInputRef = useRef<HTMLInputElement>(null);
+  // Set true by Escape so the input's onBlur (which fires when Escape unmounts
+  // the input) discards instead of committing the typed value.
+  const sectionRenameCancelledRef = useRef(false);
   const newFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -273,6 +378,54 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
       renameInputRef.current.select();
     }
   }, [renamingId]);
+
+  useEffect(() => {
+    if (renamingSection && sectionRenameInputRef.current) {
+      sectionRenameInputRef.current.focus();
+      sectionRenameInputRef.current.select();
+    }
+  }, [renamingSection]);
+
+  const startBoardRename = useCallback((board: { id: string; name?: string; boardKind: BoardKind }) => {
+    sectionRenameCancelledRef.current = false;
+    setRenamingSection({ id: board.id, kind: 'board' });
+    setSectionRenameValue(boardDisplayName(board));
+  }, []);
+
+  const startChipRename = useCallback((chipId: string, currentName: string) => {
+    sectionRenameCancelledRef.current = false;
+    setRenamingSection({ id: chipId, kind: 'chip' });
+    setSectionRenameValue(currentName);
+  }, []);
+
+  const cancelSectionRename = useCallback(() => {
+    sectionRenameCancelledRef.current = true;
+    setRenamingSection(null);
+  }, []);
+
+  const commitSectionRename = useCallback(() => {
+    // Escape cancelled this edit (it unmounts the input, firing onBlur) — discard.
+    if (sectionRenameCancelledRef.current) {
+      sectionRenameCancelledRef.current = false;
+      return;
+    }
+    const target = renamingSection;
+    if (target) {
+      const value = sectionRenameValue.trim();
+      if (target.kind === 'board') {
+        // Empty clears the custom name -> boardDisplayName falls back to kind.
+        updateBoard(target.id, { name: value });
+      } else {
+        const comp = useSimulatorStore.getState().components.find((c) => c.id === target.id);
+        if (comp) {
+          updateComponent(target.id, {
+            properties: { ...comp.properties, chipName: value || 'Custom Chip' },
+          });
+        }
+      }
+    }
+    setRenamingSection(null);
+  }, [renamingSection, sectionRenameValue, updateBoard, updateComponent]);
 
   useEffect(() => {
     if (creatingInGroup && newFileInputRef.current) {
@@ -306,6 +459,23 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
       openFile(fileId);
     },
     [activeBoardId, switchToBoard, openFile],
+  );
+
+  // Chip program groups aren't tied to a board — switching to one just makes
+  // the chip's group active in the editor (no activeBoardId change).
+  const switchToChip = useCallback(
+    (groupId: string) => {
+      setActiveGroup(groupId);
+    },
+    [setActiveGroup],
+  );
+
+  const handleChipFileClick = useCallback(
+    (fileId: string, groupId: string) => {
+      if (groupId !== activeGroupId) switchToChip(groupId);
+      openFile(fileId);
+    },
+    [activeGroupId, switchToChip, openFile],
   );
 
   const handleContextMenu = (e: React.MouseEvent, fileId: string, boardGroupId: string) => {
@@ -417,7 +587,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                   switchToBoard(board.id, groupId);
                   if (!isOpen) toggleCollapse(board.id);
                 }}
-                title={`${BOARD_KIND_LABELS[board.boardKind]} — ${t('editor.fileExplorer.clickToEdit')}`}
+                title={`${boardDisplayName(board)} — ${t('editor.fileExplorer.clickToEdit')}`}
               >
                 <button
                   className="fe-collapse-btn"
@@ -434,7 +604,31 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                   {BOARD_ICON[board.boardKind]}
                 </span>
 
-                <span className="fe-board-label">{BOARD_KIND_LABELS[board.boardKind]}</span>
+                {renamingSection?.id === board.id && renamingSection.kind === 'board' ? (
+                  <input
+                    ref={sectionRenameInputRef}
+                    className="file-explorer-rename-input fe-section-rename-input"
+                    value={sectionRenameValue}
+                    onChange={(e) => setSectionRenameValue(e.target.value)}
+                    onBlur={commitSectionRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitSectionRename();
+                      if (e.key === 'Escape') cancelSectionRename();
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <span
+                    className="fe-board-label"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      startBoardRename(board);
+                    }}
+                    title="Double-click to rename"
+                  >
+                    {boardDisplayName(board)}
+                  </span>
+                )}
 
                 <span
                   className="fe-status-dot"
@@ -448,7 +642,17 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                   }
                 />
 
-                {/* New file button — visible on hover */}
+                {/* Rename + new-file buttons — visible on hover */}
+                <button
+                  className="fe-board-new-btn"
+                  title="Rename board (or double-click the name)"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startBoardRename(board);
+                  }}
+                >
+                  <IcoPencil />
+                </button>
                 <button
                   className="fe-board-new-btn"
                   title={t('editor.fileExplorer.newFileInBoard')}
@@ -530,14 +734,155 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                       />
                     </div>
                   )}
+
+                  {/* velxio.json — THIS board's declared library manifest
+                      (compile scope), grouped with the board's code so it is
+                      clear which board it belongs to. There is one per board.
+                      Clicking switches to the board and opens the Library
+                      Manager on its list. */}
+                  <div
+                    className="file-explorer-item fe-file-item"
+                    onClick={() => {
+                      switchToBoard(board.id, groupId);
+                      window.dispatchEvent(new CustomEvent('velxio-open-library-manager'));
+                    }}
+                    title={`Libraries for ${boardDisplayName(board)} — click to manage (compile scope)`}
+                  >
+                    <span className="file-explorer-icon" style={{ color: '#ffd60a' }}>
+                      <FileIcon name="velxio.json" />
+                    </span>
+                    <span className="file-explorer-name">velxio.json</span>
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        fontSize: 10,
+                        color: '#9d9d9d',
+                        background: '#2d2d2d',
+                        borderRadius: 8,
+                        padding: '1px 7px',
+                      }}
+                      title={
+                        board.libraries && board.libraries.length
+                          ? `${board.libraries.length} declared: ${board.libraries.join(', ')}`
+                          : 'No libraries declared for this board'
+                      }
+                    >
+                      {board.libraries?.length ?? 0}
+                    </span>
+                  </div>
                 </div>
               )}
             </div>
           );
         })}
 
-        {/* Fallback: no boards yet */}
-        {boards.length === 0 && (
+        {/* Programmable custom-chip program sections — one per chip, each its
+            own collapsible group (the chip's ROM source / C), separate from the
+            board sketch above. */}
+        {programmableChips.map((chip) => {
+          const groupId = chipFileGroupId(chip.id);
+          const groupFiles = fileGroups[groupId] ?? [];
+          if (groupFiles.length === 0) return null;
+          const isActiveGroup = activeGroupId === groupId;
+          const isOpen = !collapsed[chip.id];
+          const chipName =
+            String((chip.properties as Record<string, unknown>)?.chipName ?? '').trim() ||
+            'Custom Chip';
+
+          return (
+            <div key={chip.id} className="fe-board-section">
+              <div
+                className={`fe-board-header${isActiveGroup ? ' fe-board-header-active' : ''}`}
+                onClick={() => {
+                  switchToChip(groupId);
+                  if (!isOpen) toggleCollapse(chip.id);
+                }}
+                title={`${chipName} — ${t('editor.fileExplorer.clickToEdit')}`}
+              >
+                <button
+                  className="fe-collapse-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleCollapse(chip.id);
+                  }}
+                  title={isOpen ? t('editor.fileExplorer.collapse') : t('editor.fileExplorer.expand')}
+                >
+                  <IcoChevron open={isOpen} />
+                </button>
+
+                <span className="fe-board-icon" style={{ color: '#c4b5fd' }}>
+                  <IcoChip />
+                </span>
+
+                {renamingSection?.id === chip.id && renamingSection.kind === 'chip' ? (
+                  <input
+                    ref={sectionRenameInputRef}
+                    className="file-explorer-rename-input fe-section-rename-input"
+                    value={sectionRenameValue}
+                    onChange={(e) => setSectionRenameValue(e.target.value)}
+                    onBlur={commitSectionRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitSectionRename();
+                      if (e.key === 'Escape') cancelSectionRename();
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                ) : (
+                  <span
+                    className="fe-board-label"
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      startChipRename(chip.id, chipName);
+                    }}
+                    title="Double-click to rename"
+                  >
+                    {chipName}
+                  </span>
+                )}
+
+                {!(renamingSection?.id === chip.id && renamingSection.kind === 'chip') && (
+                  <button
+                    className="fe-board-new-btn"
+                    title="Rename chip (or double-click the name)"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startChipRename(chip.id, chipName);
+                    }}
+                  >
+                    <IcoPencil />
+                  </button>
+                )}
+              </div>
+
+              {isOpen && (
+                <div className="fe-board-files">
+                  {groupFiles.map((file) => {
+                    const isActiveFile = isActiveGroup && file.id === activeFileId;
+                    return (
+                      <div
+                        key={file.id}
+                        className={`file-explorer-item fe-file-item${isActiveFile ? ' file-explorer-item-active' : ''}`}
+                        onClick={() => handleChipFileClick(file.id, groupId)}
+                        title={`${file.name}${file.modified ? ` (${t('editor.fileExplorer.unsavedSuffix')})` : ''}`}
+                      >
+                        <span className="file-explorer-icon">
+                          <FileIcon name={file.name} />
+                        </span>
+                        <span className="file-explorer-name">{file.name}</span>
+                        {file.modified && (
+                          <span className="file-explorer-dot" title={t('editor.fileExplorer.unsavedChanges')} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Fallback: nothing on the canvas yet */}
+        {boards.length === 0 && programmableChips.length === 0 && (
           <div style={{ color: '#666', fontSize: 11, padding: '12px 12px', lineHeight: 1.5 }}>
             {t('editor.fileExplorer.emptyState')}
           </div>

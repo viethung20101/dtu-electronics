@@ -827,6 +827,9 @@ interface SimulatorState {
   startSimulation: () => void;
   stopSimulation: () => void;
   resetSimulation: () => void;
+  /** Bump hexEpoch to force every component part to re-attach (e.g. so a
+   *  board-less custom chip picks up freshly compiled WASM). */
+  restartParts: () => void;
   setCompiledHex: (hex: string) => void;
   setCompiledBinary: (base64: string) => void;
   setRunning: (running: boolean) => void;
@@ -1274,11 +1277,16 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
       payload.boards.forEach((b) => {
         addBoard(b.boardKind, b.x, b.y, b.id);
         // Apply the rest of the saved fields that addBoard doesn't set.
-        if (b.languageMode && b.languageMode !== 'arduino') {
+        const patch: Partial<BoardInstance> = {};
+        if (b.languageMode && b.languageMode !== 'arduino') patch.languageMode = b.languageMode;
+        if (b.name && b.name.trim()) patch.name = b.name;
+        // P2.4 — restore per-board persisted fields that ride in boards_json.
+        if (b.boardOptions) patch.boardOptions = b.boardOptions;
+        if (b.spiffsFiles) patch.spiffsFiles = b.spiffsFiles;
+        if (b.libraries && b.libraries.length) patch.libraries = b.libraries;
+        if (Object.keys(patch).length > 0) {
           set((s) => ({
-            boards: s.boards.map((bb) =>
-              bb.id === b.id ? { ...bb, languageMode: b.languageMode } : bb,
-            ),
+            boards: s.boards.map((bb) => (bb.id === b.id ? { ...bb, ...patch } : bb)),
           }));
         }
       });
@@ -2138,6 +2146,8 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
       const boardId = activeBoardId ?? INITIAL_BOARD_ID;
       get().startBoard(boardId);
     },
+
+    restartParts: () => set((s) => ({ hexEpoch: s.hexEpoch + 1 })),
 
     stopSimulation: () => {
       const { activeBoardId } = get();
