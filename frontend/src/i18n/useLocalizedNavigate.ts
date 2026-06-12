@@ -7,10 +7,10 @@
  * the English `/editor` instead of staying at `/es/editor`.
  */
 
-import { useCallback, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getLocaleFromPath, localizedPath } from "./path";
-import type { Locale } from "./config";
+import { useCallback, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { getLocaleFromPath, localizedPath } from './path';
+import type { Locale } from './config';
 
 /** The active locale for the current URL. */
 export function useCurrentLocale(): Locale {
@@ -37,6 +37,6 @@ export function useLocalizedNavigate() {
   return useMemo(
     () => (path: string, opts?: Parameters<typeof navigate>[1]) =>
       navigate(localizedPath(path, locale), opts),
-    [navigate, locale]
+    [navigate, locale],
   );
 }

@@ -431,7 +431,15 @@ const EPaperGlyph: React.FC<InlineSVGProps> = ({ w, h }) => {
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} xmlns="http://www.w3.org/2000/svg">
       <rect x="0.5" y="0.5" width={w - 1} height={h - 1} rx="4" fill="#e8e2d4" stroke="#b8aa90" />
-      <rect x={ax} y={ay} width={aw} height={ah} fill="#f4f1e8" stroke="#a89a80" strokeWidth="0.6" />
+      <rect
+        x={ax}
+        y={ay}
+        width={aw}
+        height={ah}
+        fill="#f4f1e8"
+        stroke="#a89a80"
+        strokeWidth="0.6"
+      />
       <text
         x={w / 2}
         y={ay + ah / 2 + 4}
@@ -442,7 +450,15 @@ const EPaperGlyph: React.FC<InlineSVGProps> = ({ w, h }) => {
       >
         e-Paper
       </text>
-      <rect x={tailX} y={tailY} width={tailW} height={fpcH - 4} fill="#d49a3c" stroke="#a47020" rx="1" />
+      <rect
+        x={tailX}
+        y={tailY}
+        width={tailW}
+        height={fpcH - 4}
+        fill="#d49a3c"
+        stroke="#a47020"
+        rx="1"
+      />
     </svg>
   );
 };
@@ -516,12 +532,12 @@ export const INLINE_SVGS: Record<string, InlineEntry> = {
   // ePaper variants — sizes match the Web Component body in EPaperPanels.ts
   'epaper-1in54-bw': { component: EPaperGlyph, w: 240, h: 280 },
   'epaper-2in13-bw': { component: EPaperGlyph, w: 290, h: 170 },
-  'epaper-2in9-bw':  { component: EPaperGlyph, w: 340, h: 180 },
-  'epaper-4in2-bw':  { component: EPaperGlyph, w: 440, h: 360 },
-  'epaper-7in5-bw':  { component: EPaperGlyph, w: 860, h: 540 },
+  'epaper-2in9-bw': { component: EPaperGlyph, w: 340, h: 180 },
+  'epaper-4in2-bw': { component: EPaperGlyph, w: 440, h: 360 },
+  'epaper-7in5-bw': { component: EPaperGlyph, w: 860, h: 540 },
   // Tri-colour B/W/R panels share the same body geometry as their B/W siblings.
   'epaper-2in13-bwr': { component: EPaperGlyph, w: 290, h: 170 },
-  'epaper-2in9-bwr':  { component: EPaperGlyph, w: 340, h: 180 },
+  'epaper-2in9-bwr': { component: EPaperGlyph, w: 340, h: 180 },
   // ACeP 7-colour 5.65" — same FPC pinout, different palette.
-  'epaper-5in65-7c':  { component: EPaperGlyph, w: 660, h: 520 },
+  'epaper-5in65-7c': { component: EPaperGlyph, w: 660, h: 520 },
 };

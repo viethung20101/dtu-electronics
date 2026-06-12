@@ -32,7 +32,11 @@ export const GitHubStarBanner: React.FC<Props> = ({ onClose }) => {
         </a>
       </div>
 
-      <button className="gh-star-banner__close" onClick={onClose} aria-label={t('starBanner.dismiss')}>
+      <button
+        className="gh-star-banner__close"
+        onClick={onClose}
+        aria-label={t('starBanner.dismiss')}
+      >
         ✕
       </button>
     </div>

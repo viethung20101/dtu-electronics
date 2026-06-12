@@ -30,17 +30,18 @@ export async function solveInput(input: BuildNetlistInput): Promise<ElectricalSo
   const { netlist, pinNetMap, nets, voltageSources } = buildNetlist(input);
   await adapter.loadCircuit(netlist);
 
-  const analysis = input.analysis.kind === 'tran'
-    ? { kind: 'tran' as const, step: input.analysis.step, stop: input.analysis.stop }
-    : input.analysis.kind === 'ac'
-      ? {
-          kind: 'ac' as const,
-          sweep: (input.analysis.type ?? 'dec') as 'dec' | 'oct' | 'lin',
-          points: input.analysis.points ?? 20,
-          fstart: input.analysis.fstart ?? 1,
-          fstop: input.analysis.fstop ?? 1e6,
-        }
-      : { kind: 'op' as const };
+  const analysis =
+    input.analysis.kind === 'tran'
+      ? { kind: 'tran' as const, step: input.analysis.step, stop: input.analysis.stop }
+      : input.analysis.kind === 'ac'
+        ? {
+            kind: 'ac' as const,
+            sweep: (input.analysis.type ?? 'dec') as 'dec' | 'oct' | 'lin',
+            points: input.analysis.points ?? 20,
+            fstart: input.analysis.fstart ?? 1,
+            fstop: input.analysis.fstop ?? 1e6,
+          }
+        : { kind: 'op' as const };
 
   await adapter.solve(analysis, { vectorsOfInterest: [] });
   const allRead = adapter.readAllCurrentVectors();

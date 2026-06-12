@@ -137,7 +137,11 @@ vi.stubGlobal('cancelAnimationFrame', vi.fn());
 import { setWires, resetStore, clearAllPinManagerState } from './helpers/multiBoardSetup';
 import { resetInterconnect } from '../simulation/Interconnect';
 
-import { useSimulatorStore, getBoardSimulator, getBoardPinManager } from '../store/useSimulatorStore';
+import {
+  useSimulatorStore,
+  getBoardSimulator,
+  getBoardPinManager,
+} from '../store/useSimulatorStore';
 
 function fullReset() {
   clearAllPinManagerState(useSimulatorStore, getBoardPinManager);
@@ -172,8 +176,8 @@ describe('Dual Arduino Uno — hardware Serial (USART0)', () => {
     expect(typeof simA.onSerialData).toBe('function'); // Interconnect must wire it
     simA.onSerialData('H');
     const fed_H =
-      (simB.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'H')
-      || (simB.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'H');
+      (simB.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'H') ||
+      (simB.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'H');
     expect(fed_H).toBe(true);
   });
 
@@ -185,8 +189,8 @@ describe('Dual Arduino Uno — hardware Serial (USART0)', () => {
     expect(typeof simB.onSerialData).toBe('function');
     simB.onSerialData('Z');
     const fed_Z =
-      (simA.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'Z')
-      || (simA.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'Z');
+      (simA.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'Z') ||
+      (simA.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'Z');
     expect(fed_Z).toBe(true);
   });
 
@@ -215,8 +219,8 @@ describe('Dual Arduino Uno — hardware Serial (USART0)', () => {
 
     simA.onSerialData('H');
     const fed_H =
-      (simB.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'H')
-      || (simB.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'H');
+      (simB.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'H') ||
+      (simB.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'H');
     expect(fed_H).toBe(true);
 
     simB.onSerialData('Z');

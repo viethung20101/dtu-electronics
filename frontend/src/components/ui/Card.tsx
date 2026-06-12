@@ -19,12 +19,7 @@ export function Card({
   children,
   ...rest
 }: Props) {
-  const classes = [
-    'ui-card',
-    `ui-card--${variant}`,
-    `ui-card--p-${padding}`,
-    className ?? '',
-  ]
+  const classes = ['ui-card', `ui-card--${variant}`, `ui-card--p-${padding}`, className ?? '']
     .filter(Boolean)
     .join(' ');
 

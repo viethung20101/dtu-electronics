@@ -128,9 +128,8 @@ export const FlashModal = ({ board, fqbn, onClose }: Props) => {
             return {
               ...prev,
               log: logRef.current,
-              progress: ev.phase === 'writing' && ev.progress !== undefined
-                ? ev.progress
-                : prev.progress,
+              progress:
+                ev.phase === 'writing' && ev.progress !== undefined ? ev.progress : prev.progress,
             };
           });
         }
@@ -181,15 +180,8 @@ export const FlashModal = ({ board, fqbn, onClose }: Props) => {
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
-            Flash {boardLabel}
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            style={closeBtnStyle}
-            aria-label="Close"
-          >
+          <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Flash {boardLabel}</h2>
+          <button type="button" onClick={onClose} style={closeBtnStyle} aria-label="Close">
             ×
           </button>
         </div>
@@ -211,9 +203,7 @@ export const FlashModal = ({ board, fqbn, onClose }: Props) => {
           />
         )}
 
-        {(state.kind === 'flashing' ||
-          state.kind === 'success' ||
-          state.kind === 'error') && (
+        {(state.kind === 'flashing' || state.kind === 'success' || state.kind === 'error') && (
           <ProgressView
             state={state}
             onRetry={() => state.port && void doFlash(state.port)}
@@ -248,11 +238,9 @@ const PickerView = ({ board, ports, selected, onSelect, onRefresh, onFlash }: Pi
             No USB serial ports detected.
           </div>
           <div style={{ color: '#777', fontSize: 12, lineHeight: 1.5 }}>
-            Plug your board into a USB port and click Refresh. On Linux,
-            you may need to add yourself to the dialout group:
-            <pre style={{ marginTop: 6, fontSize: 11 }}>
-              sudo usermod -a -G dialout $USER
-            </pre>
+            Plug your board into a USB port and click Refresh. On Linux, you may need to add
+            yourself to the dialout group:
+            <pre style={{ marginTop: 6, fontSize: 11 }}>sudo usermod -a -G dialout $USER</pre>
             (log out + back in after running.)
           </div>
         </div>
@@ -270,11 +258,7 @@ const PickerView = ({ board, ports, selected, onSelect, onRefresh, onFlash }: Pi
       <label style={{ display: 'block', marginBottom: 6, fontSize: 12, color: '#aaa' }}>
         Serial port
       </label>
-      <select
-        value={selected ?? ''}
-        onChange={(e) => onSelect(e.target.value)}
-        style={selectStyle}
-      >
+      <select value={selected ?? ''} onChange={(e) => onSelect(e.target.value)} style={selectStyle}>
         {ports.map((p) => (
           <option key={p.path} value={p.path}>
             {portLabel(p)}
@@ -283,12 +267,28 @@ const PickerView = ({ board, ports, selected, onSelect, onRefresh, onFlash }: Pi
       </select>
 
       {!hasCompiled && (
-        <div style={{ marginTop: 10, padding: 10, background: '#3a2e1a', color: '#ffb84d', borderRadius: 4, fontSize: 12 }}>
+        <div
+          style={{
+            marginTop: 10,
+            padding: 10,
+            background: '#3a2e1a',
+            color: '#ffb84d',
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
           No compiled program for this board yet. Click Compile in the toolbar first.
         </div>
       )}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 14 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: 14,
+        }}
+      >
         <button type="button" onClick={onRefresh} style={secondaryBtnStyle}>
           Refresh ports
         </button>
@@ -333,7 +333,15 @@ const ProgressView = ({ state, onRetry, onClose, onBackToPicker }: ProgressProps
           <div style={{ fontSize: 13, color: '#ccc', marginBottom: 8 }}>
             Flashing on {state.port}...
           </div>
-          <div style={{ height: 6, background: '#0c0c11', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
+          <div
+            style={{
+              height: 6,
+              background: '#0c0c11',
+              borderRadius: 3,
+              overflow: 'hidden',
+              marginBottom: 6,
+            }}
+          >
             <div
               style={{
                 height: '100%',
@@ -350,13 +358,31 @@ const ProgressView = ({ state, onRetry, onClose, onBackToPicker }: ProgressProps
       )}
 
       {state.kind === 'success' && (
-        <div style={{ padding: 12, background: '#143824', color: '#7ee87e', borderRadius: 4, marginBottom: 12, fontSize: 13 }}>
+        <div
+          style={{
+            padding: 12,
+            background: '#143824',
+            color: '#7ee87e',
+            borderRadius: 4,
+            marginBottom: 12,
+            fontSize: 13,
+          }}
+        >
           ✓ Flashed successfully in {(state.elapsedMs / 1000).toFixed(1)}s
         </div>
       )}
 
       {state.kind === 'error' && (
-        <div style={{ padding: 12, background: '#3a1a1a', color: '#ff8585', borderRadius: 4, marginBottom: 12, fontSize: 13 }}>
+        <div
+          style={{
+            padding: 12,
+            background: '#3a1a1a',
+            color: '#ff8585',
+            borderRadius: 4,
+            marginBottom: 12,
+            fontSize: 13,
+          }}
+        >
           {state.message}
         </div>
       )}

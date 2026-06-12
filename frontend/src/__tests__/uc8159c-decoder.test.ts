@@ -24,7 +24,8 @@ import {
 } from '../simulation/displays/UC8159cDecoder';
 
 const cmd = (c: number): Array<[number, boolean]> => [[c, false]];
-const data = (...bs: number[]): Array<[number, boolean]> => bs.map((b) => [b, true] as [number, boolean]);
+const data = (...bs: number[]): Array<[number, boolean]> =>
+  bs.map((b) => [b, true] as [number, boolean]);
 
 function feedAll(d: UC8159cDecoder, ...streams: Array<Array<[number, boolean]>>) {
   for (const stream of streams) for (const [b, dc] of stream) d.feed(b, dc);
@@ -35,9 +36,12 @@ describe('UC8159cDecoder — init + power state', () => {
     const d = new UC8159cDecoder({ width: 600, height: 448 });
     feedAll(
       d,
-      cmd(UC_CMD_PANEL_SETTING),     data(0xef, 0x08),
-      cmd(UC_CMD_RESOLUTION_SETTING), data(0x02, 0x58, 0x01, 0xc0),
-      cmd(UC_CMD_VCOM_DATA_INTERVAL), data(0x37),
+      cmd(UC_CMD_PANEL_SETTING),
+      data(0xef, 0x08),
+      cmd(UC_CMD_RESOLUTION_SETTING),
+      data(0x02, 0x58, 0x01, 0xc0),
+      cmd(UC_CMD_VCOM_DATA_INTERVAL),
+      data(0x37),
     );
     expect(d.unknownCmds).toEqual([]);
   });

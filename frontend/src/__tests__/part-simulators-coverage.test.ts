@@ -58,7 +58,11 @@ function makeMockSimulator(): unknown {
         listeners.get(pin)!.push(cb);
         return () => {
           const arr = listeners.get(pin);
-          if (arr) listeners.set(pin, arr.filter((c) => c !== cb));
+          if (arr)
+            listeners.set(
+              pin,
+              arr.filter((c) => c !== cb),
+            );
         };
       },
       onPwmChange(pin: number, cb: (p: number, d: number) => void): () => void {
@@ -66,20 +70,34 @@ function makeMockSimulator(): unknown {
         pwmListeners.get(pin)!.push(cb);
         return () => {
           const arr = pwmListeners.get(pin);
-          if (arr) pwmListeners.set(pin, arr.filter((c) => c !== cb));
+          if (arr)
+            pwmListeners.set(
+              pin,
+              arr.filter((c) => c !== cb),
+            );
         };
       },
       triggerPinChange(): void {},
-      getPinState(): boolean { return false; },
-      getPwmValue(): number { return 0; },
+      getPinState(): boolean {
+        return false;
+      },
+      getPwmValue(): number {
+        return 0;
+      },
     },
     cpu: {
-      addClockEvent(fn: () => void, _cycles: number): void { fn(); },
+      addClockEvent(fn: () => void, _cycles: number): void {
+        fn();
+      },
       data: new Uint8Array(256),
     },
     setPinState(): void {},
-    getCurrentCycles(): number { return 0; },
-    getADC(): null { return null; },
+    getCurrentCycles(): number {
+      return 0;
+    },
+    getADC(): null {
+      return null;
+    },
   };
 }
 
@@ -98,11 +116,19 @@ function makeMockElement(): HTMLElement {
     },
     removeEventListener(type: string, listener: EventListener) {
       const arr = handlers.get(type);
-      if (arr) handlers.set(type, arr.filter((l) => l !== listener));
+      if (arr)
+        handlers.set(
+          type,
+          arr.filter((l) => l !== listener),
+        );
     },
-    dispatchEvent(): boolean { return true; },
+    dispatchEvent(): boolean {
+      return true;
+    },
     setAttribute(): void {},
-    getAttribute(): string | null { return null; },
+    getAttribute(): string | null {
+      return null;
+    },
     // Proxy properties so reads/writes work like a custom element
   };
   return new Proxy(el as unknown as HTMLElement, {

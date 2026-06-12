@@ -1,12 +1,3 @@
-/**
- * Examples Page Component
- *
- * Displays the examples gallery. Clicking a tile navigates to
- * `/example/<id>` — ExampleEditorPage owns the actual load (library
- * install, store mutations) and keeps the URL pinned for the lifetime
- * of the session so examples are shareable like saved projects are.
- */
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExamplesGallery } from '../components/examples/ExamplesGallery';
@@ -16,6 +7,9 @@ import { useLocalizedHref } from '../i18n/useLocalizedNavigate';
 import { useSEO } from '../utils/useSEO';
 import { getSeoMeta } from '../seoRoutes';
 import type { ExampleProject } from '../data/examples';
+import './ExamplesPage.css';
+import IconVectorHero from '../assets/generated/vector_167_439.svg';
+import IconVectorFeatures from '../assets/generated/vector_186_600.svg';
 
 export const ExamplesPage: React.FC = () => {
   const localize = useLocalizedHref();
@@ -28,17 +22,20 @@ export const ExamplesPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        background: '#1e1e1e',
-      }}
-    >
-      <AppHeader />
-      <ExamplesGallery onLoadExample={handleLoadExample} />
-      <CommunityProjectsGrid />
+    <div className="examples-page">
+      {/* Background Vectors */}
+      <img src={IconVectorHero} className="examples-vector examples-vector-left" alt="" />
+      <img src={IconVectorFeatures} className="examples-vector examples-vector-right" alt="" />
+
+      {/* Main Container */}
+      <div className="examples-container-centered">
+        {/* Main Branding Header */}
+        <AppHeader />
+        <div className="examples-body">
+          <ExamplesGallery onLoadExample={handleLoadExample} />
+          <CommunityProjectsGrid />
+        </div>
+      </div>
     </div>
   );
 };

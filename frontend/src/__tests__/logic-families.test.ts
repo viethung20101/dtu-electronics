@@ -49,23 +49,26 @@ function mockSource(): {
 }
 
 describe('LogicFamilies — catalog sanity', () => {
-  it.each(Object.entries(FAMILIES))('%s has self-consistent params', (name, family: LogicFamily) => {
-    expect(family.name).toBeTruthy();
-    expect(family.vcc).toBeGreaterThan(0);
-    expect(family.vil).toBeLessThan(family.vih); // dead band must have width
-    expect(family.cin_pF).toBeGreaterThan(0);
-    if (family.vol_max !== undefined && family.voh_min !== undefined) {
-      // Output range must cover input range — otherwise the family
-      // can't drive itself.
-      expect(family.vol_max).toBeLessThanOrEqual(family.vil);
-      expect(family.voh_min).toBeGreaterThanOrEqual(family.vih);
-    }
-    if (family.vil_schmitt !== undefined && family.vih_schmitt !== undefined) {
-      expect(family.vil_schmitt).toBeLessThan(family.vih_schmitt);
-    }
-    // Suppress unused-name lint: `name` is just for test labelling.
-    void name;
-  });
+  it.each(Object.entries(FAMILIES))(
+    '%s has self-consistent params',
+    (name, family: LogicFamily) => {
+      expect(family.name).toBeTruthy();
+      expect(family.vcc).toBeGreaterThan(0);
+      expect(family.vil).toBeLessThan(family.vih); // dead band must have width
+      expect(family.cin_pF).toBeGreaterThan(0);
+      if (family.vol_max !== undefined && family.voh_min !== undefined) {
+        // Output range must cover input range — otherwise the family
+        // can't drive itself.
+        expect(family.vol_max).toBeLessThanOrEqual(family.vil);
+        expect(family.voh_min).toBeGreaterThanOrEqual(family.vih);
+      }
+      if (family.vil_schmitt !== undefined && family.vih_schmitt !== undefined) {
+        expect(family.vil_schmitt).toBeLessThan(family.vih_schmitt);
+      }
+      // Suppress unused-name lint: `name` is just for test labelling.
+      void name;
+    },
+  );
 
   it('TTL/LVCMOS33 share input thresholds (interoperate by design)', () => {
     expect(FAMILIES.TTL.vil).toBe(FAMILIES.LVCMOS33.vil);
@@ -183,8 +186,8 @@ describe('SpiceResolvedPinResolver + Schmitt family — noise rejection', () => 
     const cb = vi.fn();
     r.onChange(cb);
 
-    fire(0.5);  // LOW
-    fire(4.5);  // → HIGH
+    fire(0.5); // LOW
+    fire(4.5); // → HIGH
     expect(cb).toHaveBeenLastCalledWith('HIGH', 4.5);
     cb.mockClear();
 

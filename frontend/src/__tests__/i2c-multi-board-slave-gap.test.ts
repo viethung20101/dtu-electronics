@@ -53,10 +53,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-  I2CBusManager,
-  I2CMemoryDevice,
-} from '../simulation/I2CBusManager';
+import { I2CBusManager, I2CMemoryDevice } from '../simulation/I2CBusManager';
 
 /**
  * Minimal AVRTWI mock shaped exactly as I2CBusManager uses it.
@@ -100,11 +97,7 @@ function makeTWI() {
  * Arduino Wire.beginTransmission(addr); Wire.write(byte);
  * Wire.endTransmission() compiles down and runs.
  */
-function driveMasterTransaction(
-  bus: I2CBusManager,
-  slaveAddr: number,
-  byte: number,
-) {
+function driveMasterTransaction(bus: I2CBusManager, slaveAddr: number, byte: number) {
   bus.start(false);
   bus.connectToSlave(slaveAddr, true);
   bus.writeByte(byte);

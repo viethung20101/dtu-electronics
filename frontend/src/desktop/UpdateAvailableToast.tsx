@@ -60,9 +60,7 @@ interface UpdateHandle {
   version: string;
   date?: string;
   body?: string | null;
-  downloadAndInstall: (
-    onEvent?: (event: DownloadEvent) => void,
-  ) => Promise<void>;
+  downloadAndInstall: (onEvent?: (event: DownloadEvent) => void) => Promise<void>;
 }
 
 type DownloadEvent =
@@ -138,9 +136,7 @@ export const UpdateAvailableToast = () => {
       await update.downloadAndInstall((evt) => {
         if (evt.event === 'Started') {
           setState((prev) =>
-            prev.kind === 'downloading'
-              ? { ...prev, total: evt.data.contentLength ?? null }
-              : prev,
+            prev.kind === 'downloading' ? { ...prev, total: evt.data.contentLength ?? null } : prev,
           );
         } else if (evt.event === 'Progress') {
           setState((prev) =>
@@ -207,25 +203,15 @@ export const UpdateAvailableToast = () => {
               {'↑'}
             </span>
             <div>
-              <div className="vlx-desktop-update-toast-title">
-                Update available
-              </div>
-              <div className="vlx-desktop-update-toast-version">
-                Velxio Desktop {state.version}
-              </div>
+              <div className="vlx-desktop-update-toast-title">Update available</div>
+              <div className="vlx-desktop-update-toast-version">Velxio Desktop {state.version}</div>
             </div>
           </div>
           {state.notes && (
-            <div className="vlx-desktop-update-toast-notes">
-              {truncate(state.notes, 200)}
-            </div>
+            <div className="vlx-desktop-update-toast-notes">{truncate(state.notes, 200)}</div>
           )}
           <div className="vlx-desktop-update-toast-actions">
-            <button
-              type="button"
-              className="vlx-desktop-update-toast-primary"
-              onClick={onInstall}
-            >
+            <button type="button" className="vlx-desktop-update-toast-primary" onClick={onInstall}>
               Install and restart
             </button>
             <button
@@ -241,9 +227,7 @@ export const UpdateAvailableToast = () => {
 
       {state.kind === 'downloading' && (
         <>
-          <div className="vlx-desktop-update-toast-title">
-            Downloading {state.version}...
-          </div>
+          <div className="vlx-desktop-update-toast-title">Downloading {state.version}...</div>
           <div className="vlx-desktop-update-toast-progress">
             <div
               className="vlx-desktop-update-toast-progress-bar"
@@ -251,9 +235,7 @@ export const UpdateAvailableToast = () => {
                 width: state.total
                   ? `${Math.min(100, Math.round((state.downloaded / state.total) * 100))}%`
                   : '40%',
-                animation: state.total
-                  ? undefined
-                  : 'vlx-indeterminate 1.5s linear infinite',
+                animation: state.total ? undefined : 'vlx-indeterminate 1.5s linear infinite',
               }}
             />
           </div>
@@ -265,9 +247,7 @@ export const UpdateAvailableToast = () => {
 
       {state.kind === 'installing' && (
         <>
-          <div className="vlx-desktop-update-toast-title">
-            Installing {state.version}...
-          </div>
+          <div className="vlx-desktop-update-toast-title">Installing {state.version}...</div>
           <div className="vlx-desktop-update-toast-progress-label">
             Velxio Desktop will restart automatically.
           </div>
@@ -276,16 +256,10 @@ export const UpdateAvailableToast = () => {
 
       {state.kind === 'error' && (
         <>
-          <div className="vlx-desktop-update-toast-title">
-            Update failed
-          </div>
+          <div className="vlx-desktop-update-toast-title">Update failed</div>
           <div className="vlx-desktop-update-toast-notes">{state.message}</div>
           <div className="vlx-desktop-update-toast-actions">
-            <button
-              type="button"
-              className="vlx-desktop-update-toast-primary"
-              onClick={onRetry}
-            >
+            <button type="button" className="vlx-desktop-update-toast-primary" onClick={onRetry}>
               Retry
             </button>
             <button

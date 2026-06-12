@@ -169,7 +169,11 @@ export const SensorControlPanel: React.FC<SensorControlPanelProps> = ({
     >
       <div className="sensor-panel-header">
         <span className="sensor-panel-title">{sensorName || def.title}</span>
-        <button className="sensor-panel-close" onClick={onClose} title={t('editor.sensorPanel.close')}>
+        <button
+          className="sensor-panel-close"
+          onClick={onClose}
+          title={t('editor.sensorPanel.close')}
+        >
           ×
         </button>
       </div>

@@ -149,10 +149,7 @@ describe('bannerFor — post-expiry grace states', () => {
   });
 
   it('locked returns null (LockoutOverlay covers the UI)', () => {
-    const banner = bannerFor(
-      { state: 'locked', last_plan: 'trial' },
-      nowMs,
-    );
+    const banner = bannerFor({ state: 'locked', last_plan: 'trial' }, nowMs);
     expect(banner).toBeNull();
   });
 

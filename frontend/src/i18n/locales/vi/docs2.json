@@ -356,6 +356,11 @@
       "emuQemu": "QEMU (lcgamboa)",
       "liveDemoCallout": "<strong>Demo trực tiếp:</strong> <a>cvs.local</a>, không cần cài đặt, mở trình soạn thảo và bắt đầu mô phỏng ngay."
     },
+    "sidebarGroup": {
+      "docs": "TÀI LIỆU",
+      "cores": "MÔ PHỎNG CORE",
+      "system": "HỆ THỐNG"
+    },
     "nav": {
       "intro": "Giới thiệu",
       "gettingStarted": "Bắt đầu",

@@ -38,29 +38,67 @@ import { syntheticChipPin } from '../simulation/customChips/syntheticPins';
 import { resetBusNets } from '../simulation/customChips/busNets';
 
 const f = (n: string) => fileURLToPath(new URL(`./fixtures/chipbus/${n}`, import.meta.url));
-const paths = { z80: f('z80.wasm'), rom: f('galaksija-rom.wasm'), ram: f('ram-64k.wasm'), inv: f('inverter.wasm') };
+const paths = {
+  z80: f('z80.wasm'),
+  rom: f('galaksija-rom.wasm'),
+  ram: f('ram-64k.wasm'),
+  inv: f('inverter.wasm'),
+};
 const haveFixtures = Object.values(paths).every(existsSync);
 
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 
 const Z80_PINS = [
-  ...range(16).map((i) => `A${i}`), ...range(8).map((i) => `D${i}`),
-  'M1', 'MREQ', 'IORQ', 'RD', 'WR', 'RFSH', 'HALT', 'WAIT',
-  'INT', 'NMI', 'RESET', 'BUSREQ', 'BUSACK', 'CLK', 'VCC', 'GND',
+  ...range(16).map((i) => `A${i}`),
+  ...range(8).map((i) => `D${i}`),
+  'M1',
+  'MREQ',
+  'IORQ',
+  'RD',
+  'WR',
+  'RFSH',
+  'HALT',
+  'WAIT',
+  'INT',
+  'NMI',
+  'RESET',
+  'BUSREQ',
+  'BUSACK',
+  'CLK',
+  'VCC',
+  'GND',
 ];
 const ROM_PINS = [...range(13).map((i) => `A${i}`), ...range(8).map((i) => `D${i}`), 'CE', 'OE'];
-const RAM_PINS = [...range(16).map((i) => `A${i}`), ...range(8).map((i) => `D${i}`), 'CE', 'OE', 'WE', 'VCC', 'GND'];
+const RAM_PINS = [
+  ...range(16).map((i) => `A${i}`),
+  ...range(8).map((i) => `D${i}`),
+  'CE',
+  'OE',
+  'WE',
+  'VCC',
+  'GND',
+];
 const INV_PINS = ['IN', 'OUT'];
 
 const W: ChipNetState['wires'] = [];
 const wire = (a: string, ap: string, b: string, bp: string) =>
-  (W as { start: { componentId: string; pinName: string }; end: { componentId: string; pinName: string } }[]).push(
-    { start: { componentId: a, pinName: ap }, end: { componentId: b, pinName: bp } });
-for (const i of range(13)) { wire('z80', `A${i}`, 'rom', `A${i}`); wire('z80', `A${i}`, 'ram', `A${i}`); }
+  (
+    W as {
+      start: { componentId: string; pinName: string };
+      end: { componentId: string; pinName: string };
+    }[]
+  ).push({ start: { componentId: a, pinName: ap }, end: { componentId: b, pinName: bp } });
+for (const i of range(13)) {
+  wire('z80', `A${i}`, 'rom', `A${i}`);
+  wire('z80', `A${i}`, 'ram', `A${i}`);
+}
 wire('z80', 'A13', 'rom', 'CE');
 wire('z80', 'A13', 'inv', 'IN');
 wire('inv', 'OUT', 'ram', 'CE');
-for (const i of range(8)) { wire('z80', `D${i}`, 'rom', `D${i}`); wire('z80', `D${i}`, 'ram', `D${i}`); }
+for (const i of range(8)) {
+  wire('z80', `D${i}`, 'rom', `D${i}`);
+  wire('z80', `D${i}`, 'ram', `D${i}`);
+}
 wire('z80', 'RD', 'rom', 'OE');
 wire('z80', 'RD', 'ram', 'OE');
 wire('z80', 'WR', 'ram', 'WE');
@@ -68,57 +106,108 @@ wire('z80', 'WR', 'ram', 'WE');
 const STATE: ChipNetState = {
   wires: W,
   components: [
-    { id: 'z80', metadataId: 'custom-chip' }, { id: 'rom', metadataId: 'custom-chip' },
-    { id: 'ram', metadataId: 'custom-chip' }, { id: 'inv', metadataId: 'custom-chip' },
+    { id: 'z80', metadataId: 'custom-chip' },
+    { id: 'rom', metadataId: 'custom-chip' },
+    { id: 'ram', metadataId: 'custom-chip' },
+    { id: 'inv', metadataId: 'custom-chip' },
   ],
   boards: [],
 };
-const pinKey = (c: string, p: string): number => resolveChipNetKey(STATE, c, p) ?? syntheticChipPin(c, p);
-const wiresFor = (c: string, pins: string[]) => new Map(pins.map((p) => [p, pinKey(c, p)] as [string, number]));
+const pinKey = (c: string, p: string): number =>
+  resolveChipNetKey(STATE, c, p) ?? syntheticChipPin(c, p);
+const wiresFor = (c: string, pins: string[]) =>
+  new Map(pins.map((p) => [p, pinKey(c, p)] as [string, number]));
 
-describe.skipIf(!haveFixtures)('chipbus Phase 3 — Galaksija (real Z80 home computer) boots over the bus', () => {
-  beforeEach(() => { setChipBusEnabledForTest(true); resetChipNetIndexForTest(); resetBusNets(); });
-  afterEach(() => { setChipBusEnabledForTest(null); resetChipNetIndexForTest(); resetBusNets(); });
-
-  it('runs the public-domain Galaksija ROM: leaves reset, reaches init 0x03DA, executes 1000+ fetches', async () => {
-    const pm = new PinManager();
-    const z80 = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.z80)), componentId: 'z80', pinManager: pm, wires: wiresFor('z80', Z80_PINS) });
-    z80.start();
-    const rom = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.rom)), componentId: 'rom', pinManager: pm, wires: wiresFor('rom', ROM_PINS) });
-    rom.start();
-    const ram = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.ram)), componentId: 'ram', pinManager: pm, wires: wiresFor('ram', RAM_PINS) });
-    ram.start();
-    const inv = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.inv)), componentId: 'inv', pinManager: pm, wires: wiresFor('inv', INV_PINS) });
-    inv.start();
-
-    // Watch M1: on each opcode fetch, read the address bus = PC.
-    const addrKeys = range(16).map((i) => pinKey('z80', `A${i}`));
-    const readPc = () => { let pc = 0; for (let i = 0; i < 16; i++) if (pm.getPinState(addrKeys[i])) pc |= 1 << i; return pc; };
-    let fetches = 0, reached03DA = false, everMoved = false, lastPc = -1;
-    const seen = new Set<number>();
-    pm.onPinChange(pinKey('z80', 'M1'), (_p, state) => {
-      if (state) return; // only on M1 asserted (low)
-      const pc = readPc();
-      fetches++; seen.add(pc);
-      if (pc === 0x03da) reached03DA = true;
-      if (pc !== lastPc && lastPc !== -1) everMoved = true;
-      lastPc = pc;
+describe.skipIf(!haveFixtures)(
+  'chipbus Phase 3 — Galaksija (real Z80 home computer) boots over the bus',
+  () => {
+    beforeEach(() => {
+      setChipBusEnabledForTest(true);
+      resetChipNetIndexForTest();
+      resetBusNets();
+    });
+    afterEach(() => {
+      setChipBusEnabledForTest(null);
+      resetChipNetIndexForTest();
+      resetBusNets();
     });
 
-    // Deassert control inputs, then release RESET (rising edge).
-    for (const p of ['WAIT', 'INT', 'NMI', 'BUSREQ']) pm.triggerPinChange(pinKey('z80', p), true);
-    pm.triggerPinChange(pinKey('z80', 'RESET'), false);
-    pm.triggerPinChange(pinKey('z80', 'RESET'), true);
+    it('runs the public-domain Galaksija ROM: leaves reset, reaches init 0x03DA, executes 1000+ fetches', async () => {
+      const pm = new PinManager();
+      const z80 = await ChipInstance.create({
+        wasm: new Uint8Array(readFileSync(paths.z80)),
+        componentId: 'z80',
+        pinManager: pm,
+        wires: wiresFor('z80', Z80_PINS),
+      });
+      z80.start();
+      const rom = await ChipInstance.create({
+        wasm: new Uint8Array(readFileSync(paths.rom)),
+        componentId: 'rom',
+        pinManager: pm,
+        wires: wiresFor('rom', ROM_PINS),
+      });
+      rom.start();
+      const ram = await ChipInstance.create({
+        wasm: new Uint8Array(readFileSync(paths.ram)),
+        componentId: 'ram',
+        pinManager: pm,
+        wires: wiresFor('ram', RAM_PINS),
+      });
+      ram.start();
+      const inv = await ChipInstance.create({
+        wasm: new Uint8Array(readFileSync(paths.inv)),
+        componentId: 'inv',
+        pinManager: pm,
+        wires: wiresFor('inv', INV_PINS),
+      });
+      inv.start();
 
-    // ~60000 instructions of the 4 MHz pseudo-clock (250 ns period) — enough
-    // to clear the screen, set up the stack, and run the welcome-banner init.
-    z80.tickTimers(BigInt(60000 * 250));
+      // Watch M1: on each opcode fetch, read the address bus = PC.
+      const addrKeys = range(16).map((i) => pinKey('z80', `A${i}`));
+      const readPc = () => {
+        let pc = 0;
+        for (let i = 0; i < 16; i++) if (pm.getPinState(addrKeys[i])) pc |= 1 << i;
+        return pc;
+      };
+      let fetches = 0,
+        reached03DA = false,
+        everMoved = false,
+        lastPc = -1;
+      const seen = new Set<number>();
+      pm.onPinChange(pinKey('z80', 'M1'), (_p, state) => {
+        if (state) return; // only on M1 asserted (low)
+        const pc = readPc();
+        fetches++;
+        seen.add(pc);
+        if (pc === 0x03da) reached03DA = true;
+        if (pc !== lastPc && lastPc !== -1) everMoved = true;
+        lastPc = pc;
+      });
 
-    expect(everMoved, 'PC advances past the reset vector').toBe(true);
-    expect(reached03DA, 'PC reaches the init routine at 0x03DA (JP target from reset)').toBe(true);
-    expect(fetches, 'opcode fetches over the run').toBeGreaterThan(1000);
-    expect(seen.size, 'distinct fetch addresses (init really runs through the ROM)').toBeGreaterThan(50);
+      // Deassert control inputs, then release RESET (rising edge).
+      for (const p of ['WAIT', 'INT', 'NMI', 'BUSREQ']) pm.triggerPinChange(pinKey('z80', p), true);
+      pm.triggerPinChange(pinKey('z80', 'RESET'), false);
+      pm.triggerPinChange(pinKey('z80', 'RESET'), true);
 
-    z80.dispose(); rom.dispose(); ram.dispose(); inv.dispose();
-  }, 30_000);
-});
+      // ~60000 instructions of the 4 MHz pseudo-clock (250 ns period) — enough
+      // to clear the screen, set up the stack, and run the welcome-banner init.
+      z80.tickTimers(BigInt(60000 * 250));
+
+      expect(everMoved, 'PC advances past the reset vector').toBe(true);
+      expect(reached03DA, 'PC reaches the init routine at 0x03DA (JP target from reset)').toBe(
+        true,
+      );
+      expect(fetches, 'opcode fetches over the run').toBeGreaterThan(1000);
+      expect(
+        seen.size,
+        'distinct fetch addresses (init really runs through the ROM)',
+      ).toBeGreaterThan(50);
+
+      z80.dispose();
+      rom.dispose();
+      ram.dispose();
+      inv.dispose();
+    }, 30_000);
+  },
+);

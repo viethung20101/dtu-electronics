@@ -1,11 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { BoardKind } from '../../types/board';
 import { BOARD_KIND_LABELS } from '../../types/board';
-import type {
-  ESP32BoardOptions,
-  ESP32CoreSelect,
-  SpiffsFile,
-} from '../../types/boardOptions';
+import type { ESP32BoardOptions, ESP32CoreSelect, SpiffsFile } from '../../types/boardOptions';
 import {
   CORE_SELECT_OPTIONS,
   CPU_FREQ_OPTIONS,
@@ -48,8 +44,8 @@ const PARTITION_SCHEMES: (keyof typeof PARTITION_SCHEME_LABELS)[] = [
   'rainmaker',
 ];
 
-const MAX_FILE_BYTES = 1 * 1024 * 1024;       // 1 MB per file warning
-const SOFT_TOTAL_CAP = 4 * 1024 * 1024;       // 4 MB total guardrail
+const MAX_FILE_BYTES = 1 * 1024 * 1024; // 1 MB per file warning
+const SOFT_TOTAL_CAP = 4 * 1024 * 1024; // 4 MB total guardrail
 
 function fmtBytes(n: number): string {
   if (n < 1024) return `${n} B`;
@@ -121,9 +117,7 @@ export const BoardOptionsModal = ({
     const next: SpiffsFile[] = [...spiffsFiles];
     for (const f of Array.from(files)) {
       if (next.some((existing) => existing.name === f.name)) {
-        const overwrite = window.confirm(
-          `A file named "${f.name}" already exists. Overwrite?`,
-        );
+        const overwrite = window.confirm(`A file named "${f.name}" already exists. Overwrite?`);
         if (!overwrite) continue;
       }
       const contentB64 = await readFileAsBase64(f);
@@ -284,9 +278,7 @@ export const BoardOptionsModal = ({
                       ))}
                     </select>
                     {nonDio && (
-                      <span className="bom-badge bom-badge-error">
-                        QEMU may fail to boot
-                      </span>
+                      <span className="bom-badge bom-badge-error">QEMU may fail to boot</span>
                     )}
                   </div>
                 </div>
@@ -324,8 +316,7 @@ export const BoardOptionsModal = ({
                       value={draft.coreDebugLevel}
                       onChange={(e) =>
                         update({
-                          coreDebugLevel: e.target
-                            .value as ESP32BoardOptions['coreDebugLevel'],
+                          coreDebugLevel: e.target.value as ESP32BoardOptions['coreDebugLevel'],
                         })
                       }
                     >
@@ -376,9 +367,7 @@ export const BoardOptionsModal = ({
                       ))}
                     </select>
                     {sameCore && (
-                      <span className="bom-badge bom-badge-warn">
-                        Both on same core
-                      </span>
+                      <span className="bom-badge bom-badge-warn">Both on same core</span>
                     )}
                   </div>
                 </div>
@@ -458,22 +447,20 @@ const SpiffsPanel = ({
     <>
       {noFsButHasFiles && (
         <div className="bom-warning">
-          Selected partition scheme has no filesystem. Uploaded files will be
-          ignored at flash time. Switch to a scheme like
+          Selected partition scheme has no filesystem. Uploaded files will be ignored at flash time.
+          Switch to a scheme like
           <code> default </code> or <code>min_spiffs</code> to keep them.
         </div>
       )}
       {overSchemeCap && (
         <div className="bom-warning">
-          Total upload size ({fmtBytes(totalUploaded)}) exceeds the partition's
-          SPIFFS capacity ({fmtBytes(fsCapacity)}). The image will not fit -
-          remove files or pick a larger scheme.
+          Total upload size ({fmtBytes(totalUploaded)}) exceeds the partition's SPIFFS capacity (
+          {fmtBytes(fsCapacity)}). The image will not fit - remove files or pick a larger scheme.
         </div>
       )}
       {overSoft && !overSchemeCap && (
         <div className="bom-warning">
-          Total upload size exceeds the recommended 4 MB cap. Save / load
-          operations may slow down.
+          Total upload size exceeds the recommended 4 MB cap. Save / load operations may slow down.
         </div>
       )}
 
@@ -500,8 +487,8 @@ const SpiffsPanel = ({
 
       {files.length === 0 ? (
         <div className="bom-spiffs-empty">
-          No files. Click "Add file" to upload assets that will be flashed into
-          the SPIFFS partition.
+          No files. Click "Add file" to upload assets that will be flashed into the SPIFFS
+          partition.
         </div>
       ) : (
         <table className="bom-spiffs-table">
@@ -518,20 +505,14 @@ const SpiffsPanel = ({
                 <td className="bom-spiffs-name">
                   /{f.name}
                   {f.size > MAX_FILE_BYTES && (
-                    <span
-                      className="bom-badge bom-badge-warn"
-                      style={{ marginLeft: 8 }}
-                    >
+                    <span className="bom-badge bom-badge-warn" style={{ marginLeft: 8 }}>
                       large
                     </span>
                   )}
                 </td>
                 <td className="bom-spiffs-size">{fmtBytes(f.size)}</td>
                 <td className="bom-spiffs-actions">
-                  <button
-                    className="bom-spiffs-delete"
-                    onClick={() => onDelete(f.name)}
-                  >
+                  <button className="bom-spiffs-delete" onClick={() => onDelete(f.name)}>
                     Delete
                   </button>
                 </td>

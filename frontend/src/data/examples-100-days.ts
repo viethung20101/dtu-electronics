@@ -19,15 +19,17 @@ import type { ExampleProject } from './examples';
 
 export const hundredDaysExamples: ExampleProject[] = [
   {
-    id: "100d-aqi-esp",
-    title: "AQI ESP",
-    description: "AQI ESP on ESP32 (MicroPython) \u2014 uses DHT, HTTP server, OLED, Wi-Fi.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-aqi-esp',
+    title: 'AQI ESP',
+    description: 'AQI ESP on ESP32 (MicroPython) \u2014 uses DHT, HTTP server, OLED, Wi-Fi.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "app.py", content: `from flask import Flask, request, jsonify
+      {
+        name: 'app.py',
+        content: `from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
@@ -50,8 +52,11 @@ def predict():
     return jsonify({"predicted_aqi": aqi, "status": status})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)` },
-      { name: "main.py", content: `import network
+    app.run(host="0.0.0.0", port=5000, debug=True)`,
+      },
+      {
+        name: 'main.py',
+        content: `import network
 import urequests
 import time
 from machine import Pin, ADC, I2C
@@ -151,23 +156,27 @@ while True:
     time.sleep(5)
 
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "esp32", "http_server", "i2c_oled", "micropython", "wifi"],
+    tags: ['100-days', 'dht', 'esp32', 'http_server', 'i2c_oled', 'micropython', 'wifi'],
   },
   {
-    id: "100d-auto-night-light-using-ldr-esp32-plus-micropython",
-    title: "Auto Night Light using LDR (ESP32 + MicroPython)",
-    description: "Auto Night Light using LDR (ESP32 + MicroPython) on ESP32 (MicroPython) \u2014 uses LDR.",
-    category: "sensors",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-auto-night-light-using-ldr-esp32-plus-micropython',
+    title: 'Auto Night Light using LDR (ESP32 + MicroPython)',
+    description:
+      'Auto Night Light using LDR (ESP32 + MicroPython) on ESP32 (MicroPython) \u2014 uses LDR.',
+    category: 'sensors',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, ADC
+      {
+        name: 'main.py',
+        content: `from machine import Pin, ADC
 from time import sleep
 
 # Initialize LDR on ADC pin 34
@@ -190,23 +199,27 @@ while True:
         led.off()            # Turn LED OFF
     
     sleep(1)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "ldr", "micropython"],
+    tags: ['100-days', 'esp32', 'ldr', 'micropython'],
   },
   {
-    id: "100d-battery-monitor-with-blynk-iot",
-    title: "Battery Monitor with Blynk IoT",
-    description: "Battery Monitor with Blynk IoT on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-battery-monitor-with-blynk-iot',
+    title: 'Battery Monitor with Blynk IoT',
+    description:
+      'Battery Monitor with Blynk IoT on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -470,8 +483,11 @@ class Blynk(BlynkProtocol):
         except: # TODO: handle disconnect
             return
         self.process(data)
-` },
-      { name: "main.py", content: `# Copyright (c) 2026 Kritish Mohapatra
+`,
+      },
+      {
+        name: 'main.py',
+        content: `# Copyright (c) 2026 Kritish Mohapatra
 
 import network
 from machine import ADC, Pin
@@ -536,23 +552,27 @@ while True:
         blynk.virtual_write(0, v)    # V0 = Voltage
         blynk.virtual_write(1, pct)  # V1 = Battery %
         print(f"Sent → {v}V | {pct}%")
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-bluetooth-based-wireless-led-control-system",
-    title: "Bluetooth Based Wireless LED Control System",
-    description: "Bluetooth Based Wireless LED Control System on ESP32 (MicroPython) \u2014 uses BLE.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-bluetooth-based-wireless-led-control-system',
+    title: 'Bluetooth Based Wireless LED Control System',
+    description:
+      'Bluetooth Based Wireless LED Control System on ESP32 (MicroPython) \u2014 uses BLE.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, UART
+      {
+        name: 'main.py',
+        content: `from machine import Pin, UART
 
 uart = UART(0, 9600)
 led = Pin("LED", Pin.OUT)
@@ -574,23 +594,27 @@ while True:
             print("LED OFF")
             uart.write("LED OFF\\n")
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "ble", "esp32", "micropython"],
+    tags: ['100-days', 'ble', 'esp32', 'micropython'],
   },
   {
-    id: "100d-blynk-based-iot-relay-control-micropython",
-    title: "Blynk Based IoT Relay Control (MicroPython)",
-    description: "Blynk Based IoT Relay Control (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "raspberry-pi-pico",
+    id: '100d-blynk-based-iot-relay-control-micropython',
+    title: 'Blynk Based IoT Relay Control (MicroPython)',
+    description:
+      'Blynk Based IoT Relay Control (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -854,8 +878,11 @@ class Blynk(BlynkProtocol):
         except: # TODO: handle disconnect
             return
         self.process(data)
-` },
-      { name: "main.py", content: `'''Copyright (c) 2025 Kritish Mohapatra'''
+`,
+      },
+      {
+        name: 'main.py',
+        content: `'''Copyright (c) 2025 Kritish Mohapatra'''
 
 import network
 from machine import Pin
@@ -898,23 +925,35 @@ def v1_handler(value):
 while True:
     blynk.run()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "micropython", "raspberry-pi-pico", "rp2040", "wifi"],
+    tags: [
+      '100-days',
+      'blynk',
+      'blynk_cloud',
+      'micropython',
+      'raspberry-pi-pico',
+      'rp2040',
+      'wifi',
+    ],
   },
   {
-    id: "100d-blynk-controlled-dc-brushless-fan",
-    title: "Blynk Controlled DC Brushless Fan",
-    description: "Blynk Controlled DC Brushless Fan on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-blynk-controlled-dc-brushless-fan',
+    title: 'Blynk Controlled DC Brushless Fan',
+    description:
+      'Blynk Controlled DC Brushless Fan on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -1178,8 +1217,11 @@ class Blynk(BlynkProtocol):
         except: # TODO: handle disconnect
             return
         self.process(data)
-` },
-      { name: "main.py", content: `import network
+`,
+      },
+      {
+        name: 'main.py',
+        content: `import network
 from machine import Pin
 import BlynkLib
 from time import sleep
@@ -1225,23 +1267,27 @@ def v1_handler(value):
 while True:
     blynk.run()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-clap-toggle-switch-using-esp32-and-digital-sound-sensor-micropython",
-    title: "Clap Toggle Switch using ESP32 & Digital Sound Sensor (MicroPython)",
-    description: "Clap Toggle Switch using ESP32 & Digital Sound Sensor (MicroPython) on ESP32 (MicroPython).",
-    category: "sensors",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-clap-toggle-switch-using-esp32-and-digital-sound-sensor-micropython',
+    title: 'Clap Toggle Switch using ESP32 & Digital Sound Sensor (MicroPython)',
+    description:
+      'Clap Toggle Switch using ESP32 & Digital Sound Sensor (MicroPython) on ESP32 (MicroPython).',
+    category: 'sensors',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin
+      {
+        name: 'main.py',
+        content: `from machine import Pin
 import time
 
 sound = Pin(15, Pin.IN)
@@ -1268,23 +1314,27 @@ while True:
 
     time.sleep_ms(20)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython"],
+    tags: ['100-days', 'esp32', 'micropython'],
   },
   {
-    id: "100d-dc-motor-speed-control-web-slider",
-    title: "DC Motor Speed Control (Web Slider)",
-    description: "DC Motor Speed Control (Web Slider) on ESP32 (MicroPython) \u2014 uses Servo, Wi-Fi.",
-    category: "robotics",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-dc-motor-speed-control-web-slider',
+    title: 'DC Motor Speed Control (Web Slider)',
+    description:
+      'DC Motor Speed Control (Web Slider) on ESP32 (MicroPython) \u2014 uses Servo, Wi-Fi.',
+    category: 'robotics',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import socket
 from machine import Pin, PWM
 from time import sleep_ms
@@ -1371,23 +1421,27 @@ while True:
     cl.send(html)
     cl.close()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "servo", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'servo', 'wifi'],
   },
   {
-    id: "100d-dht11-web-server-using-esp32-and-micropython",
-    title: "DHT11 Web Server using ESP32 & MicroPython",
-    description: "DHT11 Web Server using ESP32 & MicroPython on ESP32 (MicroPython) \u2014 uses DHT, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-dht11-web-server-using-esp32-and-micropython',
+    title: 'DHT11 Web Server using ESP32 & MicroPython',
+    description:
+      'DHT11 Web Server using ESP32 & MicroPython on ESP32 (MicroPython) \u2014 uses DHT, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import machine
+      {
+        name: 'main.py',
+        content: `import machine
 import network
 import time
 import socket
@@ -1514,23 +1568,27 @@ while True:
         time.sleep(10) # Wait a bit before trying again
     except Exception as e:
         print("An unexpected error occurred:", e)
-        time.sleep(10)` },
+        time.sleep(10)`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'dht', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-dimmer-led-using-potentiometer-micropython",
-    title: "Dimmer LED using Potentiometer (MicroPython)",
-    description: "Dimmer LED using Potentiometer (MicroPython) on ESP32 (MicroPython) \u2014 uses Servo.",
-    category: "robotics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-dimmer-led-using-potentiometer-micropython',
+    title: 'Dimmer LED using Potentiometer (MicroPython)',
+    description:
+      'Dimmer LED using Potentiometer (MicroPython) on ESP32 (MicroPython) \u2014 uses Servo.',
+    category: 'robotics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, ADC, PWM
+      {
+        name: 'main.py',
+        content: `from machine import Pin, ADC, PWM
 from time import sleep
 
 pot = ADC(Pin(34))       # Potentiometer
@@ -1545,23 +1603,27 @@ while True:
     print("ADC:", val, "→ PWM:", duty)
     sleep(0.1)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "servo"],
+    tags: ['100-days', 'esp32', 'micropython', 'servo'],
   },
   {
-    id: "100d-dual-ir-entry-exit-detector-with-telegram-alerts",
-    title: "Dual IR Entry Exit Detector with Telegram Alerts",
-    description: "Dual IR Entry Exit Detector with Telegram Alerts on ESP32 (MicroPython) \u2014 uses Telegram, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-dual-ir-entry-exit-detector-with-telegram-alerts',
+    title: 'Dual IR Entry Exit Detector with Telegram Alerts',
+    description:
+      'Dual IR Entry Exit Detector with Telegram Alerts on ESP32 (MicroPython) \u2014 uses Telegram, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import urequests
 import machine
 import time
@@ -1640,23 +1702,26 @@ while True:
         green_led.value(0)
 
     time.sleep(0.1)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "telegram", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'telegram', 'wifi'],
   },
   {
-    id: "100d-eeprom-simulation-using-micropython-on-esp32-wokwi",
-    title: "EEPROM Simulation using MicroPython on ESP32 (Wokwi)",
-    description: "EEPROM Simulation using MicroPython on ESP32 (Wokwi) on ESP32 (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-eeprom-simulation-using-micropython-on-esp32-wokwi',
+    title: 'EEPROM Simulation using MicroPython on ESP32 (Wokwi)',
+    description: 'EEPROM Simulation using MicroPython on ESP32 (Wokwi) on ESP32 (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `# ===== EEPROM Simulation (File-based) =====
+      {
+        name: 'main.py',
+        content: `# ===== EEPROM Simulation (File-based) =====
 
 EEPROM_FILE = "eeprom.dat"
 EEPROM_SIZE = 512
@@ -1722,23 +1787,26 @@ while True:
         print("String is same as previous one.")
 
     print("Stored Text in EEPROM:", read_string(0))
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython"],
+    tags: ['100-days', 'esp32', 'micropython'],
   },
   {
-    id: "100d-esp32-ble-led-control",
-    title: "ESP32 BLE LED Control",
-    description: "ESP32 BLE LED Control on ESP32 (MicroPython) \u2014 uses BLE.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-esp32-ble-led-control',
+    title: 'ESP32 BLE LED Control',
+    description: 'ESP32 BLE LED Control on ESP32 (MicroPython) \u2014 uses BLE.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, Timer
+      {
+        name: 'main.py',
+        content: `from machine import Pin, Timer
 import ubluetooth
 from time import sleep_ms
 
@@ -1829,23 +1897,27 @@ while True:
         ble.send(status)
         message = ""
     sleep_ms(100)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "ble", "esp32", "micropython"],
+    tags: ['100-days', 'ble', 'esp32', 'micropython'],
   },
   {
-    id: "100d-esp32-hotspot-access-point-setup-micropython",
-    title: "ESP32 Hotspot (Access Point) Setup MicroPython",
-    description: "ESP32 Hotspot (Access Point) Setup MicroPython on ESP32 (MicroPython) \u2014 uses Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-esp32-hotspot-access-point-setup-micropython',
+    title: 'ESP32 Hotspot (Access Point) Setup MicroPython',
+    description:
+      'ESP32 Hotspot (Access Point) Setup MicroPython on ESP32 (MicroPython) \u2014 uses Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import time
 
 ap=network.WLAN(network.AP_IF)
@@ -1859,23 +1931,27 @@ while not ap.active():
 print("✅ ESP32 Hotspot Started")
 print("📶 SSID: ESP32_HOTSPOT")
 print("🌐 IP Address:", ap.ifconfig()[0])
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-esp32-ir-sensor-telegram-alert-micropython",
-    title: "ESP32 IR Sensor Telegram Alert (MicroPython)",
-    description: "ESP32 IR Sensor Telegram Alert (MicroPython) on ESP32 (MicroPython) \u2014 uses Telegram, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-esp32-ir-sensor-telegram-alert-micropython',
+    title: 'ESP32 IR Sensor Telegram Alert (MicroPython)',
+    description:
+      'ESP32 IR Sensor Telegram Alert (MicroPython) on ESP32 (MicroPython) \u2014 uses Telegram, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import urequests
 import machine
 import time
@@ -1930,23 +2006,27 @@ while True:
             last_alert = time.time()
         time.sleep(1)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "telegram", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'telegram', 'wifi'],
   },
   {
-    id: "100d-esp32-oled-smart-ui-eyes-animation-time-and-weather-micropython",
-    title: "ESP32 OLED Smart UI Eyes Animation Time & Weather (MicroPython)",
-    description: "ESP32 OLED Smart UI Eyes Animation Time & Weather (MicroPython) on ESP32 (MicroPython) \u2014 uses OLED, Wi-Fi.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-esp32-oled-smart-ui-eyes-animation-time-and-weather-micropython',
+    title: 'ESP32 OLED Smart UI Eyes Animation Time & Weather (MicroPython)',
+    description:
+      'ESP32 OLED Smart UI Eyes Animation Time & Weather (MicroPython) on ESP32 (MicroPython) \u2014 uses OLED, Wi-Fi.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, I2C
+      {
+        name: 'main.py',
+        content: `from machine import Pin, I2C
 import ssd1306
 from time import sleep, localtime, time
 import network, ntptime
@@ -2126,8 +2206,11 @@ while True:
     elif state == WEATHER:
         show_weather_screen()
         state = MENU
-` },
-      { name: "ssd1306.py", content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
+`,
+      },
+      {
+        name: 'ssd1306.py',
+        content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
 from micropython import const
 import framebuf
@@ -2282,40 +2365,84 @@ class SSD1306_SPI(SSD1306):
         self.cs(0)
         self.spi.write(buf)
         self.cs(1)
-` },
+`,
+      },
     ],
     code: '',
     components: [
       { type: 'wokwi-ssd1306', id: 'oled1', x: 420, y: 80, properties: {} },
       { type: 'wokwi-pushbutton', id: 'btn-next', x: 420, y: 280, properties: { color: 'blue' } },
-      { type: 'wokwi-pushbutton', id: 'btn-sel',  x: 560, y: 280, properties: { color: 'green' } },
+      { type: 'wokwi-pushbutton', id: 'btn-sel', x: 560, y: 280, properties: { color: 'green' } },
     ],
     wires: [
       // OLED I2C — SDA = GPIO21, SCL = GPIO22 (matches SoftI2C in code)
-      { id: 'w-oled-vcc', start: { componentId: 'esp32', pinName: '3V3' },   end: { componentId: 'oled1', pinName: 'VIN' }, color: '#ff4444' },
-      { id: 'w-oled-gnd', start: { componentId: 'esp32', pinName: 'GND.1' }, end: { componentId: 'oled1', pinName: 'GND' }, color: '#000000' },
-      { id: 'w-oled-sda', start: { componentId: 'esp32', pinName: '21' },    end: { componentId: 'oled1', pinName: 'DATA' }, color: '#22aaff' },
-      { id: 'w-oled-scl', start: { componentId: 'esp32', pinName: '22' },    end: { componentId: 'oled1', pinName: 'CLK' }, color: '#ff8800' },
+      {
+        id: 'w-oled-vcc',
+        start: { componentId: 'esp32', pinName: '3V3' },
+        end: { componentId: 'oled1', pinName: 'VIN' },
+        color: '#ff4444',
+      },
+      {
+        id: 'w-oled-gnd',
+        start: { componentId: 'esp32', pinName: 'GND.1' },
+        end: { componentId: 'oled1', pinName: 'GND' },
+        color: '#000000',
+      },
+      {
+        id: 'w-oled-sda',
+        start: { componentId: 'esp32', pinName: '21' },
+        end: { componentId: 'oled1', pinName: 'DATA' },
+        color: '#22aaff',
+      },
+      {
+        id: 'w-oled-scl',
+        start: { componentId: 'esp32', pinName: '22' },
+        end: { componentId: 'oled1', pinName: 'CLK' },
+        color: '#ff8800',
+      },
       // Buttons — HIGH-when-pressed (one side to 3V3, other to GPIO). Code
       // reads pin.value() == 1 on press, so they sit between 3.3V and the
       // input pin. Add Pin.PULL_DOWN in MicroPython if the pin floats.
-      { id: 'w-btn-next-3v3', start: { componentId: 'esp32', pinName: '3V3' }, end: { componentId: 'btn-next', pinName: '1.l' }, color: '#ff4444' },
-      { id: 'w-btn-next-gpio', start: { componentId: 'btn-next', pinName: '2.l' }, end: { componentId: 'esp32', pinName: '14' }, color: '#aa66ff' },
-      { id: 'w-btn-sel-3v3',  start: { componentId: 'esp32', pinName: '3V3' }, end: { componentId: 'btn-sel', pinName: '1.l' }, color: '#ff4444' },
-      { id: 'w-btn-sel-gpio', start: { componentId: 'btn-sel', pinName: '2.l' }, end: { componentId: 'esp32', pinName: '27' }, color: '#22cc22' },
+      {
+        id: 'w-btn-next-3v3',
+        start: { componentId: 'esp32', pinName: '3V3' },
+        end: { componentId: 'btn-next', pinName: '1.l' },
+        color: '#ff4444',
+      },
+      {
+        id: 'w-btn-next-gpio',
+        start: { componentId: 'btn-next', pinName: '2.l' },
+        end: { componentId: 'esp32', pinName: '14' },
+        color: '#aa66ff',
+      },
+      {
+        id: 'w-btn-sel-3v3',
+        start: { componentId: 'esp32', pinName: '3V3' },
+        end: { componentId: 'btn-sel', pinName: '1.l' },
+        color: '#ff4444',
+      },
+      {
+        id: 'w-btn-sel-gpio',
+        start: { componentId: 'btn-sel', pinName: '2.l' },
+        end: { componentId: 'esp32', pinName: '27' },
+        color: '#22cc22',
+      },
     ],
-    tags: ["100-days", "esp32", "i2c_oled", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'i2c_oled', 'micropython', 'wifi'],
   },
   {
-    id: "100d-flask-server-based-led-control-using-micropython",
-    title: "Flask Server Based LED Control using MicroPython",
-    description: "Flask Server Based LED Control using MicroPython on ESP32 (MicroPython) \u2014 uses HTTP server, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-flask-server-based-led-control-using-micropython',
+    title: 'Flask Server Based LED Control using MicroPython',
+    description:
+      'Flask Server Based LED Control using MicroPython on ESP32 (MicroPython) \u2014 uses HTTP server, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "app.py", content: `from flask import Flask, jsonify, render_template
+      {
+        name: 'app.py',
+        content: `from flask import Flask, jsonify, render_template
 
 app = Flask(__name__)
 
@@ -2340,8 +2467,11 @@ def get_state():
     return jsonify(led_state)
 
 app.run(host="0.0.0.0", port=5000)
-` },
-      { name: "main.py", content: `import network, urequests, time
+`,
+      },
+      {
+        name: 'main.py',
+        content: `import network, urequests, time
 from machine import Pin
 
 # LED
@@ -2377,23 +2507,27 @@ while True:
 
     time.sleep(2)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "http_server", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'http_server', 'micropython', 'wifi'],
   },
   {
-    id: "100d-iot-atmospheric-monitoring-system-using-esp32-wowki-and-blynk",
-    title: "IoT Atmospheric Monitoring System using ESP32, wowki & Blynk",
-    description: "IoT Atmospheric Monitoring System using ESP32, wowki & Blynk on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-iot-atmospheric-monitoring-system-using-esp32-wowki-and-blynk',
+    title: 'IoT Atmospheric Monitoring System using ESP32, wowki & Blynk',
+    description:
+      'IoT Atmospheric Monitoring System using ESP32, wowki & Blynk on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -2659,8 +2793,11 @@ class Blynk(BlynkProtocol):
         self.process(data)
 
 
-` },
-      { name: "main.py", content: `
+`,
+      },
+      {
+        name: 'main.py',
+        content: `
 '''Copyright (c) 2026 Kritish Mohapatra'''
 
 import network
@@ -2714,23 +2851,27 @@ while True:
     blynk.virtual_write(2, altitude)   # V2 Altitude
 
     sleep(2)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-iot-based-dsm-smart-metering",
-    title: "IoT Based DSM Smart Metering",
-    description: "IoT Based DSM Smart Metering on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, OTA, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-iot-based-dsm-smart-metering',
+    title: 'IoT Based DSM Smart Metering',
+    description:
+      'IoT Based DSM Smart Metering on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, OTA, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -2994,8 +3135,11 @@ class Blynk(BlynkProtocol):
         except: # TODO: handle disconnect
             return
         self.process(data)
-` },
-      { name: "dsm_code1_csv.py", content: `# ============================================================
+`,
+      },
+      {
+        name: 'dsm_code1_csv.py',
+        content: `# ============================================================
 #  DSM Smart Meter — Code 1: Data Collection
 #  CSV Serial Output → Copy → MATLAB Plot
 #  Author : Kritish Mohapatra
@@ -3159,8 +3303,11 @@ while True:
         blynk.virtual_write(3, 1 if fan_on  else 0)
         blynk.virtual_write(4, 1 if iron_on else 0)
         blynk.virtual_write(5, round(pt, 1))
-        blynk.virtual_write(6, round(pt, 1))` },
-      { name: "dsm_code2_peakshift.py", content: `# ============================================================
+        blynk.virtual_write(6, round(pt, 1))`,
+      },
+      {
+        name: 'dsm_code2_peakshift.py',
+        content: `# ============================================================
 #  DSM Smart Meter — Code 2: Peak Shifting (With DSM)
 #  Auto Iron OFF during peak hour
 #  Author : Kritish Mohapatra
@@ -3385,23 +3532,27 @@ while True:
         blynk.virtual_write(5, round(pt, 1))
         blynk.virtual_write(6, round(pt, 1))
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "esp32", "micropython", "ota", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'esp32', 'micropython', 'ota', 'wifi'],
   },
   {
-    id: "100d-iot-environment-monitoring-with-anomaly-detection",
-    title: "IoT Environment Monitoring With Anomaly Detection",
-    description: "IoT Environment Monitoring With Anomaly Detection on ESP32 (MicroPython) \u2014 uses DHT, LDR, ThingSpeak, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-iot-environment-monitoring-with-anomaly-detection',
+    title: 'IoT Environment Monitoring With Anomaly Detection',
+    description:
+      'IoT Environment Monitoring With Anomaly Detection on ESP32 (MicroPython) \u2014 uses DHT, LDR, ThingSpeak, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import urequests as requests
 import time
 from machine import Pin, ADC
@@ -3462,23 +3613,27 @@ while True:
 
     time.sleep(15)   # ThingSpeak min 15 sec
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "esp32", "ldr", "micropython", "thingspeak", "wifi"],
+    tags: ['100-days', 'dht', 'esp32', 'ldr', 'micropython', 'thingspeak', 'wifi'],
   },
   {
-    id: "100d-iot-relay-control-web-server-raspberry-pi-pico-2w",
-    title: "IoT Relay Control Web Server (Raspberry Pi Pico 2W)",
-    description: "IoT Relay Control Web Server (Raspberry Pi Pico 2W) on Raspberry Pi Pico W (MicroPython) \u2014 uses Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "raspberry-pi-pico",
+    id: '100d-iot-relay-control-web-server-raspberry-pi-pico-2w',
+    title: 'IoT Relay Control Web Server (Raspberry Pi Pico 2W)',
+    description:
+      'IoT Relay Control Web Server (Raspberry Pi Pico 2W) on Raspberry Pi Pico W (MicroPython) \u2014 uses Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import socket
 import machine
 import time
@@ -3619,23 +3774,27 @@ while True:
     conn.sendall(webpage(relay_state))
     conn.close()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "pico-w", "raspberry-pi-pico", "wifi"],
+    tags: ['100-days', 'micropython', 'pico-w', 'raspberry-pi-pico', 'wifi'],
   },
   {
-    id: "100d-iot-smart-irrigation-system",
-    title: "IoT Smart Irrigation System",
-    description: "IoT Smart Irrigation System on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-iot-smart-irrigation-system',
+    title: 'IoT Smart Irrigation System',
+    description:
+      'IoT Smart Irrigation System on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -3901,8 +4060,11 @@ class Blynk(BlynkProtocol):
         self.process(data)
 
 
-` },
-      { name: "main.py", content: `'''Copyright (c) 2026 Kritish Mohapatra'''
+`,
+      },
+      {
+        name: 'main.py',
+        content: `'''Copyright (c) 2026 Kritish Mohapatra'''
 
 import network
 import time
@@ -3980,23 +4142,26 @@ while True:
         read_soil()
         last = time.ticks_ms()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-joystick-controlled-servo",
-    title: "Joystick Controlled Servo",
-    description: "Joystick Controlled Servo on ESP32 (MicroPython) \u2014 uses Servo.",
-    category: "robotics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-joystick-controlled-servo',
+    title: 'Joystick Controlled Servo',
+    description: 'Joystick Controlled Servo on ESP32 (MicroPython) \u2014 uses Servo.',
+    category: 'robotics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import machine
+      {
+        name: 'main.py',
+        content: `import machine
 import time
 
 # ── Hardware setup ────────────────────────────────────────────
@@ -4029,23 +4194,27 @@ while True:
     print(f"Raw: {x_raw}  Angle: {angle}°")
     
     time.sleep(0.05)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "servo"],
+    tags: ['100-days', 'esp32', 'micropython', 'servo'],
   },
   {
-    id: "100d-joystick-direction-display-with-oled",
-    title: "Joystick Direction Display with OLED",
-    description: "Joystick Direction Display with OLED on Raspberry Pi Pico W (MicroPython) \u2014 uses OLED.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "raspberry-pi-pico",
+    id: '100d-joystick-direction-display-with-oled',
+    title: 'Joystick Direction Display with OLED',
+    description:
+      'Joystick Direction Display with OLED on Raspberry Pi Pico W (MicroPython) \u2014 uses OLED.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import ADC, Pin, I2C
+      {
+        name: 'main.py',
+        content: `from machine import ADC, Pin, I2C
 import ssd1306
 import time
 
@@ -4108,8 +4277,11 @@ while True:
 
     show_direction(direction, x, y, btn)
     print(f"X={x:4d}  Y={y:4d}  SW={btn}  -> {direction}")
-    time.sleep_ms(150)` },
-      { name: "ssd1306.py", content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
+    time.sleep_ms(150)`,
+      },
+      {
+        name: 'ssd1306.py',
+        content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
 from micropython import const
 import framebuf
@@ -4263,23 +4435,26 @@ class SSD1306_SPI(SSD1306):
         self.dc(1)
         self.cs(0)
         self.spi.write(buf)
-        self.cs(1)` },
+        self.cs(1)`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "i2c_oled", "micropython", "raspberry-pi-pico", "rp2040"],
+    tags: ['100-days', 'i2c_oled', 'micropython', 'raspberry-pi-pico', 'rp2040'],
   },
   {
-    id: "100d-micropython-watch",
-    title: "MicroPython Watch",
-    description: "MicroPython Watch on ESP32 (MicroPython) \u2014 uses OLED, Wi-Fi.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-micropython-watch',
+    title: 'MicroPython Watch',
+    description: 'MicroPython Watch on ESP32 (MicroPython) \u2014 uses OLED, Wi-Fi.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import ntptime
 import urequests
 import ssd1306
@@ -4378,8 +4553,11 @@ while True:
     show_time()
     utime.sleep(1)
 
-` },
-      { name: "ssd1306.py", content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
+`,
+      },
+      {
+        name: 'ssd1306.py',
+        content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
 from micropython import const
 import framebuf
@@ -4534,23 +4712,27 @@ class SSD1306_SPI(SSD1306):
         self.cs(0)
         self.spi.write(buf)
         self.cs(1)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "i2c_oled", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'i2c_oled', 'micropython', 'wifi'],
   },
   {
-    id: "100d-mq4-gas-leak-detection-system-using-esp32-and-micropython",
-    title: "MQ4 Gas Leak Detection System using ESP32 and MicroPython",
-    description: "MQ4 Gas Leak Detection System using ESP32 and MicroPython on ESP32 (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-mq4-gas-leak-detection-system-using-esp32-and-micropython',
+    title: 'MQ4 Gas Leak Detection System using ESP32 and MicroPython',
+    description:
+      'MQ4 Gas Leak Detection System using ESP32 and MicroPython on ESP32 (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import ADC, Pin
+      {
+        name: 'main.py',
+        content: `from machine import ADC, Pin
 import time
 
 # MQ4 gas sensor setup
@@ -4581,23 +4763,26 @@ while True:
     print("----------------------------")
     time.sleep(2)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython"],
+    tags: ['100-days', 'esp32', 'micropython'],
   },
   {
-    id: "100d-mq7-co-gas-detection-esp32",
-    title: "MQ7 CO Gas Detection ESP32",
-    description: "MQ7 CO Gas Detection ESP32 on ESP32 (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-mq7-co-gas-detection-esp32',
+    title: 'MQ7 CO Gas Detection ESP32',
+    description: 'MQ7 CO Gas Detection ESP32 on ESP32 (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import ADC, Pin
+      {
+        name: 'main.py',
+        content: `from machine import ADC, Pin
 import time
 
 # MQ-7 analog output on GPIO 35
@@ -4624,23 +4809,27 @@ while True:
 
     time.sleep(2)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython"],
+    tags: ['100-days', 'esp32', 'micropython'],
   },
   {
-    id: "100d-mq-135-gas-sensor-with-esp32-micropython",
-    title: "MQ 135 Gas Sensor with ESP32 (MicroPython)",
-    description: "MQ 135 Gas Sensor with ESP32 (MicroPython) on ESP32 (MicroPython) \u2014 uses OTA.",
-    category: "sensors",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-mq-135-gas-sensor-with-esp32-micropython',
+    title: 'MQ 135 Gas Sensor with ESP32 (MicroPython)',
+    description:
+      'MQ 135 Gas Sensor with ESP32 (MicroPython) on ESP32 (MicroPython) \u2014 uses OTA.',
+    category: 'sensors',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import ADC, Pin
+      {
+        name: 'main.py',
+        content: `from machine import ADC, Pin
 import time
 
 # MQ-135 connected to GPIO 34
@@ -4667,23 +4856,27 @@ while True:
     print("MQ-135 ADC Value:", avg_val)
     time.sleep(2)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "ota"],
+    tags: ['100-days', 'esp32', 'micropython', 'ota'],
   },
   {
-    id: "100d-ntp-synchronized-digital-clock-using-esp32-and-max7219",
-    title: "NTP Synchronized Digital Clock using ESP32 & MAX7219",
-    description: "NTP Synchronized Digital Clock using ESP32 & MAX7219 on ESP32 (MicroPython) \u2014 uses MAX7219, Wi-Fi.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-ntp-synchronized-digital-clock-using-esp32-and-max7219',
+    title: 'NTP Synchronized Digital Clock using ESP32 & MAX7219',
+    description:
+      'NTP Synchronized Digital Clock using ESP32 & MAX7219 on ESP32 (MicroPython) \u2014 uses MAX7219, Wi-Fi.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `
+      {
+        name: 'main.py',
+        content: `
 
 from machine import Pin, SPI
 import max7219
@@ -4746,8 +4939,11 @@ while True:
     display.text(mm, 22, 0, 1)
     display.show()
 
-    time.sleep(1) ` },
-      { name: "max7219.py", content: `"""
+    time.sleep(1) `,
+      },
+      {
+        name: 'max7219.py',
+        content: `"""
 MicroPython max7219 cascadable 8x8 LED matrix driver
 https://github.com/mcauser/micropython-max7219
 
@@ -4845,27 +5041,33 @@ class Matrix8x8:
             self.cs(0)
             for m in range(self.num):
                 self.spi.write(bytearray([_DIGIT0 + y, self.buffer[(y * self.num) + m]]))
-            self.cs(1)` },
+            self.cs(1)`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "max7219", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'max7219', 'micropython', 'wifi'],
   },
   {
-    id: "100d-ota-update-pico2w",
-    title: "OTA Update Pico2W",
-    description: "OTA Update Pico2W on Raspberry Pi Pico W (MicroPython) \u2014 uses OTA, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "raspberry-pi-pico",
+    id: '100d-ota-update-pico2w',
+    title: 'OTA Update Pico2W',
+    description: 'OTA Update Pico2W on Raspberry Pi Pico W (MicroPython) \u2014 uses OTA, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "boot.py", content: `# boot.py - Runs automatically every time Pico starts
+      {
+        name: 'boot.py',
+        content: `# boot.py - Runs automatically every time Pico starts
 import ota
 
-ota.check_and_update()` },
-      { name: "main.py", content: `import time
+ota.check_and_update()`,
+      },
+      {
+        name: 'main.py',
+        content: `import time
 from machine import Pin
 
 led = Pin("LED", Pin.OUT)
@@ -4876,8 +5078,11 @@ while True:
     time.sleep(1)
     led.off()
     print("LED OFF - Version 1.0.0")
-    time.sleep(1)` },
-      { name: "ota.py", content: `import network
+    time.sleep(1)`,
+      },
+      {
+        name: 'ota.py',
+        content: `import network
 import urequests
 import time
 import machine
@@ -4949,23 +5154,27 @@ def check_and_update():
         except Exception as e:
             print("Update failed:", e)
     else:
-        print("Already on latest version!")` },
+        print("Already on latest version!")`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "ota", "raspberry-pi-pico", "rp2040", "wifi"],
+    tags: ['100-days', 'micropython', 'ota', 'raspberry-pi-pico', 'rp2040', 'wifi'],
   },
   {
-    id: "100d-password-lock-system-using-esp32",
-    title: "Password Lock System using ESP32",
-    description: "Password Lock System using ESP32 on ESP32 (MicroPython) \u2014 uses I\u00b2C LCD.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-password-lock-system-using-esp32',
+    title: 'Password Lock System using ESP32',
+    description:
+      'Password Lock System using ESP32 on ESP32 (MicroPython) \u2014 uses I\u00b2C LCD.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "i2c_lcd.py", content: `# Implements a HD44780 character LCD connected via PCF8574 on I2C.
+      {
+        name: 'i2c_lcd.py',
+        content: `# Implements a HD44780 character LCD connected via PCF8574 on I2C.
 # This was tested with: https://www.wemos.cc/product/d1-mini.html
 # https://github.com/dhylands/python_lcd/blob/master/lcd/machine_i2c_lcd.py
 
@@ -5048,8 +5257,11 @@ class I2cLcd(LcdApi):
         byte = (MASK_RS | (self.backlight << SHIFT_BACKLIGHT) | ((data & 0x0f) << SHIFT_DATA))
         self.i2c.writeto(self.i2c_addr, bytearray([byte | MASK_E]))
         self.i2c.writeto(self.i2c_addr, bytearray([byte]))
-` },
-      { name: "lcd_api.py", content: `# Provides an API for talking to HD44780 compatible character LCDs.
+`,
+      },
+      {
+        name: 'lcd_api.py',
+        content: `# Provides an API for talking to HD44780 compatible character LCDs.
 # https://github.com/dhylands/python_lcd/tree/master/lcd
 import time
 
@@ -5261,8 +5473,11 @@ class LcdApi:
     def hal_sleep_us(self, usecs):
         """Sleep for some time (given in microseconds)."""
         time.sleep_us(usecs)  # NOTE this is not part of Standard Python library, specific hal layers will need to override this
-` },
-      { name: "main.py", content: `from machine import Pin, I2C
+`,
+      },
+      {
+        name: 'main.py',
+        content: `from machine import Pin, I2C
 from time import sleep
 from i2c_lcd import I2cLcd
 
@@ -5339,23 +5554,27 @@ while True:
             lcd.move_to(len(entered)-1, 1)
             lcd.putstr("*")
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "lcd", "micropython"],
+    tags: ['100-days', 'esp32', 'lcd', 'micropython'],
   },
   {
-    id: "100d-pico-2-w-dht11-http-csv-logger",
-    title: "Pico 2 W Dht11 Http Csv Logger",
-    description: "Pico 2 W Dht11 Http Csv Logger on Raspberry Pi Pico W (MicroPython) \u2014 uses DHT, HTTP server, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "raspberry-pi-pico",
+    id: '100d-pico-2-w-dht11-http-csv-logger',
+    title: 'Pico 2 W Dht11 Http Csv Logger',
+    description:
+      'Pico 2 W Dht11 Http Csv Logger on Raspberry Pi Pico W (MicroPython) \u2014 uses DHT, HTTP server, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "app.py", content: `from flask import Flask, request
+      {
+        name: 'app.py',
+        content: `from flask import Flask, request
 import csv, os
 from datetime import datetime
 
@@ -5383,8 +5602,11 @@ def data():
     return "OK"
 
 app.run(host="0.0.0.0", port=5000)
-` },
-      { name: "main.py", content: `import network, time, urequests
+`,
+      },
+      {
+        name: 'main.py',
+        content: `import network, time, urequests
 import dht
 from machine import Pin
 
@@ -5423,23 +5645,27 @@ while True:
 
     time.sleep(5)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "http_server", "micropython", "raspberry-pi-pico", "rp2040", "wifi"],
+    tags: ['100-days', 'dht', 'http_server', 'micropython', 'raspberry-pi-pico', 'rp2040', 'wifi'],
   },
   {
-    id: "100d-pico-w-async-led-control-micropython",
-    title: "Pico W Async LED Control (MicroPython)",
-    description: "Pico W Async LED Control (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "raspberry-pi-pico",
+    id: '100d-pico-w-async-led-control-micropython',
+    title: 'Pico W Async LED Control (MicroPython)',
+    description:
+      'Pico W Async LED Control (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import uasyncio as asyncio
+      {
+        name: 'main.py',
+        content: `import uasyncio as asyncio
 import network
 from machine import Pin
 
@@ -5544,23 +5770,27 @@ asyncio.run(main())
 
 
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "pico-w", "raspberry-pi-pico", "wifi"],
+    tags: ['100-days', 'micropython', 'pico-w', 'raspberry-pi-pico', 'wifi'],
   },
   {
-    id: "100d-pico-w-web-servo-controller",
-    title: "Pico W Web Servo Controller",
-    description: "Pico W Web Servo Controller on Raspberry Pi Pico W (MicroPython) \u2014 uses OTA, Servo, Wi-Fi.",
-    category: "robotics",
-    difficulty: "advanced",
-    boardType: "raspberry-pi-pico",
+    id: '100d-pico-w-web-servo-controller',
+    title: 'Pico W Web Servo Controller',
+    description:
+      'Pico W Web Servo Controller on Raspberry Pi Pico W (MicroPython) \u2014 uses OTA, Servo, Wi-Fi.',
+    category: 'robotics',
+    difficulty: 'advanced',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import socket
 from machine import Pin, PWM
 import time
@@ -5810,23 +6040,27 @@ while True:
         conn.close()
     except Exception as e:
         print(f"An unexpected error occurred in main loop: {e}")
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "ota", "pico-w", "raspberry-pi-pico", "servo", "wifi"],
+    tags: ['100-days', 'micropython', 'ota', 'pico-w', 'raspberry-pi-pico', 'servo', 'wifi'],
   },
   {
-    id: "100d-pir-motion-detector-using-raspberry-pi-pico-2w-and-micropython",
-    title: "PIR Motion Detector using Raspberry Pi Pico 2W & MicroPython",
-    description: "PIR Motion Detector using Raspberry Pi Pico 2W & MicroPython on Raspberry Pi Pico W (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "raspberry-pi-pico",
+    id: '100d-pir-motion-detector-using-raspberry-pi-pico-2w-and-micropython',
+    title: 'PIR Motion Detector using Raspberry Pi Pico 2W & MicroPython',
+    description:
+      'PIR Motion Detector using Raspberry Pi Pico 2W & MicroPython on Raspberry Pi Pico W (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin
+      {
+        name: 'main.py',
+        content: `from machine import Pin
 import time
 
 pir = Pin(16, Pin.IN, Pin.PULL_DOWN)   # PIR sensor pin
@@ -5842,23 +6076,26 @@ while True:
     else:
         print("No motion")
         led.value(0)
-        time.sleep(0.2)` },
+        time.sleep(0.2)`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "pico-w", "raspberry-pi-pico"],
+    tags: ['100-days', 'micropython', 'pico-w', 'raspberry-pi-pico'],
   },
   {
-    id: "100d-potentiometer-visualizer",
-    title: "Potentiometer Visualizer",
-    description: "Potentiometer Visualizer on ESP32 (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-potentiometer-visualizer',
+    title: 'Potentiometer Visualizer',
+    description: 'Potentiometer Visualizer on ESP32 (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, ADC
+      {
+        name: 'main.py',
+        content: `from machine import Pin, ADC
 from time import sleep
 
 led_pins = [2, 4, 5, 12, 13, 14, 15, 16, 17, 18]
@@ -5879,23 +6116,26 @@ while True:
 
     sleep(0.2)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython"],
+    tags: ['100-days', 'esp32', 'micropython'],
   },
   {
-    id: "100d-pulse-monitor",
-    title: "Pulse Monitor",
-    description: "Pulse Monitor on ESP32 (MicroPython) \u2014 uses OLED.",
-    category: "displays",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-pulse-monitor',
+    title: 'Pulse Monitor',
+    description: 'Pulse Monitor on ESP32 (MicroPython) \u2014 uses OLED.',
+    category: 'displays',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import ADC, Pin, SoftI2C
+      {
+        name: 'main.py',
+        content: `from machine import ADC, Pin, SoftI2C
 import ssd1306
 import time
 
@@ -5972,8 +6212,11 @@ while True:
 
     oled.show()
     time.sleep_ms(10)
-` },
-      { name: "ssd1306.py", content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
+`,
+      },
+      {
+        name: 'ssd1306.py',
+        content: `# MicroPython SSD1306 OLED driver, I2C and SPI interfaces
 
 from micropython import const
 import framebuf
@@ -6129,23 +6372,27 @@ class SSD1306_SPI(SSD1306):
         self.spi.write(buf)
         self.cs(1)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "i2c_oled", "micropython"],
+    tags: ['100-days', 'esp32', 'i2c_oled', 'micropython'],
   },
   {
-    id: "100d-raspberry-pi-pico-2-w-thingsboard-iot",
-    title: "Raspberry Pi Pico 2 W ThingsBoard IoT",
-    description: "Raspberry Pi Pico 2 W ThingsBoard IoT on Raspberry Pi Pico W (MicroPython) \u2014 uses DHT, MQTT, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "raspberry-pi-pico",
+    id: '100d-raspberry-pi-pico-2-w-thingsboard-iot',
+    title: 'Raspberry Pi Pico 2 W ThingsBoard IoT',
+    description:
+      'Raspberry Pi Pico 2 W ThingsBoard IoT on Raspberry Pi Pico W (MicroPython) \u2014 uses DHT, MQTT, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import time
 import json
 import dht
@@ -6248,8 +6495,11 @@ while True:
         time.sleep(5)
         import machine
         machine.reset() 
-` },
-      { name: "umqttsimple.py", content: `try:
+`,
+      },
+      {
+        name: 'umqttsimple.py',
+        content: `try:
     import usocket as socket
 except:
     import socket
@@ -6456,23 +6706,27 @@ class MQTTClient:
     def check_msg(self):
         self.sock.setblocking(False)
         return self.wait_msg()
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "micropython", "mqtt", "pico-w", "raspberry-pi-pico", "wifi"],
+    tags: ['100-days', 'dht', 'micropython', 'mqtt', 'pico-w', 'raspberry-pi-pico', 'wifi'],
   },
   {
-    id: "100d-rgb-color-mixer-using-potentiometers-esp32-plus-micropython",
-    title: "RGB Color Mixer using Potentiometers (ESP32 + MicroPython)",
-    description: "RGB Color Mixer using Potentiometers (ESP32 + MicroPython) on ESP32 (MicroPython) \u2014 uses Servo.",
-    category: "robotics",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-rgb-color-mixer-using-potentiometers-esp32-plus-micropython',
+    title: 'RGB Color Mixer using Potentiometers (ESP32 + MicroPython)',
+    description:
+      'RGB Color Mixer using Potentiometers (ESP32 + MicroPython) on ESP32 (MicroPython) \u2014 uses Servo.',
+    category: 'robotics',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `# ESP32 MicroPython - RGB controlled by 3 potentiometers (common-cathode example)
+      {
+        name: 'main.py',
+        content: `# ESP32 MicroPython - RGB controlled by 3 potentiometers (common-cathode example)
 from machine import ADC, Pin, PWM
 import time
 
@@ -6523,23 +6777,27 @@ while True:
 
     time.sleep_ms(200)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "servo"],
+    tags: ['100-days', 'esp32', 'micropython', 'servo'],
   },
   {
-    id: "100d-servo-motor-control-with-raspberry-pi-pico-2-w-micropython",
-    title: "Servo Motor Control with Raspberry Pi Pico 2 W (MicroPython)",
-    description: "Servo Motor Control with Raspberry Pi Pico 2 W (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Servo.",
-    category: "robotics",
-    difficulty: "beginner",
-    boardType: "raspberry-pi-pico",
+    id: '100d-servo-motor-control-with-raspberry-pi-pico-2-w-micropython',
+    title: 'Servo Motor Control with Raspberry Pi Pico 2 W (MicroPython)',
+    description:
+      'Servo Motor Control with Raspberry Pi Pico 2 W (MicroPython) on Raspberry Pi Pico W (MicroPython) \u2014 uses Servo.',
+    category: 'robotics',
+    difficulty: 'beginner',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin, PWM
+      {
+        name: 'main.py',
+        content: `from machine import Pin, PWM
 import time
 
 servo = PWM(Pin(15))
@@ -6570,23 +6828,27 @@ while True:
 
     except ValueError:
         print("❌ Enter a valid number")
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "pico-w", "raspberry-pi-pico", "servo"],
+    tags: ['100-days', 'micropython', 'pico-w', 'raspberry-pi-pico', 'servo'],
   },
   {
-    id: "100d-single-digit-seven-segment-display-with-raspberry-pi-pico-micropython",
-    title: "Single Digit Seven Segment Display with Raspberry Pi-Pico (MicroPython)",
-    description: "Single Digit Seven Segment Display with Raspberry Pi-Pico (MicroPython) on Raspberry Pi Pico W (MicroPython).",
-    category: "basics",
-    difficulty: "beginner",
-    boardType: "raspberry-pi-pico",
+    id: '100d-single-digit-seven-segment-display-with-raspberry-pi-pico-micropython',
+    title: 'Single Digit Seven Segment Display with Raspberry Pi-Pico (MicroPython)',
+    description:
+      'Single Digit Seven Segment Display with Raspberry Pi-Pico (MicroPython) on Raspberry Pi Pico W (MicroPython).',
+    category: 'basics',
+    difficulty: 'beginner',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `from machine import Pin  # Import Pin class to control GPIO pins
+      {
+        name: 'main.py',
+        content: `from machine import Pin  # Import Pin class to control GPIO pins
 
 # ----------------------------
 # Define 7-segment display pins
@@ -6726,23 +6988,27 @@ while True:
     else:
         print("Please Enter a value between 0-9 and one digit")
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "raspberry-pi-pico", "rp2040"],
+    tags: ['100-days', 'micropython', 'raspberry-pi-pico', 'rp2040'],
   },
   {
-    id: "100d-smart-home-automation-system",
-    title: "Smart Home Automation System",
-    description: "Smart Home Automation System on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, DHT, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "esp32",
+    id: '100d-smart-home-automation-system',
+    title: 'Smart Home Automation System',
+    description:
+      'Smart Home Automation System on ESP32 (MicroPython) \u2014 uses Blynk, Blynk Cloud, DHT, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "BlynkLib.py", content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
+      {
+        name: 'BlynkLib.py',
+        content: `# Copyright (c) 2015-2019 Volodymyr Shymanskyy. See the file LICENSE for copying permission.
 
 __version__ = "1.0.0"
 
@@ -7007,8 +7273,11 @@ class Blynk(BlynkProtocol):
             return
         self.process(data)
 
-` },
-      { name: "simple_home_automation_with_blynk_and _micropython.py", content: `'''Copyright (c) 2026 Kritish Mohapatra'''
+`,
+      },
+      {
+        name: 'simple_home_automation_with_blynk_and _micropython.py',
+        content: `'''Copyright (c) 2026 Kritish Mohapatra'''
 
 
 import network # Library for network functionalities (Wi-Fi)
@@ -7132,23 +7401,26 @@ while True:
 
 
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "blynk", "blynk_cloud", "dht", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'blynk', 'blynk_cloud', 'dht', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-smart-indoor-security-system",
-    title: "Smart Indoor Security System",
-    description: "Smart Indoor Security System on ESP32 (MicroPython) \u2014 uses Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-smart-indoor-security-system',
+    title: 'Smart Indoor Security System',
+    description: 'Smart Indoor Security System on ESP32 (MicroPython) \u2014 uses Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import machine, utime, network, urequests, ujson
+      {
+        name: 'main.py',
+        content: `import machine, utime, network, urequests, ujson
 
 
 
@@ -7275,23 +7547,27 @@ while True:
             print('Timeout - Alarm!')
             send_to_favoriot('TIMEOUT_ALARM', 'ALARM', 0)
 
-    utime.sleep_ms(100)` },
+    utime.sleep_ms(100)`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'wifi'],
   },
   {
-    id: "100d-smart-iot-gas-monitoring-system",
-    title: "Smart IoT Gas Monitoring System",
-    description: "Smart IoT Gas Monitoring System on ESP32 (MicroPython) \u2014 uses DHT, HTTP server, Wi-Fi.",
-    category: "communication",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-smart-iot-gas-monitoring-system',
+    title: 'Smart IoT Gas Monitoring System',
+    description:
+      'Smart IoT Gas Monitoring System on ESP32 (MicroPython) \u2014 uses DHT, HTTP server, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "analyze.py", content: `import pandas as pd
+      {
+        name: 'analyze.py',
+        content: `import pandas as pd
 import matplotlib.pyplot as plt
 
 # Read CSV
@@ -7338,8 +7614,11 @@ axes[-1].set_xlabel("Time")
 plt.suptitle("IoT Sensor Analytics Dashboard", fontsize=14)
 plt.tight_layout()
 plt.show()
-` },
-      { name: "app.py", content: `# from flask import Flask, request
+`,
+      },
+      {
+        name: 'app.py',
+        content: `# from flask import Flask, request
 # import csv
 # from datetime import datetime
 
@@ -7482,8 +7761,11 @@ def latest():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
 
-` },
-      { name: "esp32_sensor_code.py", content: `import network, urequests, time, dht
+`,
+      },
+      {
+        name: 'esp32_sensor_code.py',
+        content: `import network, urequests, time, dht
 from machine import ADC, Pin
 
 ssid = "kritish"
@@ -7546,23 +7828,27 @@ while True:
 
     time.sleep(3)
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "dht", "esp32", "http_server", "micropython", "wifi"],
+    tags: ['100-days', 'dht', 'esp32', 'http_server', 'micropython', 'wifi'],
   },
   {
-    id: "100d-stepper-motor-control-using-esp32-and-a4988-micropython",
-    title: "Stepper Motor Control using ESP32 & A4988 (MicroPython)",
-    description: "Stepper Motor Control using ESP32 & A4988 (MicroPython) on ESP32 (MicroPython) \u2014 uses Stepper.",
-    category: "robotics",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-stepper-motor-control-using-esp32-and-a4988-micropython',
+    title: 'Stepper Motor Control using ESP32 & A4988 (MicroPython)',
+    description:
+      'Stepper Motor Control using ESP32 & A4988 (MicroPython) on ESP32 (MicroPython) \u2014 uses Stepper.',
+    category: 'robotics',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import time
+      {
+        name: 'main.py',
+        content: `import time
 import machine
 
 # A4988 pins
@@ -7594,23 +7880,27 @@ while True:
 
     move_stepper(0, 200, 2000)   # Anti-clockwise
     time.sleep(2)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "stepper"],
+    tags: ['100-days', 'esp32', 'micropython', 'stepper'],
   },
   {
-    id: "100d-temperature-based-led-indicator-micropython-esp32",
-    title: "Temperature Based LED Indicator (MicroPython ESP32)",
-    description: "Temperature Based LED Indicator (MicroPython ESP32) on ESP32 (MicroPython) \u2014 uses Servo, Wi-Fi.",
-    category: "robotics",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-temperature-based-led-indicator-micropython-esp32',
+    title: 'Temperature Based LED Indicator (MicroPython ESP32)',
+    description:
+      'Temperature Based LED Indicator (MicroPython ESP32) on ESP32 (MicroPython) \u2014 uses Servo, Wi-Fi.',
+    category: 'robotics',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import socket
 from machine import Pin, PWM
 from time import sleep_ms
@@ -7697,23 +7987,27 @@ while True:
     cl.send(html)
     cl.close()
 
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "servo", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'servo', 'wifi'],
   },
   {
-    id: "100d-ultrasonic-led-distance-indicator-esp32-micropython",
-    title: "Ultrasonic LED Distance Indicator ESP32 MicroPython",
-    description: "Ultrasonic LED Distance Indicator ESP32 MicroPython on ESP32 (MicroPython) \u2014 uses HC-SR04.",
-    category: "sensors",
-    difficulty: "beginner",
-    boardType: "esp32",
+    id: '100d-ultrasonic-led-distance-indicator-esp32-micropython',
+    title: 'Ultrasonic LED Distance Indicator ESP32 MicroPython',
+    description:
+      'Ultrasonic LED Distance Indicator ESP32 MicroPython on ESP32 (MicroPython) \u2014 uses HC-SR04.',
+    category: 'sensors',
+    difficulty: 'beginner',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "hcsr04.py", content: `import machine, time
+      {
+        name: 'hcsr04.py',
+        content: `import machine, time
 from machine import Pin
 
 __version__ = '0.2.0'
@@ -7787,8 +8081,11 @@ class HCSR04:
         # the sound speed on air (343.2 m/s), that It's equivalent to
         # 0.034320 cm/us that is 1cm each 29.1us
         cms = (pulse_time / 2) / 29.1
-        return cms` },
-      { name: "main.py", content: `from hcsr04 import HCSR04
+        return cms`,
+      },
+      {
+        name: 'main.py',
+        content: `from hcsr04 import HCSR04
 from machine import Pin
 from time import sleep
 
@@ -7814,23 +8111,27 @@ while True:
         red_led.on()
 
     sleep(1)
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "ultrasonic"],
+    tags: ['100-days', 'esp32', 'micropython', 'ultrasonic'],
   },
   {
-    id: "100d-websocket-led-control-using-raspberry-pi-pico-w",
-    title: "WebSocket LED Control using Raspberry Pi Pico W",
-    description: "WebSocket LED Control using Raspberry Pi Pico W on Raspberry Pi Pico W (MicroPython) \u2014 uses WebSocket, Wi-Fi.",
-    category: "communication",
-    difficulty: "advanced",
-    boardType: "raspberry-pi-pico",
+    id: '100d-websocket-led-control-using-raspberry-pi-pico-w',
+    title: 'WebSocket LED Control using Raspberry Pi Pico W',
+    description:
+      'WebSocket LED Control using Raspberry Pi Pico W on Raspberry Pi Pico W (MicroPython) \u2014 uses WebSocket, Wi-Fi.',
+    category: 'communication',
+    difficulty: 'advanced',
+    boardType: 'raspberry-pi-pico',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import socket
+      {
+        name: 'main.py',
+        content: `import socket
 import network
 import time
 from machine import Pin
@@ -7927,23 +8228,26 @@ while True:
     finally:
         conn.close()
         print("Connection closed. Ready for next.")
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "micropython", "pico-w", "raspberry-pi-pico", "websocket", "wifi"],
+    tags: ['100-days', 'micropython', 'pico-w', 'raspberry-pi-pico', 'websocket', 'wifi'],
   },
   {
-    id: "100d-wi-fi-controlled-4wd-robot-car",
-    title: "Wi Fi Controlled 4WD Robot Car",
-    description: "Wi Fi Controlled 4WD Robot Car on ESP32 (MicroPython) \u2014 uses Wi-Fi.",
-    category: "robotics",
-    difficulty: "intermediate",
-    boardType: "esp32",
+    id: '100d-wi-fi-controlled-4wd-robot-car',
+    title: 'Wi Fi Controlled 4WD Robot Car',
+    description: 'Wi Fi Controlled 4WD Robot Car on ESP32 (MicroPython) \u2014 uses Wi-Fi.',
+    category: 'robotics',
+    difficulty: 'intermediate',
+    boardType: 'esp32',
     languageMode: 'micropython',
     files: [
-      { name: "main.py", content: `import network
+      {
+        name: 'main.py',
+        content: `import network
 import socket
 from machine import Pin
 import time
@@ -8072,11 +8376,12 @@ while True:
     conn.send('HTTP/1.1 200 OK\\r\\nContent-Type: text/html\\r\\n\\r\\n')
     conn.send(webpage())
     conn.close()
-` },
+`,
+      },
     ],
     code: '',
     components: [],
     wires: [],
-    tags: ["100-days", "esp32", "micropython", "wifi"],
+    tags: ['100-days', 'esp32', 'micropython', 'wifi'],
   },
 ];

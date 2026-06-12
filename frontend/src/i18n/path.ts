@@ -9,11 +9,11 @@
  *   - Non-default locales mount under `/<locale>/...`.
  */
 
-import { LOCALES, DEFAULT_LOCALE, type Locale, isLocale } from "./config";
+import { LOCALES, DEFAULT_LOCALE, type Locale, isLocale } from './config';
 
 /** Detect the locale segment of a pathname. Returns DEFAULT_LOCALE if none. */
 export function getLocaleFromPath(pathname: string): Locale {
-  const segments = pathname.split("/").filter(Boolean);
+  const segments = pathname.split('/').filter(Boolean);
   if (segments.length === 0) return DEFAULT_LOCALE;
   const first = segments[0].toLowerCase();
   if (isLocale(first) && first !== DEFAULT_LOCALE) {
@@ -27,14 +27,14 @@ export function getLocaleFromPath(pathname: string): Locale {
  * another language. Always returns a path that starts with `/`.
  */
 export function stripLocaleFromPath(pathname: string): string {
-  const segments = pathname.split("/").filter(Boolean);
-  if (segments.length === 0) return "/";
+  const segments = pathname.split('/').filter(Boolean);
+  if (segments.length === 0) return '/';
   const first = segments[0].toLowerCase();
   if (isLocale(first) && first !== DEFAULT_LOCALE) {
     const rest = segments.slice(1);
-    return rest.length === 0 ? "/" : `/${rest.join("/")}`;
+    return rest.length === 0 ? '/' : `/${rest.join('/')}`;
   }
-  return `/${segments.join("/")}`;
+  return `/${segments.join('/')}`;
 }
 
 /**
@@ -42,9 +42,9 @@ export function stripLocaleFromPath(pathname: string): string {
  * Trailing slashes are preserved.
  */
 export function localizedPath(path: string, locale: Locale): string {
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
   if (locale === DEFAULT_LOCALE) return cleanPath;
-  return `/${locale}${cleanPath === "/" ? "" : cleanPath}`;
+  return `/${locale}${cleanPath === '/' ? '' : cleanPath}`;
 }
 
 /** Convenience: rebuild the current path under a different locale. */
@@ -54,9 +54,7 @@ export function switchLocale(currentPathname: string, target: Locale): string {
 }
 
 /** Comma-listed regex pattern of non-default locales for React Router. */
-export const NON_DEFAULT_LOCALE_PATTERN = LOCALES.filter(
-  l => l !== DEFAULT_LOCALE
-).join("|");
+export const NON_DEFAULT_LOCALE_PATTERN = LOCALES.filter((l) => l !== DEFAULT_LOCALE).join('|');
 
 /**
  * Build the blog URL for the given locale. The blog lives at /blog/ on
@@ -67,5 +65,5 @@ export const NON_DEFAULT_LOCALE_PATTERN = LOCALES.filter(
  *   zh-cn   -> /blog/zh-cn/
  */
 export function blogUrlFor(locale: Locale): string {
-  return locale === DEFAULT_LOCALE ? "/blog/" : `/blog/${locale}/`;
+  return locale === DEFAULT_LOCALE ? '/blog/' : `/blog/${locale}/`;
 }

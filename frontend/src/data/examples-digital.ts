@@ -1436,8 +1436,8 @@ export const digitalExamples: ExampleProject[] = [
     //   Y = Gt3 + Eq3·Gt2 + Eq3·Eq2·Gt1 + Eq3·Eq2·Eq1·Gt0
     // Build with chained AND/OR.
     components.push(
-      gate('and', 'cmpE3G2', 760, 0),       // Eq3·Gt2
-      gate('and-3', 'cmpE32G1F', 920, 60),  // Eq3·Eq2·Gt1
+      gate('and', 'cmpE3G2', 760, 0), // Eq3·Gt2
+      gate('and-3', 'cmpE32G1F', 920, 60), // Eq3·Eq2·Gt1
       gate('and-4', 'cmpE321G0', 920, 120), // Eq3·Eq2·Eq1·Gt0
       gate('or-4', 'cmpGtAll', 1080, 60),
     );
@@ -1646,14 +1646,14 @@ export const digitalExamples: ExampleProject[] = [
       gate('not', 'dec3N0', 440, 40),
       gate('not', 'dec3N1', 440, 160),
       gate('not', 'dec3N2', 440, 280),
-      gate('and-3', 'dec3Y0', 620, 20),    // !A2·!A1·!A0
-      gate('and-3', 'dec3Y1', 620, 100),   // !A2·!A1·A0
-      gate('and-3', 'dec3Y2', 620, 180),   // !A2·A1·!A0
-      gate('and-3', 'dec3Y3', 620, 260),   // !A2·A1·A0
-      gate('and-3', 'dec3Y4', 620, 340),   // A2·!A1·!A0
-      gate('and-3', 'dec3Y5', 620, 420),   // A2·!A1·A0
-      gate('and-3', 'dec3Y6', 620, 500),   // A2·A1·!A0
-      gate('and-3', 'dec3Y7', 620, 580),   // A2·A1·A0
+      gate('and-3', 'dec3Y0', 620, 20), // !A2·!A1·!A0
+      gate('and-3', 'dec3Y1', 620, 100), // !A2·!A1·A0
+      gate('and-3', 'dec3Y2', 620, 180), // !A2·A1·!A0
+      gate('and-3', 'dec3Y3', 620, 260), // !A2·A1·A0
+      gate('and-3', 'dec3Y4', 620, 340), // A2·!A1·!A0
+      gate('and-3', 'dec3Y5', 620, 420), // A2·!A1·A0
+      gate('and-3', 'dec3Y6', 620, 500), // A2·A1·!A0
+      gate('and-3', 'dec3Y7', 620, 580), // A2·A1·A0
       res('dec3rl0', 800, 20, '220'),
       led('dec3l0', 800, 80, 'red'),
       res('dec3rl1', 800, 100, '220'),
@@ -2456,7 +2456,7 @@ export const digitalExamples: ExampleProject[] = [
       // 4:1 MUX: AND select-line decoder + four enables + OR
       gate('not', 'aluNM0', 620, 100),
       gate('not', 'aluNM1', 620, 180),
-      gate('and-3', 'aluE00', 780, 20),  // !M1·!M0 → AND
+      gate('and-3', 'aluE00', 780, 20), // !M1·!M0 → AND
       gate('and-3', 'aluE01', 780, 140), // !M1·M0  → OR
       gate('and-3', 'aluE10', 780, 260), // M1·!M0  → XOR
       gate('and-3', 'aluE11', 780, 380), // M1·M0   → ADD
@@ -2578,10 +2578,7 @@ export const digitalExamples: ExampleProject[] = [
     // Generate gi, Propagate pi per bit
     for (let i = 0; i < N; i++) {
       const y = 40 + i * 140;
-      components.push(
-        gate('and', `claG${i}`, 460, y),
-        gate('xor', `claP${i}`, 460, y + 70),
-      );
+      components.push(gate('and', `claG${i}`, 460, y), gate('xor', `claP${i}`, 460, y + 70));
       wires.push(
         w(`claG${i}_a`, [`claA${i}`, '2'], [`claG${i}`, 'A'], C_SIG),
         w(`claG${i}_b`, [`claB${i}`, '2'], [`claG${i}`, 'B'], C_SIG),
@@ -2796,7 +2793,18 @@ export const digitalExamples: ExampleProject[] = [
       components.push(ff('t', id, 440, 120 + i * 150));
       wires.push(w(`cnt_t${i}`, ['src', 'SIG'], [id, 'T'], C_PWR)); // T tied high -> toggle
       if (i > 0) wires.push(w(`cnt_rip${i}`, [`cnt_ff${i - 1}`, 'Qbar'], [id, 'CLK'], C_SIG)); // ripple
-      const lo = ledOutput(`cnt_lr${i}`, `cnt_led${i}`, 'src', id, 'Q', 720, 110 + i * 150, ledColors[i], `cnt_led${i}`, wireColors[i]);
+      const lo = ledOutput(
+        `cnt_lr${i}`,
+        `cnt_led${i}`,
+        'src',
+        id,
+        'Q',
+        720,
+        110 + i * 150,
+        ledColors[i],
+        `cnt_led${i}`,
+        wireColors[i],
+      );
       components.push(...lo.components);
       wires.push(...lo.wires);
     }

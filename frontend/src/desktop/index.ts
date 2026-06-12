@@ -50,7 +50,11 @@ let sidePanelRoot: Root | null = null;
 
 function unmountOverlay(): void {
   if (overlayRoot) {
-    try { overlayRoot.unmount(); } catch { /* noop */ }
+    try {
+      overlayRoot.unmount();
+    } catch {
+      /* noop */
+    }
     overlayRoot = null;
   }
   if (overlayHost) {

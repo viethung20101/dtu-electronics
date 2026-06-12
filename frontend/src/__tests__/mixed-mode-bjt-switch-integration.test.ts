@@ -25,10 +25,7 @@ import {
   getMixedModeScheduler,
   __resetMixedModeScheduler,
 } from '../simulation/spice/MixedModeScheduler';
-import {
-  createSpiceResolvedPinResolver,
-  configFromLogicFamily,
-} from '../simulation/PinResolver';
+import { createSpiceResolvedPinResolver, configFromLogicFamily } from '../simulation/PinResolver';
 import { FAMILIES } from '../simulation/LogicFamilies';
 import type { BuildNetlistInput } from '../simulation/spice/types';
 
@@ -48,13 +45,33 @@ function bjtSwitchNetlist(pin9V: number): BuildNetlistInput {
     ],
     wires: [
       // Arduino 9 → Rb → BJT base
-      { id: 'w1', start: { componentId: 'uno', pinName: '9' }, end: { componentId: 'rb', pinName: '1' } },
-      { id: 'w2', start: { componentId: 'rb', pinName: '2' }, end: { componentId: 'q1', pinName: 'B' } },
+      {
+        id: 'w1',
+        start: { componentId: 'uno', pinName: '9' },
+        end: { componentId: 'rb', pinName: '1' },
+      },
+      {
+        id: 'w2',
+        start: { componentId: 'rb', pinName: '2' },
+        end: { componentId: 'q1', pinName: 'B' },
+      },
       // 5V → Rc → BJT collector
-      { id: 'w3', start: { componentId: 'uno', pinName: '5V' }, end: { componentId: 'rc', pinName: '1' } },
-      { id: 'w4', start: { componentId: 'rc', pinName: '2' }, end: { componentId: 'q1', pinName: 'C' } },
+      {
+        id: 'w3',
+        start: { componentId: 'uno', pinName: '5V' },
+        end: { componentId: 'rc', pinName: '1' },
+      },
+      {
+        id: 'w4',
+        start: { componentId: 'rc', pinName: '2' },
+        end: { componentId: 'q1', pinName: 'C' },
+      },
       // BJT emitter → GND
-      { id: 'w5', start: { componentId: 'q1', pinName: 'E' }, end: { componentId: 'uno', pinName: 'GND' } },
+      {
+        id: 'w5',
+        start: { componentId: 'q1', pinName: 'E' },
+        end: { componentId: 'uno', pinName: 'GND' },
+      },
     ],
     boards: [
       {

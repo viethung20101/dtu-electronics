@@ -41,9 +41,7 @@ interface SmokeOutcome {
   detail?: string;
 }
 
-async function smokeOne(
-  example: typeof analogExamples[number],
-): Promise<SmokeOutcome> {
+async function smokeOne(example: (typeof analogExamples)[number]): Promise<SmokeOutcome> {
   try {
     const input = exampleToBuildNetlistInput(example);
     if (input.components.length === 0 && input.wires.length === 0) {
@@ -56,7 +54,12 @@ async function smokeOne(
     }
     const bad = voltages.find((v) => !Number.isFinite(v));
     if (bad !== undefined) {
-      return { id: example.id, title: example.title, status: 'invalid-numerics', detail: String(bad) };
+      return {
+        id: example.id,
+        title: example.title,
+        status: 'invalid-numerics',
+        detail: String(bad),
+      };
     }
     return { id: example.id, title: example.title, status: 'ok' };
   } catch (err) {

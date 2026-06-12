@@ -1,0 +1,60 @@
+.header_1_premium_header {
+  width: 1920px;
+  height: 73px;
+}
+
+.container {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.vector {
+  width: 105px;
+  height: 31px;
+}
+
+.nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.ng_nhp {
+  font-size: 13.5px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.button {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0px 0px 30px 0px rgba(0, 240, 255, 0.25);
+}
+
+.workspace {
+  font-size: 13.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.svg {
+  width: 16px;
+  height: 16px;
+}
+
+.link {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.trang_ch {
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}

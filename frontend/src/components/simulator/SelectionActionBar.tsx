@@ -100,10 +100,7 @@ const CloseIcon: React.FC = () => (
  * runs as a layout effect so the handler closure is current after every
  * render — no ref-during-render hacks needed.
  */
-function useTouchSafeAction(
-  ref: React.RefObject<HTMLElement | null>,
-  handler: () => void,
-) {
+function useTouchSafeAction(ref: React.RefObject<HTMLElement | null>, handler: () => void) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;

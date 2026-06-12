@@ -101,9 +101,8 @@ function navigateTo(route: string): void {
   // of switching back to English. Mirrors how LanguageSwitcher does it.
   const cur = window.location.pathname;
   const localeMatch = cur.match(/^\/([a-z]{2}(?:-[a-z]{2})?)\b/);
-  const prefix = localeMatch && LOCALES.includes(localeMatch[1] as Locale)
-    ? `/${localeMatch[1]}`
-    : '';
+  const prefix =
+    localeMatch && LOCALES.includes(localeMatch[1] as Locale) ? `/${localeMatch[1]}` : '';
   const normalised = route.startsWith('/') ? route : `/${route}`;
   const next = `${prefix}${normalised}`;
   if (next === cur) return;
@@ -123,9 +122,7 @@ function setLocale(locale: string): void {
   }
   const target = locale as Locale;
   const next =
-    switchLocale(window.location.pathname, target) +
-    window.location.search +
-    window.location.hash;
+    switchLocale(window.location.pathname, target) + window.location.search + window.location.hash;
   if (next === window.location.pathname + window.location.search + window.location.hash) {
     return;
   }
@@ -182,9 +179,7 @@ function newProject(): void {
 
   if (hasWork) {
     // eslint-disable-next-line no-alert
-    const ok = window.confirm(
-      'Start a new project? Any unsaved changes will be lost.',
-    );
+    const ok = window.confirm('Start a new project? Any unsaved changes will be lost.');
     if (!ok) return;
   }
 

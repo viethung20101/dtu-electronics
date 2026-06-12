@@ -10,15 +10,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Globe } from 'lucide-react';
-import {
-  LOCALES,
-  LOCALE_META,
-  type Locale,
-} from '../../i18n/config';
-import {
-  getLocaleFromPath,
-  switchLocale,
-} from '../../i18n/path';
+import { LOCALES, LOCALE_META, type Locale } from '../../i18n/config';
+import { getLocaleFromPath, switchLocale } from '../../i18n/path';
 
 export const LanguageSwitcher: React.FC = () => {
   const location = useLocation();
@@ -66,35 +59,22 @@ export const LanguageSwitcher: React.FC = () => {
         <span className="velxio-language-current">{current.toUpperCase()}</span>
       </button>
       {open && (
-        <ul
-          className="velxio-language-menu"
-          role="listbox"
-          aria-label="Language"
-        >
+        <ul className="velxio-language-menu" role="listbox" aria-label="Language">
           {LOCALES.map((loc) => {
             const meta = LOCALE_META[loc];
             const active = loc === current;
             return (
-              <li
-                key={loc}
-                role="option"
-                aria-selected={active}
-              >
+              <li key={loc} role="option" aria-selected={active}>
                 <button
                   type="button"
                   className={
-                    'velxio-language-item' +
-                    (active ? ' velxio-language-item-active' : '')
+                    'velxio-language-item' + (active ? ' velxio-language-item-active' : '')
                   }
                   onClick={() => choose(loc)}
                   lang={meta.htmlLang}
                 >
-                  <span className="velxio-language-native">
-                    {meta.nativeName}
-                  </span>
-                  <span className="velxio-language-code">
-                    {loc.toUpperCase()}
-                  </span>
+                  <span className="velxio-language-native">{meta.nativeName}</span>
+                  <span className="velxio-language-code">{loc.toUpperCase()}</span>
                 </button>
               </li>
             );

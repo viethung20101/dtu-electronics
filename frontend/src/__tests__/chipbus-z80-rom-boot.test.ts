@@ -39,13 +39,30 @@ const range = (n: number, from = 0) => Array.from({ length: n }, (_, i) => i + f
 const Z80_PINS = [
   ...range(16).map((i) => `A${i}`),
   ...range(8).map((i) => `D${i}`),
-  'M1', 'MREQ', 'IORQ', 'RD', 'WR', 'RFSH', 'HALT', 'WAIT',
-  'INT', 'NMI', 'RESET', 'BUSREQ', 'BUSACK', 'CLK', 'VCC', 'GND',
+  'M1',
+  'MREQ',
+  'IORQ',
+  'RD',
+  'WR',
+  'RFSH',
+  'HALT',
+  'WAIT',
+  'INT',
+  'NMI',
+  'RESET',
+  'BUSREQ',
+  'BUSACK',
+  'CLK',
+  'VCC',
+  'GND',
 ];
 const ROM_PINS = [
   ...range(15).map((i) => `A${i}`),
   ...range(8).map((i) => `D${i}`),
-  'CE', 'OE', 'VCC', 'GND',
+  'CE',
+  'OE',
+  'VCC',
+  'GND',
 ];
 
 // The schematic: address A0..A14 and data D0..D7 straight across, plus the Z80's
@@ -77,51 +94,60 @@ function wiresFor(chipId: string, pins: string[]): Map<string, number> {
   return new Map(pins.map((p) => [p, pinKey(chipId, p)] as [string, number]));
 }
 
-describe.skipIf(!haveFixtures)('chipbus Phase 0-2 — a real Z80 boots from a ROM over the bus', () => {
-  beforeEach(() => {
-    setChipBusEnabledForTest(true);
-    resetChipNetIndexForTest();
-    resetBusNets();
-  });
-  afterEach(() => {
-    setChipBusEnabledForTest(null);
-    resetChipNetIndexForTest();
-    resetBusNets();
-  });
-
-  it('fetches JP+HALT from the ROM across the bus and drives HALT low', async () => {
-    const z80Wasm = new Uint8Array(readFileSync(z80Path));
-    const romWasm = new Uint8Array(readFileSync(romPath));
-    const pm = new PinManager();
-
-    const z80 = await ChipInstance.create({
-      wasm: z80Wasm, componentId: 'z80', pinManager: pm, wires: wiresFor('z80', Z80_PINS),
+describe.skipIf(!haveFixtures)(
+  'chipbus Phase 0-2 — a real Z80 boots from a ROM over the bus',
+  () => {
+    beforeEach(() => {
+      setChipBusEnabledForTest(true);
+      resetChipNetIndexForTest();
+      resetBusNets();
     });
-    z80.start();
-    const rom = await ChipInstance.create({
-      wasm: romWasm, componentId: 'rom', pinManager: pm, wires: wiresFor('rom', ROM_PINS),
+    afterEach(() => {
+      setChipBusEnabledForTest(null);
+      resetChipNetIndexForTest();
+      resetBusNets();
     });
-    rom.start();
 
-    const halt = pinKey('z80', 'HALT');
-    // At power-on the Z80 holds HALT high (running, registered OUTPUT_HIGH).
-    expect(pm.getPinState(halt)).toBe(true);
+    it('fetches JP+HALT from the ROM across the bus and drives HALT low', async () => {
+      const z80Wasm = new Uint8Array(readFileSync(z80Path));
+      const romWasm = new Uint8Array(readFileSync(romPath));
+      const pm = new PinManager();
 
-    // on_clock bails while BUSREQ/WAIT read low (unwired inputs default 0), so
-    // deassert them, then release RESET (rising edge) to start the CPU.
-    pm.triggerPinChange(pinKey('z80', 'BUSREQ'), true);
-    pm.triggerPinChange(pinKey('z80', 'WAIT'), true);
-    pm.triggerPinChange(pinKey('z80', 'RESET'), true);
+      const z80 = await ChipInstance.create({
+        wasm: z80Wasm,
+        componentId: 'z80',
+        pinManager: pm,
+        wires: wiresFor('z80', Z80_PINS),
+      });
+      z80.start();
+      const rom = await ChipInstance.create({
+        wasm: romWasm,
+        componentId: 'rom',
+        pinManager: pm,
+        wires: wiresFor('rom', ROM_PINS),
+      });
+      rom.start();
 
-    // Run the 4 MHz pseudo-clock (250 ns period) for ~200 ticks — far more than
-    // the 2 instructions to reach HALT.
-    z80.tickTimers(50_000n);
+      const halt = pinKey('z80', 'HALT');
+      // At power-on the Z80 holds HALT high (running, registered OUTPUT_HIGH).
+      expect(pm.getPinState(halt)).toBe(true);
 
-    // HALT went low: the Z80 executed JP 0x0006 then HALT, having correctly read
-    // every byte from the ROM over the shared chip-to-chip bus.
-    expect(pm.getPinState(halt)).toBe(false);
+      // on_clock bails while BUSREQ/WAIT read low (unwired inputs default 0), so
+      // deassert them, then release RESET (rising edge) to start the CPU.
+      pm.triggerPinChange(pinKey('z80', 'BUSREQ'), true);
+      pm.triggerPinChange(pinKey('z80', 'WAIT'), true);
+      pm.triggerPinChange(pinKey('z80', 'RESET'), true);
 
-    z80.dispose();
-    rom.dispose();
-  });
-});
+      // Run the 4 MHz pseudo-clock (250 ns period) for ~200 ticks — far more than
+      // the 2 instructions to reach HALT.
+      z80.tickTimers(50_000n);
+
+      // HALT went low: the Z80 executed JP 0x0006 then HALT, having correctly read
+      // every byte from the ROM over the shared chip-to-chip bus.
+      expect(pm.getPinState(halt)).toBe(false);
+
+      z80.dispose();
+      rom.dispose();
+    });
+  },
+);

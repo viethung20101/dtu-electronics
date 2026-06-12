@@ -95,17 +95,14 @@ export const CanvasMinimap: React.FC<Props> = ({
   // Drag state. We use a ref + window listeners (rather than React's
   // onMouseMove on the minimap div) so the gesture keeps working even if
   // the cursor leaves the minimap during a fast pan.
-  const dragRef = useRef<
-    | {
-        // Mouse position at mousedown.
-        mouseX: number;
-        mouseY: number;
-        // Pan at mousedown — we add (delta-converted-to-world) to this.
-        panX: number;
-        panY: number;
-      }
-    | null
-  >(null);
+  const dragRef = useRef<{
+    // Mouse position at mousedown.
+    mouseX: number;
+    mouseY: number;
+    // Pan at mousedown — we add (delta-converted-to-world) to this.
+    panX: number;
+    panY: number;
+  } | null>(null);
 
   const minimapRef = useRef<HTMLDivElement>(null);
 

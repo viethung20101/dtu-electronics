@@ -68,7 +68,7 @@ async function main() {
   });
 }
 
-main().catch(err => console.error('[main] bootstrap failed:', err));
+main().catch((err) => console.error('[main] bootstrap failed:', err));
 
 // Optional pro overlay. The `@pro` import resolves to a no-op stub in the
 // open-source build (see vite.config.ts) and to the real overlay only when

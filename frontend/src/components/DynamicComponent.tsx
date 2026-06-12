@@ -137,14 +137,12 @@ function traceDetailed(
   let chipNeighbour: { id: string; pin: string } | null = null;
 
   for (const w of wires) {
-    const selfEp =
-      w.start.componentId === fromId && w.start.pinName === fromPin ? w.start : w.end;
+    const selfEp = w.start.componentId === fromId && w.start.pinName === fromPin ? w.start : w.end;
     const otherEp = selfEp === w.start ? w.end : w.start;
 
     if (isBoardComponent(otherEp.componentId)) {
       const boardKind =
-        state.boards.find((b) => b.id === otherEp.componentId)?.boardKind ??
-        otherEp.componentId;
+        state.boards.find((b) => b.id === otherEp.componentId)?.boardKind ?? otherEp.componentId;
       const pin = boardPinToNumber(boardKind, otherEp.pinName);
       if (pin !== null) return { arduinoPin: pin, crossedActiveDevice: activeSeen };
     } else {
@@ -156,15 +154,8 @@ function traceDetailed(
       if (pair) {
         const [p1, p2] = pair;
         const otherPin = otherEp.pinName === p1 ? p2 : p1;
-        const nowActive =
-          activeSeen || (comp ? isActiveDevice(comp.metadataId) : false);
-        const result = traceDetailed(
-          state,
-          otherEp.componentId,
-          otherPin,
-          depth + 1,
-          nowActive,
-        );
+        const nowActive = activeSeen || (comp ? isActiveDevice(comp.metadataId) : false);
+        const result = traceDetailed(state, otherEp.componentId, otherPin, depth + 1, nowActive);
         if (result.arduinoPin !== null) return result;
       }
     }
@@ -451,11 +442,10 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
           // shared flat PinManager that SimulatorCanvas subscribes LEDs to, so
           // both sides talk on the same numeric/synthetic pin ids. Falls back
           // to a no-op only if even that isn't ready yet.
-          pinManager:
-            (useSimulatorStore.getState().pinManager as any) ?? {
-              onPinChange: () => () => {},
-              triggerPinChange: () => {},
-            },
+          pinManager: (useSimulatorStore.getState().pinManager as any) ?? {
+            onPinChange: () => () => {},
+            triggerPinChange: () => {},
+          },
         } as any);
       // Helper to find Arduino pin connected to a component pin.
       // Traces through electrically-transparent passive components so that a
@@ -474,14 +464,10 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
       // component "rgb-led-1", got null, and the PinResolver reported
       // FLOATING forever (the canonical "wokwi-rgb-led never lights up
       // even though SPICE is driving R/G/B" symptom).
-      const getArduinoPin = (
-        componentIdOrPin: string,
-        maybePinName?: string,
-      ): number | null => {
+      const getArduinoPin = (componentIdOrPin: string, maybePinName?: string): number | null => {
         const state = useSimulatorStore.getState();
         const componentId = maybePinName !== undefined ? componentIdOrPin : id;
-        const componentPinName =
-          maybePinName !== undefined ? maybePinName : componentIdOrPin;
+        const componentPinName = maybePinName !== undefined ? maybePinName : componentIdOrPin;
         return traceDetailed(state, componentId, componentPinName, 0).arduinoPin;
       };
 
@@ -492,18 +478,21 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
       // implementation that watches node voltages and threshold-converts
       // to logic states.
       const simState = useSimulatorStore.getState();
-      const ownerBoard =
-        simState.boards.find((b) => b.id === simState.activeBoardId) ?? null;
+      const ownerBoard = simState.boards.find((b) => b.id === simState.activeBoardId) ?? null;
       const ownerBoardVcc =
-        (ownerBoard && BOARD_PIN_GROUPS[ownerBoard.boardKind as keyof typeof BOARD_PIN_GROUPS]?.vcc) ?? 5;
+        (ownerBoard &&
+          BOARD_PIN_GROUPS[ownerBoard.boardKind as keyof typeof BOARD_PIN_GROUPS]?.vcc) ??
+        5;
       const getPinResolver = (componentPinName: string): PinResolver | null => {
         const state = useSimulatorStore.getState();
-        const pinManager = (stubSimulator as {
-          pinManager?: {
-            onPinChange?: (pin: number, cb: (pin: number, state: boolean) => void) => () => void;
-            getPinState?: (pin: number) => boolean | null;
-          };
-        }).pinManager;
+        const pinManager = (
+          stubSimulator as {
+            pinManager?: {
+              onPinChange?: (pin: number, cb: (pin: number, state: boolean) => void) => () => void;
+              getPinState?: (pin: number) => boolean | null;
+            };
+          }
+        ).pinManager;
 
         // Phase 1b: detect whether the path between this component pin and
         // an Arduino pin passes through any active device (BJT, MOSFET,
@@ -591,7 +580,11 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
         left: `${x}px`,
         top: `${y}px`,
         cursor: interactionRunning && isInteractive ? 'pointer' : 'move',
-        border: isSelected ? '2px dashed #007acc' : '2px solid transparent',
+        border: isSelected
+          ? properties.locked
+            ? '2px solid #ef5350'
+            : '2px dashed #007acc'
+          : '2px solid transparent',
         borderRadius: '4px',
         padding: '4px',
         userSelect: 'none',
@@ -625,6 +618,7 @@ export const DynamicComponent: React.FC<DynamicComponentProps> = ({
           gap: '4px',
         }}
       >
+        {properties.locked && <span style={{ marginRight: '2px', fontSize: '10px' }}>🔒</span>}
         {properties.pin !== undefined ? `Pin ${properties.pin}` : metadata.name}
         {properties.protocol && (
           <span

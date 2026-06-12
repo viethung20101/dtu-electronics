@@ -601,6 +601,9 @@ class Stm32BridgeShim {
   loadHex(_hex: string): void {}
   loadBinary(_b64: string): void {}
   isRunning(): boolean { return this.bridge.connected; }
+  serialWrite(text: string): void {
+    this.bridge.sendSerialBytes(Array.from(new TextEncoder().encode(text)));
+  }
 
   /** Drive a GPIO input from a part. `pin` is the linear pin (port*16+pin). */
   setPinState(pin: number, state: boolean): void {
@@ -730,7 +733,7 @@ function isRiscVEsp32Kind(kind: BoardKind): boolean {
 }
 
 // ── Component type ────────────────────────────────────────────────────────
-interface Component {
+export interface Component {
   id: string;
   metadataId: string;
   x: number;
@@ -807,6 +810,7 @@ interface SimulatorState {
     | RiscVSimulator
     | Esp32C3Simulator
     | Esp32BridgeShim
+    | Stm32BridgeShim
     | null;
   /** @deprecated use getBoardPinManager(activeBoardId) */
   pinManager: PinManager;
@@ -912,6 +916,10 @@ interface SimulatorState {
   serialWriteToBoard: (boardId: string, text: string) => void;
   clearSerialOutput: () => void;
   clearBoardSerialOutput: (boardId: string) => void;
+
+  // ── Component library integration triggers ───────────────────────────────
+  addComponentTrigger: ((metadata: any) => void) | null;
+  addBoardTrigger: ((kind: any) => void) | null;
 }
 
 // ── Helper: create a simulator for a given board kind ─────────────────────
@@ -1017,6 +1025,8 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
     // ── Multi-board state ─────────────────────────────────────────────────
     boards: [INITIAL_BOARD],
     activeBoardId: INITIAL_BOARD_ID,
+    addComponentTrigger: null,
+    addBoardTrigger: null,
 
     addBoard: (boardKind: BoardKind, x: number, y: number, explicitId?: string) => {
       let id: string;
@@ -2332,7 +2342,7 @@ export const useSimulatorStore = create<SimulatorState>((set, get) => {
     setWires: (wires) =>
       set({
         // Ensure every wire has waypoints (backwards-compatible with saved projects)
-        wires: wires.map((w) => ({ waypoints: [], ...w })),
+        wires: wires.map((w) => ({ ...w, waypoints: w.waypoints ?? [] })),
         // Bulk replacement clears history for the same reason as setComponents.
         history: [],
         historyIndex: -1,

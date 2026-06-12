@@ -30,8 +30,12 @@ import {
 } from '../simulation/customChips/chipNets';
 import { syntheticChipPin } from '../simulation/customChips/syntheticPins';
 
-const driverWasmPath = fileURLToPath(new URL('./fixtures/chipbus/bus-driver.wasm', import.meta.url));
-const readerWasmPath = fileURLToPath(new URL('./fixtures/chipbus/bus-reader.wasm', import.meta.url));
+const driverWasmPath = fileURLToPath(
+  new URL('./fixtures/chipbus/bus-driver.wasm', import.meta.url),
+);
+const readerWasmPath = fileURLToPath(
+  new URL('./fixtures/chipbus/bus-reader.wasm', import.meta.url),
+);
 const haveFixtures = existsSync(driverWasmPath) && existsSync(readerWasmPath);
 
 const chip = (id: string) => ({ id, metadataId: 'custom-chip' });

@@ -183,10 +183,23 @@ const BOARD_ICON: Record<BoardKind, string> = {
   'arduino-nano': '▪',
   'arduino-mega': '▬',
   'raspberry-pi-pico': '◆',
+  'pi-pico-w': '◆',
+  'raspberry-pi-zero': '⬛',
+  'raspberry-pi-1': '⬛',
+  'raspberry-pi-2': '⬛',
   'raspberry-pi-3': '⬛',
+  'raspberry-pi-4': '⬛',
+  'raspberry-pi-5': '⬛',
   esp32: '⬡',
+  'esp32-devkit-c-v4': '⬡',
+  'esp32-cam': '⬡',
+  'wemos-lolin32-lite': '⬡',
   'esp32-s3': '⬡',
+  'xiao-esp32-s3': '⬡',
+  'arduino-nano-esp32': '⬡',
   'esp32-c3': '⬡',
+  'xiao-esp32-c3': '⬡',
+  'aitewinrobot-esp32c3-supermini': '⬡',
   'stm32-bluepill': '◈',
   'stm32-blackpill': '◈',
   'stm32-bluepill-f103cb': '◈',
@@ -195,6 +208,7 @@ const BOARD_ICON: Record<BoardKind, string> = {
   'stm32-olimex-h405': '◈',
   'stm32-netduino-plus2': '◈',
   'stm32-netduino2': '◈',
+  attiny85: '⚫',
 };
 
 // Color accent per board family
@@ -203,10 +217,23 @@ const BOARD_COLOR: Record<BoardKind, string> = {
   'arduino-nano': '#4fc3f7',
   'arduino-mega': '#4fc3f7',
   'raspberry-pi-pico': '#ce93d8',
+  'pi-pico-w': '#ce93d8',
+  'raspberry-pi-zero': '#ef9a9a',
+  'raspberry-pi-1': '#ef9a9a',
+  'raspberry-pi-2': '#ef9a9a',
   'raspberry-pi-3': '#ef9a9a',
+  'raspberry-pi-4': '#ef9a9a',
+  'raspberry-pi-5': '#ef9a9a',
   esp32: '#a5d6a7',
+  'esp32-devkit-c-v4': '#a5d6a7',
+  'esp32-cam': '#a5d6a7',
+  'wemos-lolin32-lite': '#a5d6a7',
   'esp32-s3': '#a5d6a7',
+  'xiao-esp32-s3': '#a5d6a7',
+  'arduino-nano-esp32': '#a5d6a7',
   'esp32-c3': '#a5d6a7',
+  'xiao-esp32-c3': '#a5d6a7',
+  'aitewinrobot-esp32c3-supermini': '#a5d6a7',
   'stm32-bluepill': '#80cbc4',
   'stm32-blackpill': '#b0bec5',
   'stm32-bluepill-f103cb': '#80cbc4',
@@ -215,6 +242,7 @@ const BOARD_COLOR: Record<BoardKind, string> = {
   'stm32-olimex-h405': '#a5d6a7',
   'stm32-netduino-plus2': '#ce93d8',
   'stm32-netduino2': '#ce93d8',
+  attiny85: '#e0e0e0',
 };
 
 function FileIcon({ name }: { name: string }) {
@@ -312,7 +340,8 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
   // predefined chips declare no programTargets and don't appear here (they're
   // edited in the chip designer).
   const programmableChips = components.filter(
-    (c) => c.metadataId === 'custom-chip' && isProgrammableChip(c.properties as Record<string, unknown>),
+    (c) =>
+      c.metadataId === 'custom-chip' && isProgrammableChip(c.properties as Record<string, unknown>),
   );
 
   // Ensure each programmable chip has an editable program AND its editor group.
@@ -331,9 +360,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
       if (existing) {
         // Chip already names its program (e.g. an example) — seed from its
         // saved source if any, else empty (loadExample usually filled it).
-        ed.createFileGroup(gid, [
-          { name: existing, content: String(props.programSource ?? '') },
-        ]);
+        ed.createFileGroup(gid, [{ name: existing, content: String(props.programSource ?? '') }]);
       } else {
         // Fresh chip from the gallery — give it a starter program.c and
         // remember its target CPU for the ROM compiler.
@@ -386,11 +413,14 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
     }
   }, [renamingSection]);
 
-  const startBoardRename = useCallback((board: { id: string; name?: string; boardKind: BoardKind }) => {
-    sectionRenameCancelledRef.current = false;
-    setRenamingSection({ id: board.id, kind: 'board' });
-    setSectionRenameValue(boardDisplayName(board));
-  }, []);
+  const startBoardRename = useCallback(
+    (board: { id: string; name?: string; boardKind: BoardKind }) => {
+      sectionRenameCancelledRef.current = false;
+      setRenamingSection({ id: board.id, kind: 'board' });
+      setSectionRenameValue(boardDisplayName(board));
+    },
+    [],
+  );
 
   const startChipRename = useCallback((chipId: string, currentName: string) => {
     sectionRenameCancelledRef.current = false;
@@ -595,7 +625,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                     e.stopPropagation();
                     toggleCollapse(board.id);
                   }}
-                  title={isOpen ? t('editor.fileExplorer.collapse') : t('editor.fileExplorer.expand')}
+                  title={
+                    isOpen ? t('editor.fileExplorer.collapse') : t('editor.fileExplorer.expand')
+                  }
                 >
                   <IcoChevron open={isOpen} />
                 </button>
@@ -704,7 +736,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                         )}
 
                         {file.modified && (
-                          <span className="file-explorer-dot" title={t('editor.fileExplorer.unsavedChanges')} />
+                          <span
+                            className="file-explorer-dot"
+                            title={t('editor.fileExplorer.unsavedChanges')}
+                          />
                         )}
                       </div>
                     );
@@ -805,7 +840,9 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                     e.stopPropagation();
                     toggleCollapse(chip.id);
                   }}
-                  title={isOpen ? t('editor.fileExplorer.collapse') : t('editor.fileExplorer.expand')}
+                  title={
+                    isOpen ? t('editor.fileExplorer.collapse') : t('editor.fileExplorer.expand')
+                  }
                 >
                   <IcoChevron open={isOpen} />
                 </button>
@@ -870,7 +907,10 @@ export const FileExplorer: React.FC<FileExplorerProps> = ({ onSaveClick, onNewCl
                         </span>
                         <span className="file-explorer-name">{file.name}</span>
                         {file.modified && (
-                          <span className="file-explorer-dot" title={t('editor.fileExplorer.unsavedChanges')} />
+                          <span
+                            className="file-explorer-dot"
+                            title={t('editor.fileExplorer.unsavedChanges')}
+                          />
                         )}
                       </div>
                     );

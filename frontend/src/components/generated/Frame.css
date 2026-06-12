@@ -1,0 +1,486 @@
+.frame {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(0, 240, 255, 0.02) 3%, rgba(0, 240, 255, 0) 3%),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.02) 3%, rgba(0, 240, 255, 0) 3%), #202020, #ffffff;
+}
+
+.section_2_hero_ultimate_section {
+  position: relative;
+}
+
+.ambient_blur_glows {
+  width: 384px;
+  height: 384px;
+  position: absolute;
+  left: 320px;
+  top: 170px;
+  background-color: rgba(0, 240, 255, 0.1);
+  filter: blur(140px);
+}
+
+.overlayblur {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  left: 560px;
+  top: 110px;
+  background-color: rgba(157, 78, 221, 0.1);
+  filter: blur(160px);
+}
+
+.container {
+  position: relative;
+  display: flex;
+  gap: 32px;
+}
+
+.overlayborder {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.background {
+  width: 8px;
+  height: 8px;
+  background-color: #00f0ff;
+}
+
+.new_v30_engine_at_speed_overclock {
+  color: #00f0ff;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.heading_1 {
+  position: relative;
+}
+
+.arduino_esp32 {
+  color: #e5e7eb;
+  font-size: 59.79999923706055px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 60px;
+}
+
+.nn_tng_gi_lp_phn_cng_bin_chuyn_su_kt_ni_linh_kin_in_t_vit_m_nhng_v_phn_tch_lung_d_liu_thi_gian_thc_m_khng_cn_chm_vo_phn_cng_vt_l {
+  color: #9ca3af;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.khi_ui_gi_lp_3d_mockup {
+  position: relative;
+}
+
+.overlayborderoverlayblur {
+  position: relative;
+  background-color: rgba(10, 15, 30, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.overlayshadow {
+  width: 576px;
+  height: 371px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.margin {
+  position: relative;
+}
+
+.horizontalborder {
+  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.overlay {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.svg {
+  width: 12px;
+  height: 12px;
+}
+
+.status_running {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.m_phng_bng_mch_logic_ha_tit_cao_cp {
+  position: relative;
+  background-color: #070a12;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.backgroundbordershadow {
+  width: 144px;
+  height: 96px;
+  position: relative;
+  background: linear-gradient(156deg, rgba(8, 51, 68, 1) 0%, rgba(15, 23, 42, 1) 100%);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  box-shadow: 0px 0px 30px 0px rgba(0, 240, 255, 0.25);
+}
+
+.esp32_s3 {
+  color: #00f0ff;
+  font-size: 10px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 15px;
+}
+
+.mcu_core {
+  color: #ffffff;
+  font-size: 16.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.gradient {
+  width: 524px;
+  height: 254px;
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  background: radial-gradient(circle at 50% 50%, rgba(26, 46, 68, 1) 4%, rgba(26, 46, 68, 0) 4%);
+}
+
+.cc_chm_n_led_gi_lp_ngu_nhin {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  left: 469px;
+  top: 33px;
+  background-color: #4ade80;
+  box-shadow: 0px 0px 30px 0px rgba(0, 240, 255, 0.25);
+}
+
+.backgroundshadow {
+  width: 8px;
+  height: 8px;
+  position: absolute;
+  left: 65px;
+  top: 215px;
+  background-color: #ff007f;
+  box-shadow: 0px 0px 30px 0px rgba(255, 0, 127, 0.2);
+}
+
+.section_3_premium_component_architecture {
+  position: relative;
+  display: flex;
+  gap: 48px;
+  align-items: stretch;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.kin_trc_phn_cng_h_tr {
+  color: #00f0ff;
+  font-size: 10.699999809265137px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.heading_2 {
+  position: relative;
+}
+
+.mi_kin_trc_mt_cng_c_duy_nht {
+  color: #ffffff;
+  font-size: 29.5px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 36px;
+}
+
+.khng_cn_ci_t_driver_khng_lo_hng_mch_tht_chn_dng_chip_yu_thch_ca_bn_v_lp_trnh_tc_th {
+  color: #9ca3af;
+  font-size: 13.100000381469727px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.section_4_code_playground_studio_section_tnh_nng_c_quyn_mi_b_sung {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.backgroundborder {
+  position: relative;
+  background: linear-gradient(175deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.integrated_studio_playground {
+  color: #9d4edd;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.list {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.section_5_bento_grid_features_system {
+  position: relative;
+  display: flex;
+  gap: 64px;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section_6_ultimate_saas_pricing_matrix {
+  position: relative;
+  display: flex;
+  gap: 64px;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer_7_footer {
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+._2026_circuitos_cloud_platform_built_for_developers {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.header_1_premium_header {
+  width: 1920px;
+  height: 73px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  background-color: rgba(3, 5, 10, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vector {
+  width: 105px;
+  height: 31px;
+  background-color: #009ffe;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.link {
+  position: relative;
+}
+
+.ng_nhp {
+  color: #9ca3af;
+  font-size: 13.5px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.button {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(0, 240, 255, 1) 0%, rgba(6, 182, 212, 1) 100%);
+  box-shadow: 0px 0px 30px 0px rgba(0, 240, 255, 0.25);
+}
+
+.workspace {
+  color: #000000;
+  font-size: 13.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.shadow {
+  position: relative;
+  box-shadow:
+    0px 10px 8px 0px rgba(0, 0, 0, 0.04),
+    0px 4px 3px 0px rgba(0, 0, 0, 0.1);
+}
+
+.raspberry_pi {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 240, 255, 1) 0%,
+    rgba(157, 78, 221, 1) 50%,
+    rgba(255, 0, 127, 1) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 60px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 60px;
+}
+
+.khi_chy_trnh_m_phng {
+  color: #000000;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.vit_code_chy_kim_th_thi_gian_thc {
+  color: #ffffff;
+  font-size: 29.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 36px;
+}
+
+.item {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.t_ng_kim_tra_li_bin_dch_c_php {
+  color: #d1d5db;
+  font-size: 11.399999618530273px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.nng_lc_ti_tn_ca_lab_in_t_o {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 36px;
+}
+
+.heading_3 {
+  position: relative;
+}
+
+.oscilloscope_logic_analyzer {
+  color: #ffffff;
+  font-size: 17.700000762939453px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.o_c_chnh_xc_xung_nhp_ca_cc_chn_pwm_v_phn_tch_chnh_xc_m_sng_nh_phn_ca_tn_hiu_truyn_thng {
+  color: #9ca3af;
+  font-size: 11.300000190734863px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 19.5px;
+}
+
+.kho_ko_th_linh_kin_s {
+  color: #ffffff;
+  font-size: 17.899999618530273px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.chia_s_lm_vic_nhm {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.tr_l_tc_t_ai_sa_code_v_ti_u_mch {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.bng_gi_linh_hot_cho_mi_i_tng {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 36px;
+}
+
+.m_phng_phn_cng_min_ph_trn_i_ch_tr_chi_ph_khi_dng_tc_t_ai_hiu_nng_cao {
+  color: #9ca3af;
+  font-size: 13.300000190734863px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.gi_lp_khng_gii_hn_s_lng_bo_mch {
+  color: #9ca3af;
+  font-size: 11.600000381469727px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.bao_gm_ton_b_tnh_nng_gi_starter {
+  color: #e5e7eb;
+  font-size: 11.300000190734863px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.terms_of_service {
+  color: #6b7280;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.trang_ch {
+  color: #18a0fb;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}

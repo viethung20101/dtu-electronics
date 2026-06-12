@@ -28,12 +28,12 @@ const BOARD_LABELS: Record<string, string> = {
   'arduino-uno': 'Arduino Uno',
   'arduino-nano': 'Arduino Nano',
   'arduino-mega': 'Arduino Mega',
-  'esp32': 'ESP32',
+  esp32: 'ESP32',
   'esp32-s3': 'ESP32-S3',
   'esp32-c3': 'ESP32-C3',
   'raspberry-pi-pico': 'Pico',
   'raspberry-pi-3': 'Pi 3',
-  'attiny85': 'ATtiny85',
+  attiny85: 'ATtiny85',
 };
 
 export const CommunityProjectsGrid = () => {
@@ -56,8 +56,12 @@ export const CommunityProjectsGrid = () => {
         }
         setProjects(rows);
       })
-      .catch(() => { if (!cancelled) setHidden(true); });
-    return () => { cancelled = true; };
+      .catch(() => {
+        if (!cancelled) setHidden(true);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   if (hidden || !projects) return null;
@@ -67,8 +71,8 @@ export const CommunityProjectsGrid = () => {
       <div style={styles.header}>
         <h2 style={styles.title}>Featured community projects</h2>
         <p style={styles.sub}>
-          The most-run public circuits on Velxio. Open one to see how it's wired,
-          remix the code, and run it live.
+          The most-run public circuits on Velxio. Open one to see how it's wired, remix the code,
+          and run it live.
         </p>
       </div>
       <div style={styles.grid}>
@@ -86,9 +90,7 @@ export const CommunityProjectsGrid = () => {
               <span>{p.run_count.toLocaleString()} runs</span>
             </div>
             <div style={styles.cardOwner}>by @{p.owner_username}</div>
-            {p.description && (
-              <div style={styles.cardDesc}>{p.description.slice(0, 140)}</div>
-            )}
+            {p.description && <div style={styles.cardDesc}>{p.description.slice(0, 140)}</div>}
           </Link>
         ))}
       </div>

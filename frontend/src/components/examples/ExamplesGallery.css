@@ -4,7 +4,8 @@
 
 .examples-gallery {
   min-height: 100vh;
-  background: var(--bg);
+  /* background: var(--bg); */
+  margin: 0px auto;
   color: var(--text);
   padding: 52px 40px;
   font-family: var(--font);

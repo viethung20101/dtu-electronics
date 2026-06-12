@@ -556,7 +556,9 @@ export const Oscilloscope: React.FC = () => {
         <button
           className={`osc-btn${capturing ? '' : ' osc-btn-active'}`}
           onClick={() => setCapturing(!capturing)}
-          title={capturing ? t('editor.oscilloscope.pauseTitle') : t('editor.oscilloscope.resumeTitle')}
+          title={
+            capturing ? t('editor.oscilloscope.pauseTitle') : t('editor.oscilloscope.resumeTitle')
+          }
         >
           {capturing ? `⏸ ${t('editor.oscilloscope.pause')}` : `▶ ${t('editor.oscilloscope.run')}`}
         </button>
@@ -566,7 +568,9 @@ export const Oscilloscope: React.FC = () => {
             Auto = free-running (current default).  Normal = window pins
             on every triggering edge.  Single = arm once, freeze on first
             edge — click again to re-arm. */}
-        <span className="osc-label" title="Trigger configuration">Trigger</span>
+        <span className="osc-label" title="Trigger configuration">
+          Trigger
+        </span>
         <select
           className="osc-select"
           value={triggerMode}

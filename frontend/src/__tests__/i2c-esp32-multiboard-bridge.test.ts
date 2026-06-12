@@ -145,11 +145,7 @@ import {
   getBoardSimulator,
   getBoardPinManager,
 } from '../store/useSimulatorStore';
-import {
-  I2CMemoryDevice,
-  VirtualBMP280,
-  VirtualPCF8574,
-} from '../simulation/I2CBusManager';
+import { I2CMemoryDevice, VirtualBMP280, VirtualPCF8574 } from '../simulation/I2CBusManager';
 
 function fullReset() {
   clearAllPinManagerState(useSimulatorStore, getBoardPinManager);
@@ -252,9 +248,7 @@ describe('Cross-architecture I2C — Uno master reads device attached to ESP32 v
     espSim.getI2CBus(0).addDevice(memDev);
 
     // SCL missing
-    setWires(useSimulatorStore, [
-      { fromBoard: unoId, fromPin: 'A4', toBoard: espId, toPin: '21' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: unoId, fromPin: 'A4', toBoard: espId, toPin: '21' }]);
 
     const unoSim = getBoardSimulator(unoId) as any;
     const busU = unoSim.getI2CBus(0);
@@ -292,9 +286,7 @@ describe('Cross-architecture I2C — Uno master reads device attached to ESP32 v
     expect(memDev.registers[0x01]).toBe(0x77);
 
     // Drop SCL → bridge teardown.
-    setWires(useSimulatorStore, [
-      { fromBoard: unoId, fromPin: 'A4', toBoard: espId, toPin: '21' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: unoId, fromPin: 'A4', toBoard: espId, toPin: '21' }]);
 
     busU = unoSim.getI2CBus(0);
     busU.start(false);
@@ -313,7 +305,7 @@ describe('Per-peer proxy ownership (multiple concurrent bridges to one ESP32)', 
     fullReset();
   });
 
-  it('tearing down one bridge leaves the other peer\'s proxies intact', () => {
+  it("tearing down one bridge leaves the other peer's proxies intact", () => {
     const store = useSimulatorStore.getState();
     const unoId = 'arduino-uno';
     const picoId = store.addBoard('pi-pico-w', 200, 100);
@@ -342,9 +334,7 @@ describe('Per-peer proxy ownership (multiple concurrent bridges to one ESP32)', 
     ]);
 
     // Capture which addresses were registered on the ESP32's backend.
-    const registeredAddrs = espBridge?.registerProxyI2c.mock.calls.map(
-      (c: any[]) => c[0],
-    ) ?? [];
+    const registeredAddrs = espBridge?.registerProxyI2c.mock.calls.map((c: any[]) => c[0]) ?? [];
     // Both peer addresses must have been pushed to QEMU.
     expect(registeredAddrs).toContain(0x42);
     expect(registeredAddrs).toContain(0x55);
@@ -361,9 +351,7 @@ describe('Per-peer proxy ownership (multiple concurrent bridges to one ESP32)', 
       { fromBoard: picoId, fromPin: 'GP5', toBoard: espId, toPin: '22' },
     ]);
 
-    const unregistered = espBridge?.unregisterProxyI2c.mock.calls.map(
-      (c: any[]) => c[0],
-    ) ?? [];
+    const unregistered = espBridge?.unregisterProxyI2c.mock.calls.map((c: any[]) => c[0]) ?? [];
 
     // Uno's 0x42 must have been unregistered exactly once.
     expect(unregistered).toContain(0x42);
@@ -391,9 +379,7 @@ describe('Per-peer proxy ownership (multiple concurrent bridges to one ESP32)', 
 
     espBridge?.unregisterProxyI2c.mockClear();
     espSim.clearAllProxies?.();
-    const unregistered = espBridge?.unregisterProxyI2c.mock.calls.map(
-      (c: any[]) => c[0],
-    ) ?? [];
+    const unregistered = espBridge?.unregisterProxyI2c.mock.calls.map((c: any[]) => c[0]) ?? [];
     expect(unregistered).toContain(0x10);
     expect(unregistered).toContain(0x11);
   });
@@ -421,7 +407,7 @@ describe('Periodic resync (dynamic devices)', () => {
     vi.useRealTimers();
   });
 
-  it('pushes updateProxyI2c when a dynamic device\'s register dump changes', async () => {
+  it("pushes updateProxyI2c when a dynamic device's register dump changes", async () => {
     const store = useSimulatorStore.getState();
     const unoId = 'arduino-uno';
     const espId = store.addBoard('esp32', 400, 100);
@@ -453,9 +439,7 @@ describe('Periodic resync (dynamic devices)', () => {
     // Two resync ticks at 250 ms each.
     await vi.advanceTimersByTimeAsync(700);
     expect(espBridge?.updateProxyI2c).toHaveBeenCalled();
-    const addrsUpdated = espBridge?.updateProxyI2c.mock.calls.map(
-      (c: any[]) => c[0],
-    );
+    const addrsUpdated = espBridge?.updateProxyI2c.mock.calls.map((c: any[]) => c[0]);
     expect(addrsUpdated).toContain(0x68);
   });
 
@@ -632,9 +616,7 @@ describe('Transitive proxy sync (3-board chain into ESP32)', () => {
       { fromBoard: unoId, fromPin: 'A5', toBoard: espId, toPin: '22' },
     ]);
 
-    const registered = espBridge?.registerProxyI2c.mock.calls.map(
-      (c: any[]) => c[0],
-    ) ?? [];
+    const registered = espBridge?.registerProxyI2c.mock.calls.map((c: any[]) => c[0]) ?? [];
     expect(registered).toContain(0x76);
   });
 });

@@ -22,7 +22,6 @@ import {
   ledcSignalForChannel,
 } from '../simulation/esp32-signals';
 
-
 describe('SignalRouter — core update/lookup', () => {
   it('update_routing populates both indexes', () => {
     const r = new SignalRouter();
@@ -41,7 +40,7 @@ describe('SignalRouter — core update/lookup', () => {
 
   it('rerouting a pin moves it cleanly across reverse-index sets', () => {
     const r = new SignalRouter();
-    const sigA = SIG_LEDC_HS_CH0_OUT_IDX;     // 72
+    const sigA = SIG_LEDC_HS_CH0_OUT_IDX; // 72
     const sigB = SIG_LEDC_HS_CH0_OUT_IDX + 1; // 73
     r.updateRouting(13, sigA);
     r.updateRouting(13, sigB);
@@ -79,7 +78,7 @@ describe('SignalRouter — core update/lookup', () => {
     r.updateRouting(13, sig);
     const snapshot = r.pinsForSignal(sig);
     r.updateRouting(12, sig); // mutate
-    expect(snapshot).toEqual([13]);           // snapshot unchanged
+    expect(snapshot).toEqual([13]); // snapshot unchanged
     expect(r.pinsForSignal(sig)).toEqual([12, 13]);
   });
 
@@ -112,13 +111,12 @@ describe('SignalRouter — core update/lookup', () => {
   });
 });
 
-
 describe('esp32-signals — channel ↔ signal id helpers', () => {
   it.each([
-    [0,  SIG_LEDC_HS_CH0_OUT_IDX],         // 71 (HS ch 0)
-    [7,  SIG_LEDC_HS_CH0_OUT_IDX + 7],     // 78 (HS ch 7)
-    [8,  SIG_LEDC_LS_CH0_OUT_IDX],         // 79 (LS ch 0)
-    [15, SIG_LEDC_LS_CH0_OUT_IDX + 7],     // 86 (LS ch 7)
+    [0, SIG_LEDC_HS_CH0_OUT_IDX], // 71 (HS ch 0)
+    [7, SIG_LEDC_HS_CH0_OUT_IDX + 7], // 78 (HS ch 7)
+    [8, SIG_LEDC_LS_CH0_OUT_IDX], // 79 (LS ch 0)
+    [15, SIG_LEDC_LS_CH0_OUT_IDX + 7], // 86 (LS ch 7)
   ])('ledcSignalForChannel(%d) roundtrips through channelForLedcSignal → %d', (channel, sig) => {
     expect(ledcSignalForChannel(channel)).toBe(sig);
     expect(channelForLedcSignal(sig)).toBe(channel);
@@ -138,7 +136,6 @@ describe('esp32-signals — channel ↔ signal id helpers', () => {
     expect(channelForLedcSignal(256)).toBeNull();
   });
 });
-
 
 describe('SignalRouter — multi-servo blink regression', () => {
   it('two servos on different channels do NOT alias on the reverse index', () => {

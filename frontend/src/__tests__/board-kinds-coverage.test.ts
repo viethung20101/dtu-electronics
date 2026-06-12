@@ -125,10 +125,12 @@ describe('BoardKind gallery coverage matrix', () => {
   it.each(allKinds.map((k) => [k] as const))(
     'BoardKind %s has at least one gallery example (or is accepted as uncovered)',
     (kind) => {
-      const count =
-        (byBoardType.get(kind)?.length ?? 0) + (byBoardsArray.get(kind)?.length ?? 0);
+      const count = (byBoardType.get(kind)?.length ?? 0) + (byBoardsArray.get(kind)?.length ?? 0);
       if (ACCEPTED_UNCOVERED.has(kind)) {
-        expect(count, `${kind} is in ACCEPTED_UNCOVERED but actually has ${count} examples — remove from the accepted list`).toBe(0);
+        expect(
+          count,
+          `${kind} is in ACCEPTED_UNCOVERED but actually has ${count} examples — remove from the accepted list`,
+        ).toBe(0);
         return;
       }
       expect(

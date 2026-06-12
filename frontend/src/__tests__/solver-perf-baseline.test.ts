@@ -80,8 +80,11 @@ describe.skipIf(!PERF_ENABLED)('Solver performance baseline (CI_PERF=1)', () => 
 // When the suite is disabled (default), expose a trivial it() so the
 // file still registers in test discovery and a CI dashboard can show
 // "skipped" instead of an empty file.
-describe.skipIf(PERF_ENABLED)('Solver performance baseline (disabled — set CI_PERF=1 to enable)', () => {
-  it('placeholder', () => {
-    expect(PERF_ENABLED).toBe(false);
-  });
-});
+describe.skipIf(PERF_ENABLED)(
+  'Solver performance baseline (disabled — set CI_PERF=1 to enable)',
+  () => {
+    it('placeholder', () => {
+      expect(PERF_ENABLED).toBe(false);
+    });
+  },
+);

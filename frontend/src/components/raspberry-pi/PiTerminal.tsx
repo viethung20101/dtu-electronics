@@ -52,7 +52,11 @@ export const PiTerminal: React.FC<PiTerminalProps> = ({ boardId }) => {
       // only fires when the DOM element has focus, so users staring at
       // a working prompt see no echo because their keystrokes go to
       // whatever element had focus at mount time (canvas, code editor).
-      try { term.focus(); } catch (_) { /* container may not be visible */ }
+      try {
+        term.focus();
+      } catch (_) {
+        /* container may not be visible */
+      }
     });
 
     termRef.current = term;

@@ -86,18 +86,74 @@ beforeEach(() => resetBusNets());
 
 describe('digital-gate-engine Phase 0 — single gates settle on the kernel', () => {
   const cases: Array<[string, (b: boolean[]) => boolean, Array<[number, number, number]>]> = [
-    ['AND', AND, [[0, 0, 0], [0, 1, 0], [1, 0, 0], [1, 1, 1]]],
-    ['OR', OR, [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]]],
-    ['NAND', NAND, [[0, 0, 1], [0, 1, 1], [1, 0, 1], [1, 1, 0]]],
-    ['NOR', NOR, [[0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 0]]],
-    ['XOR', XOR, [[0, 0, 0], [0, 1, 1], [1, 0, 1], [1, 1, 0]]],
-    ['XNOR', XNOR, [[0, 0, 1], [0, 1, 0], [1, 0, 0], [1, 1, 1]]],
+    [
+      'AND',
+      AND,
+      [
+        [0, 0, 0],
+        [0, 1, 0],
+        [1, 0, 0],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      'OR',
+      OR,
+      [
+        [0, 0, 0],
+        [0, 1, 1],
+        [1, 0, 1],
+        [1, 1, 1],
+      ],
+    ],
+    [
+      'NAND',
+      NAND,
+      [
+        [0, 0, 1],
+        [0, 1, 1],
+        [1, 0, 1],
+        [1, 1, 0],
+      ],
+    ],
+    [
+      'NOR',
+      NOR,
+      [
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, 0, 0],
+        [1, 1, 0],
+      ],
+    ],
+    [
+      'XOR',
+      XOR,
+      [
+        [0, 0, 0],
+        [0, 1, 1],
+        [1, 0, 1],
+        [1, 1, 0],
+      ],
+    ],
+    [
+      'XNOR',
+      XNOR,
+      [
+        [0, 0, 1],
+        [0, 1, 0],
+        [1, 0, 0],
+        [1, 1, 1],
+      ],
+    ],
   ];
 
   it.each(cases)('%s truth table', (_name, fn, table) => {
     for (const [a, b, y] of table) {
       const net = new Network();
-      const A = net.net(), B = net.net(), Y = net.net();
+      const A = net.net(),
+        B = net.net(),
+        Y = net.net();
       net.gate('g', [A, B], Y, fn);
       net.setSwitch(A, a as 0 | 1);
       net.setSwitch(B, b as 0 | 1);
@@ -107,9 +163,13 @@ describe('digital-gate-engine Phase 0 — single gates settle on the kernel', ()
   });
 
   it('NOT inverter (incl. the all-zero-input high output)', () => {
-    for (const [a, y] of [[0, 1], [1, 0]] as Array<[0 | 1, 0 | 1]>) {
+    for (const [a, y] of [
+      [0, 1],
+      [1, 0],
+    ] as Array<[0 | 1, 0 | 1]>) {
       const net = new Network();
-      const A = net.net(), Y = net.net();
+      const A = net.net(),
+        Y = net.net();
       net.gate('inv', [A], Y, NOT);
       // Read BEFORE driving: NOT(0)=1 must come from the drive-on-mount.
       expect(net.read(Y), `NOT(${a}) initial`).toBe(1);
@@ -122,9 +182,17 @@ describe('digital-gate-engine Phase 0 — single gates settle on the kernel', ()
 
 describe('digital-gate-engine Phase 0 — combinational blocks', () => {
   it('half adder: S = A XOR B, C = A AND B', () => {
-    for (const [a, b] of [[0, 0], [0, 1], [1, 0], [1, 1]] as Array<[0 | 1, 0 | 1]>) {
+    for (const [a, b] of [
+      [0, 0],
+      [0, 1],
+      [1, 0],
+      [1, 1],
+    ] as Array<[0 | 1, 0 | 1]>) {
       const net = new Network();
-      const A = net.net(), B = net.net(), S = net.net(), C = net.net();
+      const A = net.net(),
+        B = net.net(),
+        S = net.net(),
+        C = net.net();
       net.gate('s', [A, B], S, XOR);
       net.gate('c', [A, B], C, AND);
       net.setSwitch(A, a);
@@ -136,15 +204,22 @@ describe('digital-gate-engine Phase 0 — combinational blocks', () => {
 
   it('full adder: all 8 input combinations', () => {
     for (let v = 0; v < 8; v++) {
-      const a = (v & 1) as 0 | 1, b = ((v >> 1) & 1) as 0 | 1, cin = ((v >> 2) & 1) as 0 | 1;
+      const a = (v & 1) as 0 | 1,
+        b = ((v >> 1) & 1) as 0 | 1,
+        cin = ((v >> 2) & 1) as 0 | 1;
       const net = new Network();
-      const A = net.net(), B = net.net(), CIN = net.net();
+      const A = net.net(),
+        B = net.net(),
+        CIN = net.net();
       const { sum, cout } = net.fullAdder('fa', A, B, CIN);
       net.setSwitch(A, a);
       net.setSwitch(B, b);
       net.setSwitch(CIN, cin);
       const total = a + b + cin;
-      expect([net.read(sum), net.read(cout)], `FA(${a},${b},${cin})`).toEqual([total & 1, total >> 1]);
+      expect([net.read(sum), net.read(cout)], `FA(${a},${b},${cin})`).toEqual([
+        total & 1,
+        total >> 1,
+      ]);
       resetBusNets();
     }
   });
@@ -179,7 +254,14 @@ describe('digital-gate-engine Phase 0 — 4-bit ripple adder/subtractor (the fai
     return { apply, result, carryOut };
   };
 
-  const vectors: Array<{ a: number; b: number; m: 0 | 1; sum: number; cout: 0 | 1; label: string }> = [
+  const vectors: Array<{
+    a: number;
+    b: number;
+    m: 0 | 1;
+    sum: number;
+    cout: 0 | 1;
+    label: string;
+  }> = [
     { a: 3, b: 2, m: 0, sum: 5, cout: 0, label: 'ADD 3+2' },
     { a: 7, b: 6, m: 0, sum: 13, cout: 0, label: 'ADD 7+6' },
     { a: 15, b: 1, m: 0, sum: 0, cout: 1, label: 'ADD 15+1 (carry)' },
@@ -213,15 +295,24 @@ describe('digital-gate-engine Phase 0 — 4-bit ripple adder/subtractor (the fai
 describe('digital-gate-engine Phase 0 — more example topologies (fan-out, select, wide, deep)', () => {
   it('2-to-1 mux: Y = S ? B : A (all 8 inputs)', () => {
     for (let v = 0; v < 8; v++) {
-      const s = (v & 1) as 0 | 1, a = ((v >> 1) & 1) as 0 | 1, b = ((v >> 2) & 1) as 0 | 1;
+      const s = (v & 1) as 0 | 1,
+        a = ((v >> 1) & 1) as 0 | 1,
+        b = ((v >> 2) & 1) as 0 | 1;
       const net = new Network();
-      const S = net.net(), A = net.net(), B = net.net();
-      const nS = net.net(), t0 = net.net(), t1 = net.net(), Y = net.net();
+      const S = net.net(),
+        A = net.net(),
+        B = net.net();
+      const nS = net.net(),
+        t0 = net.net(),
+        t1 = net.net(),
+        Y = net.net();
       net.gate('ns', [S], nS, NOT);
       net.gate('t0', [nS, A], t0, AND);
       net.gate('t1', [S, B], t1, AND);
       net.gate('y', [t0, t1], Y, OR);
-      net.setSwitch(S, s); net.setSwitch(A, a); net.setSwitch(B, b);
+      net.setSwitch(S, s);
+      net.setSwitch(A, a);
+      net.setSwitch(B, b);
       expect(net.read(Y), `MUX s=${s} a=${a} b=${b}`).toBe(s ? b : a);
       resetBusNets();
     }
@@ -229,9 +320,13 @@ describe('digital-gate-engine Phase 0 — more example topologies (fan-out, sele
 
   it('2-to-4 decoder: one-hot output (fan-out from 2 inputs)', () => {
     for (let v = 0; v < 4; v++) {
-      const s0 = (v & 1) as 0 | 1, s1 = ((v >> 1) & 1) as 0 | 1;
+      const s0 = (v & 1) as 0 | 1,
+        s1 = ((v >> 1) & 1) as 0 | 1;
       const net = new Network();
-      const S0 = net.net(), S1 = net.net(), nS0 = net.net(), nS1 = net.net();
+      const S0 = net.net(),
+        S1 = net.net(),
+        nS0 = net.net(),
+        nS1 = net.net();
       const D = [net.net(), net.net(), net.net(), net.net()];
       net.gate('n0', [S0], nS0, NOT);
       net.gate('n1', [S1], nS1, NOT);
@@ -239,19 +334,32 @@ describe('digital-gate-engine Phase 0 — more example topologies (fan-out, sele
       net.gate('d1', [nS1, S0], D[1], AND);
       net.gate('d2', [S1, nS0], D[2], AND);
       net.gate('d3', [S1, S0], D[3], AND);
-      net.setSwitch(S0, s0); net.setSwitch(S1, s1);
-      expect(D.map((d) => net.read(d)), `DECODE ${v}`).toEqual([0, 1, 2, 3].map((i) => (i === v ? 1 : 0)));
+      net.setSwitch(S0, s0);
+      net.setSwitch(S1, s1);
+      expect(
+        D.map((d) => net.read(d)),
+        `DECODE ${v}`,
+      ).toEqual([0, 1, 2, 3].map((i) => (i === v ? 1 : 0)));
       resetBusNets();
     }
   });
 
   it('4-bit equality comparator: EQ = AND of (A_i XNOR B_i) — wide AND', () => {
-    const samples: Array<[number, number]> = [[0, 0], [5, 5], [15, 15], [5, 7], [9, 1], [15, 14]];
+    const samples: Array<[number, number]> = [
+      [0, 0],
+      [5, 5],
+      [15, 15],
+      [5, 7],
+      [9, 1],
+      [15, 14],
+    ];
     for (const [a, b] of samples) {
       const net = new Network();
       const e: number[] = [];
       for (let i = 0; i < 4; i++) {
-        const Ai = net.net(), Bi = net.net(), Ei = net.net();
+        const Ai = net.net(),
+          Bi = net.net(),
+          Ei = net.net();
         net.gate(`xnor${i}`, [Ai, Bi], Ei, XNOR);
         net.setSwitch(Ai, ((a >> i) & 1) as 0 | 1);
         net.setSwitch(Bi, ((b >> i) & 1) as 0 | 1);
@@ -268,7 +376,9 @@ describe('digital-gate-engine Phase 0 — more example topologies (fan-out, sele
     for (let v = 0; v < 16; v++) {
       const net = new Network();
       const bits = [net.net(), net.net(), net.net(), net.net()];
-      const p01 = net.net(), p012 = net.net(), p0123 = net.net();
+      const p01 = net.net(),
+        p012 = net.net(),
+        p0123 = net.net();
       net.gate('p01', [bits[0], bits[1]], p01, XOR);
       net.gate('p012', [p01, bits[2]], p012, XOR);
       net.gate('p0123', [p012, bits[3]], p0123, XOR);
@@ -283,23 +393,34 @@ describe('digital-gate-engine Phase 0 — more example topologies (fan-out, sele
     for (let a = 0; a < 4; a++) {
       for (let b = 0; b < 4; b++) {
         const net = new Network();
-        const A0 = net.net(), A1 = net.net(), B0 = net.net(), B1 = net.net();
-        const a0b0 = net.net(), a1b0 = net.net(), a0b1 = net.net(), a1b1 = net.net();
+        const A0 = net.net(),
+          A1 = net.net(),
+          B0 = net.net(),
+          B1 = net.net();
+        const a0b0 = net.net(),
+          a1b0 = net.net(),
+          a0b1 = net.net(),
+          a1b1 = net.net();
         net.gate('a0b0', [A0, B0], a0b0, AND);
         net.gate('a1b0', [A1, B0], a1b0, AND);
         net.gate('a0b1', [A0, B1], a0b1, AND);
         net.gate('a1b1', [A1, B1], a1b1, AND);
         const P0 = a0b0;
-        const P1 = net.net(), c1 = net.net();
+        const P1 = net.net(),
+          c1 = net.net();
         net.gate('p1', [a1b0, a0b1], P1, XOR);
         net.gate('c1', [a1b0, a0b1], c1, AND);
-        const P2 = net.net(), c2 = net.net();
+        const P2 = net.net(),
+          c2 = net.net();
         net.gate('p2', [a1b1, c1], P2, XOR);
         net.gate('c2', [a1b1, c1], c2, AND);
         const P3 = c2;
-        net.setSwitch(A0, (a & 1) as 0 | 1); net.setSwitch(A1, ((a >> 1) & 1) as 0 | 1);
-        net.setSwitch(B0, (b & 1) as 0 | 1); net.setSwitch(B1, ((b >> 1) & 1) as 0 | 1);
-        const product = net.read(P0) + (net.read(P1) << 1) + (net.read(P2) << 2) + (net.read(P3) << 3);
+        net.setSwitch(A0, (a & 1) as 0 | 1);
+        net.setSwitch(A1, ((a >> 1) & 1) as 0 | 1);
+        net.setSwitch(B0, (b & 1) as 0 | 1);
+        net.setSwitch(B1, ((b >> 1) & 1) as 0 | 1);
+        const product =
+          net.read(P0) + (net.read(P1) << 1) + (net.read(P2) << 2) + (net.read(P3) << 3);
         expect(product, `MUL ${a}*${b}`).toBe(a * b);
         resetBusNets();
       }

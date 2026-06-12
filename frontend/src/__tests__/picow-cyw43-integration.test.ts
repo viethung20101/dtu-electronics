@@ -53,7 +53,7 @@ function makeHdr(opts: {
   );
 }
 function readU32(b: Uint8Array): number {
-  return ((b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24)) >>> 0);
+  return (b[0] | (b[1] << 8) | (b[2] << 16) | (b[3] << 24)) >>> 0;
 }
 
 describe('cyw43 barrel exports', () => {
@@ -75,8 +75,14 @@ describe('cyw43 barrel exports', () => {
 describe('Cyw43Emulator bus handshake', () => {
   it('returns 0 then 0xFEEDBEAD on F0:0x14 reads', () => {
     const chip = new Cyw43Emulator();
-    const r1 = chip.onCommand(makeHdr({ write: false, func: 0, addr: F0.READ_TEST, length: 4 }), new Uint8Array(0))!;
-    const r2 = chip.onCommand(makeHdr({ write: false, func: 0, addr: F0.READ_TEST, length: 4 }), new Uint8Array(0))!;
+    const r1 = chip.onCommand(
+      makeHdr({ write: false, func: 0, addr: F0.READ_TEST, length: 4 }),
+      new Uint8Array(0),
+    )!;
+    const r2 = chip.onCommand(
+      makeHdr({ write: false, func: 0, addr: F0.READ_TEST, length: 4 }),
+      new Uint8Array(0),
+    )!;
     expect(readU32(r1)).toBe(0);
     expect(readU32(r2)).toBe(TEST_PATTERN);
   });
@@ -162,12 +168,8 @@ describe('Cyw43Bridge WS protocol shape', () => {
     expect(createdSockets).toHaveLength(1);
     const sock = createdSockets[0];
     sock.onopen?.();
-    expect(sock.send).toHaveBeenCalledWith(
-      expect.stringContaining('"type":"start_picow"'),
-    );
-    expect(sock.send).toHaveBeenCalledWith(
-      expect.stringContaining('"wifi_enabled":true'),
-    );
+    expect(sock.send).toHaveBeenCalledWith(expect.stringContaining('"type":"start_picow"'));
+    expect(sock.send).toHaveBeenCalledWith(expect.stringContaining('"wifi_enabled":true'));
 
     b.sendPacket(new Uint8Array([1, 2, 3, 4, 5]));
     const lastCall = sock.send.mock.calls.at(-1)?.[0] as string | undefined;
@@ -185,16 +187,23 @@ function pushIoctl(
   isSet: number,
 ): Array<{ type: number; status: number; reason: number; data: Uint8Array }> {
   const sdpcm = encodeIoctlRequest(0, cmd, isSet, 0, payload);
-  chip.onCommand(makeHdr({ write: true, func: 2, addr: 0, length: sdpcm.length, inc: true }), sdpcm);
+  chip.onCommand(
+    makeHdr({ write: true, func: 2, addr: 0, length: sdpcm.length, inc: true }),
+    sdpcm,
+  );
   const events: Array<{ type: number; status: number; reason: number; data: Uint8Array }> = [];
   for (let i = 0; i < 32; i++) {
-    const out = chip.onCommand(makeHdr({ write: false, func: 2, addr: 0, length: 1600, inc: true }), new Uint8Array(0))!;
+    const out = chip.onCommand(
+      makeHdr({ write: false, func: 2, addr: 0, length: 1600, inc: true }),
+      new Uint8Array(0),
+    )!;
     if (!out || out.every((b) => b === 0)) break;
     const f = decodeSdpcm(out);
     if (!f) break;
     if (f.channel === SdpcmChannel.EVENT) {
       const ev = decodeEventBody(f.payload);
-      if (ev) events.push({ type: ev.eventType, status: ev.status, reason: ev.reason, data: ev.data });
+      if (ev)
+        events.push({ type: ev.eventType, status: ev.status, reason: ev.reason, data: ev.data });
     } else if (f.channel === SdpcmChannel.CONTROL) {
       decodeCdc(f.payload); // ignore — we just care about events
     }

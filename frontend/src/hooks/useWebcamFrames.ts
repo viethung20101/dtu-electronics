@@ -24,12 +24,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getEsp32Bridge } from '../store/useSimulatorStore';
 
-export type WebcamStatus =
-  | 'idle'
-  | 'requesting'
-  | 'streaming'
-  | 'denied'
-  | 'error';
+export type WebcamStatus = 'idle' | 'requesting' | 'streaming' | 'denied' | 'error';
 
 export interface UseWebcamFramesResult {
   status: WebcamStatus;
@@ -79,9 +74,9 @@ const FRAME_INTERVAL_MS = 100; // 10 fps
 // cap, leaving room for the per-frame EOI injection and any framework
 // overhead. Bumped from 7800 once the multi-lap walker landed.
 const MAX_FRAME_BYTES = 23000;
-const QUALITY_LADDER  = [0.6, 0.5, 0.4, 0.3, 0.2, 0.1] as const;
-const FALLBACK_W      = 240;
-const FALLBACK_H      = 180;
+const QUALITY_LADDER = [0.6, 0.5, 0.4, 0.3, 0.2, 0.1] as const;
+const FALLBACK_W = 240;
+const FALLBACK_H = 180;
 
 interface EncodedFrame {
   buf: ArrayBuffer;
@@ -99,9 +94,7 @@ function canvasToJpeg(
   if (typeof OffscreenCanvas !== 'undefined' && c instanceof OffscreenCanvas) {
     return c.convertToBlob({ type: 'image/jpeg', quality });
   }
-  return new Promise((resolve) =>
-    (c as HTMLCanvasElement).toBlob(resolve, 'image/jpeg', quality),
-  );
+  return new Promise((resolve) => (c as HTMLCanvasElement).toBlob(resolve, 'image/jpeg', quality));
 }
 
 /** Last-resort fallback for HD/4K webcams: redraw the full-size
@@ -197,107 +190,110 @@ export function useWebcamFrames(): UseWebcamFramesResult {
     setFramesSent(0);
   }, []);
 
-  const start = useCallback(async (boardId: string) => {
-    setStatus('requesting');
-    setErrorMessage(null);
-    setFramesSent(0);
-    boardIdRef.current = boardId;
+  const start = useCallback(
+    async (boardId: string) => {
+      setStatus('requesting');
+      setErrorMessage(null);
+      setFramesSent(0);
+      boardIdRef.current = boardId;
 
-    // 1. Request camera permission + media stream.
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          width: FRAME_WIDTH,
-          height: FRAME_HEIGHT,
-          frameRate: { ideal: 10, max: 15 },
-        },
-        audio: false,
-      });
-    } catch (err: unknown) {
-      const e = err as { name?: string; message?: string };
-      if (e.name === 'NotAllowedError') {
-        setStatus('denied');
-        setErrorMessage('Camera permission denied');
-      } else if (e.name === 'NotFoundError') {
-        setStatus('error');
-        setErrorMessage('No camera detected');
-      } else {
-        setStatus('error');
-        setErrorMessage(e.message ?? 'getUserMedia failed');
+      // 1. Request camera permission + media stream.
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            width: FRAME_WIDTH,
+            height: FRAME_HEIGHT,
+            frameRate: { ideal: 10, max: 15 },
+          },
+          audio: false,
+        });
+      } catch (err: unknown) {
+        const e = err as { name?: string; message?: string };
+        if (e.name === 'NotAllowedError') {
+          setStatus('denied');
+          setErrorMessage('Camera permission denied');
+        } else if (e.name === 'NotFoundError') {
+          setStatus('error');
+          setErrorMessage('No camera detected');
+        } else {
+          setStatus('error');
+          setErrorMessage(e.message ?? 'getUserMedia failed');
+        }
+        return;
       }
-      return;
-    }
-    streamRef.current = stream;
+      streamRef.current = stream;
 
-    // 2. Wire stream into a hidden <video> for the canvas to draw from.
-    if (!videoRef.current) {
-      videoRef.current = document.createElement('video');
-      videoRef.current.muted = true;
-      videoRef.current.autoplay = true;
-      videoRef.current.playsInline = true;
-    }
-    videoRef.current.srcObject = stream;
-    try {
-      await videoRef.current.play();
-    } catch {
-      // Some browsers reject .play() until user gesture; harmless if it
-      // throws — the next animation tick will proceed anyway.
-    }
-
-    // 3. Prepare canvas for JPEG encode.
-    if (!canvasRef.current) {
-      if (typeof OffscreenCanvas !== 'undefined') {
-        canvasRef.current = new OffscreenCanvas(FRAME_WIDTH, FRAME_HEIGHT);
-      } else {
-        const c = document.createElement('canvas');
-        c.width = FRAME_WIDTH;
-        c.height = FRAME_HEIGHT;
-        canvasRef.current = c;
+      // 2. Wire stream into a hidden <video> for the canvas to draw from.
+      if (!videoRef.current) {
+        videoRef.current = document.createElement('video');
+        videoRef.current.muted = true;
+        videoRef.current.autoplay = true;
+        videoRef.current.playsInline = true;
       }
-    }
+      videoRef.current.srcObject = stream;
+      try {
+        await videoRef.current.play();
+      } catch {
+        // Some browsers reject .play() until user gesture; harmless if it
+        // throws — the next animation tick will proceed anyway.
+      }
 
-    // 4. Tell the backend a frame source is on its way.
-    const bridge = getEsp32Bridge(boardId);
-    if (!bridge) {
-      setStatus('error');
-      setErrorMessage(`No ESP32 bridge for board ${boardId}`);
-      stop();
-      return;
-    }
-    bridge.sendCameraAttach();
+      // 3. Prepare canvas for JPEG encode.
+      if (!canvasRef.current) {
+        if (typeof OffscreenCanvas !== 'undefined') {
+          canvasRef.current = new OffscreenCanvas(FRAME_WIDTH, FRAME_HEIGHT);
+        } else {
+          const c = document.createElement('canvas');
+          c.width = FRAME_WIDTH;
+          c.height = FRAME_HEIGHT;
+          canvasRef.current = c;
+        }
+      }
 
-    // 5. Start the capture loop.
-    setStatus('streaming');
-    timerRef.current = window.setInterval(async () => {
-      const v = videoRef.current;
-      const c = canvasRef.current;
-      if (!v || !c || v.readyState < 2) return;
+      // 4. Tell the backend a frame source is on its way.
+      const bridge = getEsp32Bridge(boardId);
+      if (!bridge) {
+        setStatus('error');
+        setErrorMessage(`No ESP32 bridge for board ${boardId}`);
+        stop();
+        return;
+      }
+      bridge.sendCameraAttach();
 
-      const ctx = (c as HTMLCanvasElement).getContext('2d');
-      if (!ctx) return;
-      ctx.drawImage(v, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+      // 5. Start the capture loop.
+      setStatus('streaming');
+      timerRef.current = window.setInterval(async () => {
+        const v = videoRef.current;
+        const c = canvasRef.current;
+        if (!v || !c || v.readyState < 2) return;
 
-      // Use the bounded encoder so the JPEG always fits in the
-      // emulator's per-frame budget regardless of webcam hardware.
-      const encoded = await encodeBoundedJpeg(c);
-      if (!encoded) return;
-      const id = boardIdRef.current;
-      if (!id) return;
-      const b = getEsp32Bridge(id);
-      if (!b) return;
-      // Pass through the source dimensions so the firmware sees the
-      // expected camera_fb_t->width/height. The encoder may have
-      // internally downscaled to 240×180, but we report 320×240
-      // because that's what `esp_camera_fb_get` advertises (and the
-      // sketches expect to match cfg.frame_size = FRAMESIZE_QVGA).
-      b.sendCameraFrame(encoded.buf, FRAME_WIDTH, FRAME_HEIGHT);
-      setFramesSent((n) => n + 1);
-      setLastFrameBytes(encoded.bytes);
-      setLastQualityUsed(encoded.quality);
-      setLastDownscaled(encoded.downscaled);
-    }, FRAME_INTERVAL_MS);
-  }, [stop]);
+        const ctx = (c as HTMLCanvasElement).getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(v, 0, 0, FRAME_WIDTH, FRAME_HEIGHT);
+
+        // Use the bounded encoder so the JPEG always fits in the
+        // emulator's per-frame budget regardless of webcam hardware.
+        const encoded = await encodeBoundedJpeg(c);
+        if (!encoded) return;
+        const id = boardIdRef.current;
+        if (!id) return;
+        const b = getEsp32Bridge(id);
+        if (!b) return;
+        // Pass through the source dimensions so the firmware sees the
+        // expected camera_fb_t->width/height. The encoder may have
+        // internally downscaled to 240×180, but we report 320×240
+        // because that's what `esp_camera_fb_get` advertises (and the
+        // sketches expect to match cfg.frame_size = FRAMESIZE_QVGA).
+        b.sendCameraFrame(encoded.buf, FRAME_WIDTH, FRAME_HEIGHT);
+        setFramesSent((n) => n + 1);
+        setLastFrameBytes(encoded.bytes);
+        setLastQualityUsed(encoded.quality);
+        setLastDownscaled(encoded.downscaled);
+      }, FRAME_INTERVAL_MS);
+    },
+    [stop],
+  );
 
   // Stop on unmount.
   useEffect(() => () => stop(), [stop]);

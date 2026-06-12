@@ -41,7 +41,13 @@ function a4988Pins(): Pin[] {
     pins.push({ name, x: LEFT_FRAC * W, y: topY + i * stepY, number: i + 1, signals: [] }),
   );
   RIGHT.forEach((name, i) =>
-    pins.push({ name, x: RIGHT_FRAC * W, y: topY + i * stepY, number: LEFT.length + i + 1, signals: [] }),
+    pins.push({
+      name,
+      x: RIGHT_FRAC * W,
+      y: topY + i * stepY,
+      number: LEFT.length + i + 1,
+      signals: [],
+    }),
   );
   return pins;
 }

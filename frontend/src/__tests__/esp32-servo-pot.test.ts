@@ -55,9 +55,9 @@ vi.mock('../simulation/RP2040Simulator', () => ({
     this.registerSensor = vi.fn().mockReturnValue(false);
     this.pinManager = {
       onPinChange: vi.fn().mockReturnValue(() => {
-    this.attachCyw43 = vi.fn();
-    this.spi = { onByte: null, completeTransfer: vi.fn() };
-  }),
+        this.attachCyw43 = vi.fn();
+        this.spi = { onByte: null, completeTransfer: vi.fn() };
+      }),
       onPwmChange: vi.fn().mockReturnValue(() => {}),
       updatePwm: vi.fn(),
     };
@@ -731,4 +731,3 @@ describe('LEDC polling — data format', () => {
     expect(emitted[1]).toEqual({ ch: 0, duty: 12.0 });
   });
 });
-

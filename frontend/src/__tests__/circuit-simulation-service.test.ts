@@ -40,10 +40,7 @@ import { FakeSolverAdapter } from '../simulation/spice/adapters/FakeSolverAdapte
 const _activeUnsubs: Array<() => void> = [];
 const _activeServices: Array<{ stop: () => void }> = [];
 
-function startTracked(service: {
-  start: () => () => void;
-  stop: () => void;
-}): () => void {
+function startTracked(service: { start: () => () => void; stop: () => void }): () => void {
   const unsub = service.start();
   _activeUnsubs.push(unsub);
   _activeServices.push(service);
@@ -52,10 +49,18 @@ function startTracked(service: {
 
 afterEach(() => {
   for (const unsub of _activeUnsubs.splice(0)) {
-    try { unsub(); } catch { /* ignore */ }
+    try {
+      unsub();
+    } catch {
+      /* ignore */
+    }
   }
   for (const service of _activeServices.splice(0)) {
-    try { service.stop(); } catch { /* ignore */ }
+    try {
+      service.stop();
+    } catch {
+      /* ignore */
+    }
   }
   __resetMixedModeScheduler();
 });
@@ -179,7 +184,12 @@ describe('CircuitSimulationService — orchestration', () => {
     await new Promise((r) => setTimeout(r, 10));
     expect(fake.calls.solve.length).toBe(1);
 
-    sim.set({ components: [...simpleBoardWithBoard.components, { id: 'r2', metadataId: 'resistor', properties: {} }] });
+    sim.set({
+      components: [
+        ...simpleBoardWithBoard.components,
+        { id: 'r2', metadataId: 'resistor', properties: {} },
+      ],
+    });
     await new Promise((r) => setTimeout(r, 10));
     expect(fake.calls.solve.length).toBe(2);
   });
@@ -363,9 +373,7 @@ describe('handleMcuEdge (Phase 1c D1)', () => {
     // forever and handleMcuEdge's self-heal path would loop. Mirrors
     // the wired fixture used by the alter+republish test above.
     const sim = makeSimStore({
-      components: [
-        { id: 'rb', metadataId: 'resistor', properties: { value: '1k' } },
-      ],
+      components: [{ id: 'rb', metadataId: 'resistor', properties: { value: '1k' } }],
       wires: [
         {
           id: 'w1',

@@ -10,12 +10,12 @@
  * Should wrap the entire `<Routes>` tree.
  */
 
-import { useEffect, type ReactNode } from "react";
-import { useLocation } from "react-router-dom";
-import { i18n, loadLocale } from "./index";
-import { LOCALE_META, DEFAULT_LOCALE } from "./config";
-import { getLocaleFromPath } from "./path";
-import { writeLocaleCookie } from "./cookie";
+import { useEffect, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { i18n, loadLocale } from './index';
+import { LOCALE_META, DEFAULT_LOCALE } from './config';
+import { getLocaleFromPath } from './path';
+import { writeLocaleCookie } from './cookie';
 
 type Props = { children: ReactNode };
 

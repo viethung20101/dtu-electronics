@@ -136,7 +136,11 @@ export const ComponentPropertyDialog: React.FC<ComponentPropertyDialogProps> = (
       {/* Header */}
       <div className="component-property-header">
         <span className="component-property-title">{componentMetadata.name}</span>
-        <button className="property-close-button" onClick={onClose} title={t('editor.componentProps.close')}>
+        <button
+          className="property-close-button"
+          onClick={onClose}
+          title={t('editor.componentProps.close')}
+        >
           ×
         </button>
       </div>
@@ -145,108 +149,107 @@ export const ComponentPropertyDialog: React.FC<ComponentPropertyDialogProps> = (
           footer goes here so the action buttons stay pinned at the bottom on
           mobile (where the dialog uses a flex column layout). */}
       <div className="component-property-body">
-
-      {/* Pin Roles Section — when onPinSelect is provided each row becomes a
+        {/* Pin Roles Section — when onPinSelect is provided each row becomes a
           touch-friendly button that starts (or finishes) a wire from that pin.
           On a phone this is the primary way to wire things up: tapping a pin
           name in a list is much easier than poking a 12px overlay with a
           fingertip. */}
-      {pinInfo.length > 0 && (
-        <div className="pin-roles-section">
-          <div className="pin-roles-label">
-            {onPinSelect
-              ? wireInProgress
-                ? t('editor.componentProps.tapToConnect')
-                : t('editor.componentProps.tapToWire')
-              : t('editor.componentProps.pinRoles')}
-          </div>
-          {pinInfo.map((pin) => {
-            const isInteractive = Boolean(onPinSelect);
-            const handle = () => onPinSelect?.(componentId, pin.name);
-            return (
-              <div
-                key={pin.name}
-                role={isInteractive ? 'button' : undefined}
-                tabIndex={isInteractive ? 0 : undefined}
-                className={`pin-role-item${isInteractive ? ' pin-role-item--interactive' : ''}`}
-                onClick={isInteractive ? handle : undefined}
-                onKeyDown={
-                  isInteractive
-                    ? (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handle();
-                        }
-                      }
-                    : undefined
-                }
-              >
-                <span className="pin-name">• {pin.name}</span>
-                {pin.description && <span className="pin-description"> ({pin.description})</span>}
-                {isInteractive && (
-                  <span className="pin-role-action" aria-hidden="true">
-                    →
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Current Arduino Pin Assignment */}
-      {componentProperties.pin !== undefined && (
-        <div className="pin-assignment-section">
-          <div className="pin-assignment-label">{t('editor.componentProps.arduinoPin')}</div>
-          <div className="pin-assignment-value">
-            {componentProperties.pin >= 14
-              ? `A${componentProperties.pin - 14}`
-              : `D${componentProperties.pin}`}
-          </div>
-        </div>
-      )}
-
-      {/* Editable Properties (select dropdowns + text/number inputs) */}
-      {componentMetadata.properties.filter((p: any) => isEditable(p)).length > 0 && (
-        <div className="property-edit-section">
-          {componentMetadata.properties
-            .filter((p: any) => isEditable(p))
-            .map((prop: any) => {
-              const current = String(componentProperties[prop.name] ?? prop.defaultValue ?? '');
-              if (prop.control === 'select' && prop.options) {
-                return (
-                  <div key={prop.name} className="property-edit-row">
-                    <label className="property-edit-label">{prop.description || prop.name}</label>
-                    <select
-                      className="property-edit-select"
-                      value={current}
-                      onChange={(e) => onPropertyChange?.(componentId, prop.name, e.target.value)}
-                    >
-                      {prop.options.map((opt: string) => (
-                        <option key={opt} value={opt}>
-                          {opt.toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                );
-              }
+        {pinInfo.length > 0 && (
+          <div className="pin-roles-section">
+            <div className="pin-roles-label">
+              {onPinSelect
+                ? wireInProgress
+                  ? t('editor.componentProps.tapToConnect')
+                  : t('editor.componentProps.tapToWire')
+                : t('editor.componentProps.pinRoles')}
+            </div>
+            {pinInfo.map((pin) => {
+              const isInteractive = Boolean(onPinSelect);
+              const handle = () => onPinSelect?.(componentId, pin.name);
               return (
-                <div key={prop.name} className="property-edit-row">
-                  <label className="property-edit-label">{prop.description || prop.name}</label>
-                  <input
-                    type={prop.control === 'number' ? 'number' : 'text'}
-                    className="property-edit-input"
-                    value={current}
-                    onChange={(e) => onPropertyChange?.(componentId, prop.name, e.target.value)}
-                  />
+                <div
+                  key={pin.name}
+                  role={isInteractive ? 'button' : undefined}
+                  tabIndex={isInteractive ? 0 : undefined}
+                  className={`pin-role-item${isInteractive ? ' pin-role-item--interactive' : ''}`}
+                  onClick={isInteractive ? handle : undefined}
+                  onKeyDown={
+                    isInteractive
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handle();
+                          }
+                        }
+                      : undefined
+                  }
+                >
+                  <span className="pin-name">• {pin.name}</span>
+                  {pin.description && <span className="pin-description"> ({pin.description})</span>}
+                  {isInteractive && (
+                    <span className="pin-role-action" aria-hidden="true">
+                      →
+                    </span>
+                  )}
                 </div>
               );
             })}
-        </div>
-      )}
+          </div>
+        )}
 
-      </div>{/* /component-property-body */}
+        {/* Current Arduino Pin Assignment */}
+        {componentProperties.pin !== undefined && (
+          <div className="pin-assignment-section">
+            <div className="pin-assignment-label">{t('editor.componentProps.arduinoPin')}</div>
+            <div className="pin-assignment-value">
+              {componentProperties.pin >= 14
+                ? `A${componentProperties.pin - 14}`
+                : `D${componentProperties.pin}`}
+            </div>
+          </div>
+        )}
+
+        {/* Editable Properties (select dropdowns + text/number inputs) */}
+        {componentMetadata.properties.filter((p: any) => isEditable(p)).length > 0 && (
+          <div className="property-edit-section">
+            {componentMetadata.properties
+              .filter((p: any) => isEditable(p))
+              .map((prop: any) => {
+                const current = String(componentProperties[prop.name] ?? prop.defaultValue ?? '');
+                if (prop.control === 'select' && prop.options) {
+                  return (
+                    <div key={prop.name} className="property-edit-row">
+                      <label className="property-edit-label">{prop.description || prop.name}</label>
+                      <select
+                        className="property-edit-select"
+                        value={current}
+                        onChange={(e) => onPropertyChange?.(componentId, prop.name, e.target.value)}
+                      >
+                        {prop.options.map((opt: string) => (
+                          <option key={opt} value={opt}>
+                            {opt.toUpperCase()}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                }
+                return (
+                  <div key={prop.name} className="property-edit-row">
+                    <label className="property-edit-label">{prop.description || prop.name}</label>
+                    <input
+                      type={prop.control === 'number' ? 'number' : 'text'}
+                      className="property-edit-input"
+                      value={current}
+                      onChange={(e) => onPropertyChange?.(componentId, prop.name, e.target.value)}
+                    />
+                  </div>
+                );
+              })}
+          </div>
+        )}
+      </div>
+      {/* /component-property-body */}
 
       {/* Action Buttons — flips into a confirm-delete prompt when armed. */}
       <div className="property-actions">

@@ -10,6 +10,7 @@ import { CodeEditor } from '../components/editor/CodeEditor';
 import { EditorToolbar } from '../components/editor/EditorToolbar';
 import { FileTabs } from '../components/editor/FileTabs';
 import { FileExplorer } from '../components/editor/FileExplorer';
+import { UnifiedToolbar } from '../components/editor/UnifiedToolbar';
 
 // Lazy-load Pi workspace so xterm.js isn't in the main bundle
 const RaspberryPiWorkspace = lazy(() =>
@@ -22,6 +23,7 @@ import { SimulatorCanvas } from '../components/simulator/SimulatorCanvas';
 import { SerialMonitor } from '../components/simulator/SerialMonitor';
 import { Oscilloscope } from '../components/simulator/Oscilloscope';
 import { AppHeader } from '../components/layout/AppHeader';
+import { ComponentLibrarySidebar } from '../components/editor/ComponentLibrarySidebar';
 import { triggerSaveAction } from '../lib/proSaveAction';
 import { GitHubStarBanner } from '../components/layout/GitHubStarBanner';
 import { useSimulatorStore, DEFAULT_BOARD_POSITION } from '../store/useSimulatorStore';
@@ -135,8 +137,8 @@ export const EditorPage: React.FC = () => {
     localStorage.setItem('velxio_star_prompted', '1');
     setShowStarBanner(false);
   };
-  const [explorerOpen, setExplorerOpen] = useState(true);
-  const [explorerWidth, setExplorerWidth] = useState(EXPLORER_DEFAULT);
+  const [activeLeftTab, setActiveLeftTab] = useState<'workspace' | 'code'>('code');
+  const [rightSidebarWidth, setRightSidebarWidth] = useState(320);
   const [isMobile, setIsMobile] = useState(
     () => window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`).matches,
   );
@@ -183,7 +185,7 @@ export const EditorPage: React.FC = () => {
     const update = (e: MediaQueryListEvent | MediaQueryList) => {
       const mobile = e.matches;
       setIsMobile(mobile);
-      if (mobile) setExplorerOpen(false);
+      if (mobile) setActiveLeftTab('code');
     };
     update(mq);
     mq.addEventListener('change', update);
@@ -294,15 +296,17 @@ export const EditorPage: React.FC = () => {
     [bottomPanelHeight],
   );
 
-  const handleExplorerResizeMouseDown = useCallback(
+
+
+  const handleRightResizeMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       const startX = e.clientX;
-      const startWidth = explorerWidth;
+      const startWidth = rightSidebarWidth;
 
       const onMove = (ev: MouseEvent) => {
-        const delta = ev.clientX - startX;
-        setExplorerWidth(Math.max(EXPLORER_MIN, Math.min(EXPLORER_MAX, startWidth + delta)));
+        const delta = startX - ev.clientX; // drag left to make wider
+        setRightSidebarWidth(Math.max(240, Math.min(480, startWidth + delta)));
       };
       const onUp = () => {
         document.body.style.cursor = '';
@@ -315,7 +319,7 @@ export const EditorPage: React.FC = () => {
       document.addEventListener('mousemove', onMove);
       document.addEventListener('mouseup', onUp);
     },
-    [explorerWidth],
+    [rightSidebarWidth],
   );
 
   return (
@@ -374,96 +378,10 @@ export const EditorPage: React.FC = () => {
           The canvas controls (board selector, Serial, Scope, zoom, Add) are
           portaled into `canvasHeaderSlot` from inside SimulatorCanvas. */}
       {!isMobile && (
-        <div className="unified-toolbar">
-          <button
-            className="explorer-toggle-btn unified-toolbar-explorer-toggle"
-            onClick={() => setExplorerOpen((v) => !v)}
-            title={explorerOpen ? 'Hide file explorer' : 'Show file explorer'}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-            </svg>
-          </button>
-          {/* View-mode toggle: Code / Both / Circuit. Lets users hide a
-              pane to give the right-docked AI chat more breathing room.
-              Hidden on mobile — there's already a code/circuit toggle in
-              the mobile bottom-nav. */}
-          <div
-            role="group"
-            aria-label={t('editor.shell.viewMode')}
-            className="view-mode-toggle"
-            style={{
-              display: 'flex',
-              gap: 1,
-              background: '#252526',
-              border: '1px solid #3c3c3c',
-              borderRadius: 4,
-              overflow: 'hidden',
-              alignSelf: 'center',
-              margin: '0 6px',
-            }}
-          >
-            {(
-              [
-                { key: 'code', label: t('editor.shell.code'), path: 'M16 18l6-6-6-6M8 6l-6 6 6 6' },
-                { key: 'both', label: t('editor.shell.both'), path: 'M3 3h7v18H3zM14 3h7v18h-7z' },
-                { key: 'circuit', label: t('editor.shell.circuit'), path: 'M5 12h14M12 5v14' },
-              ] as const
-            ).map((m) => (
-              <button
-                key={m.key}
-                onClick={() => setViewMode(m.key)}
-                aria-pressed={viewMode === m.key}
-                style={{
-                  background: viewMode === m.key ? '#0e639c' : 'transparent',
-                  color: viewMode === m.key ? 'white' : '#aaa',
-                  border: 'none',
-                  height: 28,
-                  padding: '0 10px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontFamily: 'inherit',
-                }}
-              >
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d={m.path} />
-                </svg>
-                <span>{m.label}</span>
-              </button>
-            ))}
-          </div>
-          <div className="unified-toolbar-editor">
-            <EditorToolbar
-              consoleOpen={consoleOpen}
-              setConsoleOpen={setConsoleOpen}
-              compileLogs={compileLogs}
-              setCompileLogs={setCompileLogs}
-              centerSlot={!isRaspberryPi3 ? <FileTabs /> : null}
-            />
-          </div>
-          <div className="unified-toolbar-canvas" ref={setCanvasHeaderSlot} />
-        </div>
+        <UnifiedToolbar
+          onSaveClick={handleSaveClick}
+          onNewClick={handleNewClick}
+        />
       )}
 
       <div className="app-container" ref={containerRef}>
@@ -482,27 +400,27 @@ export const EditorPage: React.FC = () => {
               (isMobile && mobileView !== 'code') || (!isMobile && viewMode === 'circuit')
                 ? 'none'
                 : 'flex',
-            flexDirection: 'row',
+            flexDirection: 'column',
           }}
         >
-          {/* File explorer sidebar + resize handle */}
-          {explorerOpen && (
-            <>
-              <div
-                style={{ width: explorerWidth, flexShrink: 0, display: 'flex', overflow: 'hidden' }}
+          {/* Tab switcher at the top of Left Panel */}
+          <div className="left-panel-header">
+            <div className="left-panel-tabs">
+              <button
+                className={`left-panel-tab ${activeLeftTab === 'workspace' ? 'active' : ''}`}
+                onClick={() => setActiveLeftTab('workspace')}
               >
-                <FileExplorer onSaveClick={handleSaveClick} onNewClick={handleNewClick} />
-              </div>
-              {!isMobile && (
-                <div
-                  className="explorer-resize-handle"
-                  onMouseDown={handleExplorerResizeMouseDown}
-                />
-              )}
-            </>
-          )}
+                Workspace
+              </button>
+              <button
+                className={`left-panel-tab ${activeLeftTab === 'code' ? 'active' : ''}`}
+                onClick={() => setActiveLeftTab('code')}
+              >
+                Code
+              </button>
+            </div>
+          </div>
 
-          {/* Editor main area */}
           <div
             style={{
               flex: 1,
@@ -512,73 +430,81 @@ export const EditorPage: React.FC = () => {
               minWidth: 0,
             }}
           >
-            {/* Mobile-only: explorer toggle + editor toolbar inside the panel.
-                On desktop these are hoisted into the unified top toolbar. */}
-            {isMobile && (
-              <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
-                <button
-                  className="explorer-toggle-btn"
-                  onClick={() => setExplorerOpen((v) => !v)}
-                  title={explorerOpen ? 'Hide file explorer' : 'Show file explorer'}
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                  </svg>
-                </button>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <EditorToolbar
-                    consoleOpen={consoleOpen}
-                    setConsoleOpen={setConsoleOpen}
-                    compileLogs={compileLogs}
-                    setCompileLogs={setCompileLogs}
-                    centerSlot={!isRaspberryPi3 ? <FileTabs /> : null}
-                  />
-                </div>
+            {activeLeftTab === 'workspace' ? (
+              <div style={{ flex: 1, overflow: 'hidden', display: 'flex' }}>
+                <FileExplorer onSaveClick={handleSaveClick} onNewClick={handleNewClick} />
               </div>
-            )}
-
-            {/* Editor area: Pi workspace or Monaco editor */}
-            <div className="editor-wrapper" style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
-              {isRaspberryPi3 && activeBoardId ? (
-                <Suspense
-                  fallback={
-                    <div style={{ color: '#666', padding: 16, fontSize: 12 }}>
-                      Loading Pi workspace…
-                    </div>
-                  }
-                >
-                  <RaspberryPiWorkspace boardId={activeBoardId} />
-                </Suspense>
-              ) : (
-                <CodeEditor />
-              )}
-            </div>
-
-            {/* Console */}
-            {consoleOpen && (
+            ) : (
               <>
-                <div
-                  onMouseDown={handleBottomPanelResizeMouseDown}
-                  style={resizeHandleStyle}
-                  title={t('editor.shell.dragResize')}
-                />
-                <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
-                  <CompilationConsole
-                    isOpen={consoleOpen}
-                    onClose={() => setConsoleOpen(false)}
-                    logs={compileLogs}
-                    onClear={() => setCompileLogs([])}
-                  />
+                {/* Mobile-only: explorer toggle + editor toolbar inside the panel.
+                    On desktop these are hoisted into the unified top toolbar. */}
+                {isMobile && (
+                  <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
+                    <button
+                      className="explorer-toggle-btn"
+                      onClick={() => setActiveLeftTab((v) => (v === 'workspace' ? 'code' : 'workspace'))}
+                      title={activeLeftTab === 'workspace' ? 'Show code editor' : 'Show file explorer'}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </button>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <EditorToolbar
+                        consoleOpen={consoleOpen}
+                        setConsoleOpen={setConsoleOpen}
+                        compileLogs={compileLogs}
+                        setCompileLogs={setCompileLogs}
+                        centerSlot={!isRaspberryPi3 ? <FileTabs /> : null}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Editor area: Pi workspace or Monaco editor */}
+                <div className="editor-wrapper" style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+                  {isRaspberryPi3 && activeBoardId ? (
+                    <Suspense
+                      fallback={
+                        <div style={{ color: '#666', padding: 16, fontSize: 12 }}>
+                          Loading Pi workspace…
+                        </div>
+                      }
+                    >
+                      <RaspberryPiWorkspace boardId={activeBoardId} />
+                    </Suspense>
+                  ) : (
+                    <CodeEditor />
+                  )}
                 </div>
+
+                {/* Console */}
+                {consoleOpen && (
+                  <>
+                    <div
+                      onMouseDown={handleBottomPanelResizeMouseDown}
+                      style={resizeHandleStyle}
+                      title={t('editor.shell.dragResize')}
+                    />
+                    <div style={{ height: bottomPanelHeight, flexShrink: 0 }}>
+                      <CompilationConsole
+                        isOpen={consoleOpen}
+                        onClose={() => setConsoleOpen(false)}
+                        logs={compileLogs}
+                        onClear={() => setCompileLogs([])}
+                      />
+                    </div>
+                  </>
+                )}
               </>
             )}
           </div>
@@ -598,10 +524,10 @@ export const EditorPage: React.FC = () => {
             width: isMobile
               ? '100%'
               : viewMode === 'circuit'
-              ? '100%'
+              ? `calc(100% - ${rightSidebarWidth}px)`
               : viewMode === 'code'
               ? '0%'
-              : `${100 - editorWidthPct}%`,
+              : `calc(${100 - editorWidthPct}% - ${rightSidebarWidth}px)`,
             display:
               (isMobile && mobileView !== 'circuit') || (!isMobile && viewMode === 'code')
                 ? 'none'
@@ -610,7 +536,7 @@ export const EditorPage: React.FC = () => {
           }}
         >
           <div style={{ flex: 1, overflow: 'hidden', position: 'relative', minHeight: 0 }}>
-            <SimulatorCanvas headerSlot={!isMobile ? canvasHeaderSlot : null} />
+            <SimulatorCanvas headerSlot={null} />
           </div>
           {serialMonitorOpen && (
             <>
@@ -637,6 +563,31 @@ export const EditorPage: React.FC = () => {
             </>
           )}
         </div>
+
+        {/* Resize handle between simulator and component library */}
+        {!isMobile && (viewMode === 'both' || viewMode === 'circuit') && (
+          <div className="resize-handle" onMouseDown={handleRightResizeMouseDown}>
+            <div className="resize-handle-grip" />
+          </div>
+        )}
+
+        {/* ── Component library side ── */}
+        {!isMobile && (viewMode === 'both' || viewMode === 'circuit') && (
+          <div
+            className="component-library-panel"
+            style={{
+              width: rightSidebarWidth,
+              flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              background: '#1e1e1e',
+              borderLeft: '1px solid #3c3c3c',
+              overflow: 'hidden',
+            }}
+          >
+            <ComponentLibrarySidebar />
+          </div>
+        )}
       </div>
 
       {showStarBanner && <GitHubStarBanner onClose={handleDismissStarBanner} />}

@@ -7,7 +7,7 @@
       "home": "Trang chủ",
       "documentation": "Tài liệu",
       "examples": "Ví dụ",
-      "editor": "Trình soạn thảo",
+      "editor": "Thực hành",
       "about": "Giới thiệu",
       "pricing": "Bảng giá",
       "download": "Tải xuống",
@@ -26,17 +26,17 @@
     "search": "Tìm kiếm"
   },
   "footer": {
-    "about": "CVS là phần mềm mô phỏng mạch điện và vi điều khiển miễn phí, mã nguồn mở, chạy hoàn toàn trên trình duyệt. Arduino, ESP32, RP2040 và ATtiny85, với mô phỏng tương tự chính xác theo SPICE. Được xây dựng cho những người đam mê, sinh viên và kỹ sư nhúng học qua thực hành. AGPLv3."
+    "about": "VEPS là hệ thống thực hành ảo điện và mô phỏng vi điều khiển miễn phí, mã nguồn mở, chạy hoàn toàn trên trình duyệt. Arduino, ESP32, RP2040 và ATtiny85, với mô phỏng tương tự chính xác theo SPICE. Được xây dựng cho những người đam mê, sinh viên và kỹ sư học qua thực hành. AGPLv3."
   },
   "landing": {
     "hero": {
-      "titleLine1": "Arduino, ESP32 & Raspberry Pi.",
-      "titleAccent": "Ngay trong trình duyệt của bạn.",
-      "subtitle": "Viết code, kết nối linh kiện, nhấn chạy. 19 bo mạch, tác tử AI giúp bạn thiết kế mạch, mô phỏng CPU thực, ứng dụng desktop offline đầy đủ, mã nguồn mở AGPLv3.",
-      "ctaPrimary": "Dùng thử trình mô phỏng miễn phí →",
-      "ctaGithub": "Xem trên GitHub",
-      "trustLine": "Tác tử AI đi kèm · Hoạt động offline · Mã nguồn mở AGPLv3 · Không cần đăng ký",
-      "imageAlt": "Trình soạn thảo CVS với mạch đèn giao thông Arduino Uno"
+      "titleLine1": "Arduino, ESP32 &",
+      "titleAccent": "Raspberry Pi.",
+      "subtitle": "Ngay trong trình duyệt của bạn. Lập trình vi điều khiển, đấu nối linh kiện ảo và chạy mô phỏng mạch thời gian thực với tính trực quan cao.",
+      "ctaPrimary": "Khởi chạy Trình mô phỏng",
+      "ctaGithub": "Tìm tài liệu Core",
+      "trustLine": "Hỗ trợ học tập · Giả lập trực quan · Lập trình vi điều khiển · Hoạt động trực tiếp",
+      "imageAlt": "Hệ thống thực hành ảo điện VEPS"
     },
     "boards": {
       "label": "Phần cứng được hỗ trợ",

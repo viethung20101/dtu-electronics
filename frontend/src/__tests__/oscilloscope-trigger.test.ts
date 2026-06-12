@@ -9,10 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  useOscilloscopeStore,
-  matchesTriggerEdge,
-} from '../store/useOscilloscopeStore';
+import { useOscilloscopeStore, matchesTriggerEdge } from '../store/useOscilloscopeStore';
 
 const initialState = useOscilloscopeStore.getState();
 
@@ -74,12 +71,12 @@ describe('pushSample under each trigger mode', () => {
 
     s.pushSample(chId, 0, false); // first sample — no prior state, no trigger
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBeNull();
-    s.pushSample(chId, 1, true);  // ↑ rising — trigger fires
+    s.pushSample(chId, 1, true); // ↑ rising — trigger fires
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBe(1);
     expect(useOscilloscopeStore.getState().triggerStatus).toBe('triggered');
     s.pushSample(chId, 2, false); // ↓ falling — not "rising", no re-trigger
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBe(1);
-    s.pushSample(chId, 3, true);  // ↑ rising — re-trigger to new time
+    s.pushSample(chId, 3, true); // ↑ rising — re-trigger to new time
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBe(3);
   });
 
@@ -90,7 +87,7 @@ describe('pushSample under each trigger mode', () => {
     s.setTriggerMode('single');
 
     s.pushSample(chId, 0, false);
-    s.pushSample(chId, 1, true);  // ↑ trigger → capture, freeze
+    s.pushSample(chId, 1, true); // ↑ trigger → capture, freeze
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBe(1);
     expect(useOscilloscopeStore.getState().running).toBe(false);
     expect(useOscilloscopeStore.getState().triggerStatus).toBe('captured');
@@ -130,9 +127,9 @@ describe('pushSample under each trigger mode', () => {
     s.setTriggerEdge('falling');
 
     s.pushSample(chId, 0, false);
-    s.pushSample(chId, 1, true);   // rising — ignored
+    s.pushSample(chId, 1, true); // rising — ignored
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBeNull();
-    s.pushSample(chId, 2, false);  // falling — fires
+    s.pushSample(chId, 2, false); // falling — fires
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBe(2);
   });
 
@@ -145,7 +142,7 @@ describe('pushSample under each trigger mode', () => {
     s.setTriggerChannel(chD13);
 
     s.pushSample(chD1, 0, false);
-    s.pushSample(chD1, 1, true);  // edge on D1 — should NOT trigger (channel mismatch)
+    s.pushSample(chD1, 1, true); // edge on D1 — should NOT trigger (channel mismatch)
     expect(useOscilloscopeStore.getState().triggeredAtMs).toBeNull();
     s.pushSample(chD13, 0, false);
     s.pushSample(chD13, 1, true); // edge on D13 — triggers

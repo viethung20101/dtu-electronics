@@ -30,10 +30,10 @@
  */
 
 import type { BoardInstance } from '../types/board';
-import type { Component } from '../types/component';
 import type { Wire } from '../types/wire';
 import { useEditorStore, chipFileGroupId } from '../store/useEditorStore';
 import { useSimulatorStore } from '../store/useSimulatorStore';
+import type { Component } from '../store/useSimulatorStore';
 
 const VLX_FORMAT = 'velxio-project';
 const VLX_VERSION = 1;

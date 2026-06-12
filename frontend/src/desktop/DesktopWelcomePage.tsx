@@ -100,7 +100,7 @@ export const DesktopWelcomePage = ({ onAuthorised, grandfatherDaysRemaining = nu
       return;
     }
     if (!/^vlx_[a-z_]+_[0-9a-f]+$/.test(trimmed)) {
-      setErr('That doesn\'t look like a Velxio key (vlx_<plan>_<hex>).');
+      setErr("That doesn't look like a Velxio key (vlx_<plan>_<hex>).");
       return;
     }
     setBusy(true);

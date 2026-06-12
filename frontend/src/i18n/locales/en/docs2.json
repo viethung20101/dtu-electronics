@@ -356,6 +356,11 @@
       "emuQemu": "QEMU (lcgamboa)",
       "liveDemoCallout": "<strong>Live Demo:</strong> <a>cvs.local</a> , no installation needed, open the editor and start simulating immediately."
     },
+    "sidebarGroup": {
+      "docs": "DOCUMENTATION",
+      "cores": "EMULATION CORES",
+      "system": "SYSTEM"
+    },
     "nav": {
       "intro": "Introduction",
       "gettingStarted": "Getting Started",

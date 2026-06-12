@@ -11,7 +11,9 @@ import { PinManager } from '../simulation/PinManager';
 import { ChipInstance } from '../simulation/customChips/ChipRuntime';
 import { resetBusNets } from '../simulation/customChips/busNets';
 
-const dispPath = fileURLToPath(new URL('./fixtures/chipbus/galaksija-display.wasm', import.meta.url));
+const dispPath = fileURLToPath(
+  new URL('./fixtures/chipbus/galaksija-display.wasm', import.meta.url),
+);
 const have = existsSync(dispPath);
 const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 
@@ -39,12 +41,18 @@ describe.skipIf(!have)('chipbus Phase 3 — Galaksija display renders a characte
       display: { width: 256, height: 128 },
     });
     let fb: Uint8Array | null = null;
-    disp.onFramebufferUpdate((rgba) => { fb = rgba as Uint8Array; });
+    disp.onFramebufferUpdate((rgba) => {
+      fb = rgba as Uint8Array;
+    });
     disp.start();
 
     // Drive address 0x2802 (A1,A11,A13), data 'R'=0x52 (D1,D4,D6), then pulse WR.
-    const setAddr = (addr: number) => { for (let i = 0; i < 14; i++) pm.triggerPinChange(aKey(i), ((addr >> i) & 1) === 1); };
-    const setData = (d: number) => { for (let i = 0; i < 8; i++) pm.triggerPinChange(dKey(i), ((d >> i) & 1) === 1); };
+    const setAddr = (addr: number) => {
+      for (let i = 0; i < 14; i++) pm.triggerPinChange(aKey(i), ((addr >> i) & 1) === 1);
+    };
+    const setData = (d: number) => {
+      for (let i = 0; i < 8; i++) pm.triggerPinChange(dKey(i), ((d >> i) & 1) === 1);
+    };
     setAddr(0x2802);
     setData(0x52);
     pm.triggerPinChange(WR, false);

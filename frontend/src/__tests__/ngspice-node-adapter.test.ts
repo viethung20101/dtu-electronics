@@ -37,28 +37,21 @@ describe('NgSpiceNodeAdapter — SolverPort contract on real WASM', () => {
         '.end',
       ].join('\n');
       await adapter.loadCircuit(netlist);
-      const result = await adapter.solve(
-        { kind: 'op' },
-        { vectorsOfInterest: ['v(1)', 'v(mid)'] },
-      );
+      const result = await adapter.solve({ kind: 'op' }, { vectorsOfInterest: ['v(1)', 'v(mid)'] });
       expect(result.vectors.size).toBeGreaterThanOrEqual(2);
       expect(result.vectors.get('v(1)')?.real[0]).toBeCloseTo(5, 3);
       expect(result.vectors.get('v(mid)')?.real[0]).toBeCloseTo(2.5, 3);
     },
   );
 
-  it(
-    'omits missing vectors silently',
-    { timeout: 30_000 },
-    async () => {
-      const result = await adapter.solve(
-        { kind: 'op' },
-        { vectorsOfInterest: ['v(1)', 'v(does_not_exist)'] },
-      );
-      expect(result.vectors.has('v(1)')).toBe(true);
-      expect(result.vectors.has('v(does_not_exist)')).toBe(false);
-    },
-  );
+  it('omits missing vectors silently', { timeout: 30_000 }, async () => {
+    const result = await adapter.solve(
+      { kind: 'op' },
+      { vectorsOfInterest: ['v(1)', 'v(does_not_exist)'] },
+    );
+    expect(result.vectors.has('v(1)')).toBe(true);
+    expect(result.vectors.has('v(does_not_exist)')).toBe(false);
+  });
 
   it(
     'alterSource updates a V source and the next solve sees the new value',
@@ -66,10 +59,7 @@ describe('NgSpiceNodeAdapter — SolverPort contract on real WASM', () => {
     async () => {
       // Same divider as before — V1 is still loaded.
       await adapter.alterSource('V1', 10);
-      const result = await adapter.solve(
-        { kind: 'op' },
-        { vectorsOfInterest: ['v(mid)'] },
-      );
+      const result = await adapter.solve({ kind: 'op' }, { vectorsOfInterest: ['v(mid)'] });
       expect(result.vectors.get('v(mid)')?.real[0]).toBeCloseTo(5, 3);
     },
   );

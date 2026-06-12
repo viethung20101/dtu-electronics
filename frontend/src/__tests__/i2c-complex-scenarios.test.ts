@@ -63,11 +63,10 @@ function hasLibrary(header: string): boolean {
     join(sketchDir, 'probe.ino'),
     `#include <${header}>\nvoid setup(){}\nvoid loop(){}\n`,
   );
-  const r = spawnSync(
-    'arduino-cli',
-    ['compile', '--fqbn', 'arduino:avr:uno', sketchDir],
-    { encoding: 'utf-8', timeout: 60_000 },
-  );
+  const r = spawnSync('arduino-cli', ['compile', '--fqbn', 'arduino:avr:uno', sketchDir], {
+    encoding: 'utf-8',
+    timeout: 60_000,
+  });
   return r.status === 0;
 }
 
@@ -78,12 +77,7 @@ const LIQUID_CRYSTAL_I2C_AVAILABLE = ARDUINO_CLI_AVAILABLE
 // ─── Compile helper — mirrors backend/services/arduino_cli.py exactly ────────
 
 function sketchSourcePath(name: string): string {
-  return resolve(
-    __dirname,
-    '../../../test/test_custom_chips/sketches',
-    name,
-    `${name}.ino`,
-  );
+  return resolve(__dirname, '../../../test/test_custom_chips/sketches', name, `${name}.ino`);
 }
 
 /**
@@ -119,13 +113,7 @@ function compileSketch(name: string, fqbn = 'arduino:avr:uno'): string {
 
   const result = spawnSync(
     'arduino-cli',
-    [
-      'compile',
-      '--fqbn', fqbn,
-      '--output-dir', buildDir,
-      '--build-path', buildDir,
-      sketchDir,
-    ],
+    ['compile', '--fqbn', fqbn, '--output-dir', buildDir, '--build-path', buildDir, sketchDir],
     { encoding: 'utf-8', timeout: 240_000 },
   );
   if (result.error) {
@@ -158,9 +146,7 @@ function compileSketch(name: string, fqbn = 'arduino:avr:uno'): string {
   }
   if (!artifact) {
     const files = readdirSync(buildDir, { recursive: true });
-    throw new Error(
-      `Could not locate ${ext} output in ${buildDir} (saw: ${files.join(', ')})`,
-    );
+    throw new Error(`Could not locate ${ext} output in ${buildDir} (saw: ${files.join(', ')})`);
   }
   writeFileSync(cachePath, artifact);
   return artifact;
@@ -305,11 +291,7 @@ describe.runIf(LIQUID_CRYSTAL_I2C_AVAILABLE)(
       runUntil(sim, 30_000_000, () => {
         const c = el.characters as Uint8Array;
         const lastSec = c[23];
-        return (
-          c[0] === 'T'.charCodeAt(0) &&
-          lastSec >= 0x30 &&
-          lastSec <= 0x39
-        );
+        return c[0] === 'T'.charCodeAt(0) && lastSec >= 0x30 && lastSec <= 0x39;
       });
 
       const c = el.characters as Uint8Array;
@@ -335,8 +317,7 @@ describe.runIf(LIQUID_CRYSTAL_I2C_AVAILABLE)(
       // (test runtime + I2C overhead).
       const now = new Date();
       const displayedSecondsOfDay = hh * 3600 + mm * 60 + ss;
-      const nowSecondsOfDay =
-        now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const nowSecondsOfDay = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
       const drift = Math.abs(displayedSecondsOfDay - nowSecondsOfDay);
       // Allow for day rollover at midnight.
       expect(Math.min(drift, 86400 - drift)).toBeLessThan(10);

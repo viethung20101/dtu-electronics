@@ -84,7 +84,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
       setActive(next);
       setVisibility(next === 'public');
     } catch (err) {
-      const e = err as { response?: { status?: number; data?: { detail?: VisibilityErrorDetail } } };
+      const e = err as {
+        response?: { status?: number; data?: { detail?: VisibilityErrorDetail } };
+      };
       const status = e?.response?.status;
       const detail = e?.response?.data?.detail;
       if (status === 403 && detail?.error === 'visibility_not_allowed') {
@@ -151,13 +153,17 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
               >
                 <div style={styles.optionHead}>
                   <span style={styles.optionLabel}>{opt.label}</span>
-                  {opt.badge && (
-                    <span style={styles.badge}>{opt.badge}</span>
-                  )}
+                  {opt.badge && <span style={styles.badge}>{opt.badge}</span>}
                   {isActive && (
                     <svg
-                      width="14" height="14" viewBox="0 0 24 24" fill="none"
-                      stroke="#4ade80" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#4ade80"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
@@ -183,8 +189,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
           <button onClick={handleCopy} style={styles.copyBtn}>
             {copied ? (
               <svg
-                width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4ade80"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
@@ -211,13 +223,23 @@ export const ShareModal: React.FC<ShareModalProps> = ({ onClose }) => {
 
 const styles: Record<string, React.CSSProperties> = {
   overlay: {
-    position: 'fixed', inset: 0, background: 'rgba(0,0,0,.6)',
-    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0,0,0,.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
   },
   modal: {
-    background: '#252526', border: '1px solid #3c3c3c', borderRadius: 8,
-    padding: '1.75rem', width: 460,
-    display: 'flex', flexDirection: 'column', gap: 16,
+    background: '#252526',
+    border: '1px solid #3c3c3c',
+    borderRadius: 8,
+    padding: '1.75rem',
+    width: 460,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 16,
   },
   title: { color: '#ccc', margin: 0, fontSize: 18, fontWeight: 600 },
   visibilityList: { display: 'flex', flexDirection: 'column', gap: 6 },
@@ -246,22 +268,44 @@ const styles: Record<string, React.CSSProperties> = {
   },
   linkRow: { display: 'flex', gap: 6 },
   linkInput: {
-    flex: 1, background: '#1e1e1e', border: '1px solid #444', borderRadius: 4,
-    padding: '8px 10px', color: '#4fc3f7', fontSize: 13,
-    fontFamily: 'monospace', outline: 'none',
+    flex: 1,
+    background: '#1e1e1e',
+    border: '1px solid #444',
+    borderRadius: 4,
+    padding: '8px 10px',
+    color: '#4fc3f7',
+    fontSize: 13,
+    fontFamily: 'monospace',
+    outline: 'none',
   },
   copyBtn: {
-    background: '#0e639c', border: 'none', borderRadius: 4, color: '#fff',
-    padding: '8px 16px', fontSize: 13, cursor: 'pointer', fontWeight: 500,
-    display: 'flex', alignItems: 'center',
+    background: '#0e639c',
+    border: 'none',
+    borderRadius: 4,
+    color: '#fff',
+    padding: '8px 16px',
+    fontSize: 13,
+    cursor: 'pointer',
+    fontWeight: 500,
+    display: 'flex',
+    alignItems: 'center',
   },
   warning: {
-    background: '#3d2e00', border: '1px solid #f59e0b44', borderRadius: 4,
-    color: '#f59e0b', padding: '8px 12px', fontSize: 12,
+    background: '#3d2e00',
+    border: '1px solid #f59e0b44',
+    borderRadius: 4,
+    color: '#f59e0b',
+    padding: '8px 12px',
+    fontSize: 12,
   },
   actions: { display: 'flex', justifyContent: 'flex-end' },
   closeBtn: {
-    background: 'transparent', border: '1px solid #555', borderRadius: 4,
-    color: '#ccc', padding: '8px 16px', fontSize: 13, cursor: 'pointer',
+    background: 'transparent',
+    border: '1px solid #555',
+    borderRadius: 4,
+    color: '#ccc',
+    padding: '8px 16px',
+    fontSize: 13,
+    cursor: 'pointer',
   },
 };

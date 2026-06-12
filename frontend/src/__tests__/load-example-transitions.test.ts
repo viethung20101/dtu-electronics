@@ -180,7 +180,10 @@ describe('isProgrammableChip — detects ROM-loading CPUs by programTargets', ()
     // chip.json marks it a CPU. It must still be treated as programmable so a
     // program file gets created for it.
     expect(
-      isProgrammableChip({ chipJson: JSON.stringify({ programTargets: ['z80'] }), programFile: '' }),
+      isProgrammableChip({
+        chipJson: JSON.stringify({ programTargets: ['z80'] }),
+        programFile: '',
+      }),
     ).toBe(true);
   });
 

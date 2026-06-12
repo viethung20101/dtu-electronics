@@ -127,9 +127,8 @@ function fullReset() {
 
 function uartFedWith(sim: any, expected: string, uart = 0): boolean {
   return (
-    (sim.feedUart as any).mock.calls.some(
-      (c: any[]) => c[0] === uart && c[1] === expected,
-    ) || (sim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === expected)
+    (sim.feedUart as any).mock.calls.some((c: any[]) => c[0] === uart && c[1] === expected) ||
+    (sim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === expected)
   );
 }
 
@@ -246,9 +245,7 @@ describe('Dual Pico W — I2C0 (GP4=SDA, GP5=SCL)', () => {
       pmA.triggerPinChange(5, true);
       pmA.triggerPinChange(5, false);
     }
-    const clockHits = (simB.setPinState as any).mock.calls.filter(
-      (c: any[]) => c[0] === 5,
-    );
+    const clockHits = (simB.setPinState as any).mock.calls.filter((c: any[]) => c[0] === 5);
     expect(clockHits.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -404,9 +401,7 @@ describe('Dual Pico W — raw digital pins', () => {
 
   it('cross-pin wiring (A.GP3 ↔ B.GP25 = LED_BUILTIN) carries the digital signal', () => {
     const { idA, idB } = setupTwoPicos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'GP3', toBoard: idB, toPin: 'GP25' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'GP3', toBoard: idB, toPin: 'GP25' }]);
     const pmA = getBoardPinManager(idA)!;
     const simB = getBoardSimulator(idB) as any;
     pmA.triggerPinChange(3, true);
@@ -415,9 +410,7 @@ describe('Dual Pico W — raw digital pins', () => {
 
   it('high-speed toggle on a single pin is rate-limited only by PinManager dedup', () => {
     const { idA, idB } = setupTwoPicos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'GP10', toBoard: idB, toPin: 'GP10' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'GP10', toBoard: idB, toPin: 'GP10' }]);
     const pmA = getBoardPinManager(idA)!;
     const simB = getBoardSimulator(idB) as any;
 

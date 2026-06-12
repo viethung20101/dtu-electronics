@@ -16,7 +16,11 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { resetBusNets } from '../simulation/customChips/busNets';
-import { buildMixedNetwork, type DigitalComponent, type DigitalWire } from '../simulation/digital/digitalGateEngine';
+import {
+  buildMixedNetwork,
+  type DigitalComponent,
+  type DigitalWire,
+} from '../simulation/digital/digitalGateEngine';
 
 beforeEach(() => resetBusNets());
 
@@ -28,7 +32,10 @@ const components: DigitalComponent[] = [
   { id: 'a1', metadataId: 'bjt-npn' }, // analog (non-primitive)
   { id: 'g2', metadataId: 'logic-gate-not' },
 ];
-const W = (a: string, ap: string, b: string, bp: string): DigitalWire => ({ start: { componentId: a, pinName: ap }, end: { componentId: b, pinName: bp } });
+const W = (a: string, ap: string, b: string, bp: string): DigitalWire => ({
+  start: { componentId: a, pinName: ap },
+  end: { componentId: b, pinName: bp },
+});
 const wires: DigitalWire[] = [
   W('src', 'SIG', 'sw1', '1'),
   W('sw1', '2', 'g1', 'A'),
@@ -76,7 +83,7 @@ describe('digital-gate-engine Phase 3 — mixed boundary', () => {
     for (const sw of [0, 1, 0, 1] as const) {
       net.setSwitch('sw1', sw);
       const analogIn = net.readBoundary(outB); // g1 = NOT(sw)
-      net.setBoundaryInput(inB, analogIn);     // ideal analog: C = B
+      net.setBoundaryInput(inB, analogIn); // ideal analog: C = B
       // g2 = NOT(analogIn) = NOT(NOT(sw)) = sw
       expect(net.readNet(finalOut), `chain sw=${sw}`).toBe(sw);
     }

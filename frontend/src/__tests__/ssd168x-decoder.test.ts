@@ -31,7 +31,8 @@ import {
 // ── Helpers (mirror the Python ones) ──────────────────────────────────────────
 
 const cmd = (c: number): Array<[number, boolean]> => [[c, false]];
-const data = (...bs: number[]): Array<[number, boolean]> => bs.map((b) => [b, true] as [number, boolean]);
+const data = (...bs: number[]): Array<[number, boolean]> =>
+  bs.map((b) => [b, true] as [number, boolean]);
 
 function feedAll(d: SSD168xDecoder, ...streams: Array<Array<[number, boolean]>>) {
   for (const stream of streams) {
@@ -160,12 +161,7 @@ describe('SSD168xDecoder — frame latch & compose', () => {
       onFlush: (f) => seen.push(f),
     });
     gxepd2Init154(d);
-    feedAll(
-      d,
-      cmd(CMD_DISP_UPDATE_CTRL_2),
-      data(0xf7),
-      cmd(CMD_MASTER_ACTIVATION),
-    );
+    feedAll(d, cmd(CMD_DISP_UPDATE_CTRL_2), data(0xf7), cmd(CMD_MASTER_ACTIVATION));
     expect(seen.length).toBe(1);
     expect(d.refreshedCount).toBe(1);
     const frame = seen[0];
@@ -216,12 +212,7 @@ describe('SSD168xDecoder — end-to-end hello world', () => {
     feedAll(d, cmd(CMD_SET_RAMX_COUNTER), data(0x00));
     feedAll(d, cmd(CMD_SET_RAMY_COUNTER), data(0x00, 0x00));
     feedAll(d, cmd(CMD_WRITE_BLACK_VRAM), data(0x7f));
-    feedAll(
-      d,
-      cmd(CMD_DISP_UPDATE_CTRL_2),
-      data(0xf7),
-      cmd(CMD_MASTER_ACTIVATION),
-    );
+    feedAll(d, cmd(CMD_DISP_UPDATE_CTRL_2), data(0xf7), cmd(CMD_MASTER_ACTIVATION));
     expect(seen.length).toBe(1);
     expect(seen[0].pixels[0]).toBe(0); // top-left black
     expect(seen[0].pixels[1]).toBe(1); // (1,0) white
@@ -246,11 +237,16 @@ describe('SSD168xDecoder — tri-colour B/W/R pipeline', () => {
     // Match the typical GxEPD2 init sub-sequence enough to set window + cursor.
     feedAll(
       d,
-      cmd(CMD_DATA_ENTRY_MODE), data(0x03),
-      cmd(CMD_SET_RAMX_RANGE),  data(0x00, 0x01),         // 2 bytes wide
-      cmd(CMD_SET_RAMY_RANGE),  data(0x00, 0x00, 0x02, 0x00), // rows 0..2
-      cmd(CMD_SET_RAMX_COUNTER), data(0x00),
-      cmd(CMD_SET_RAMY_COUNTER), data(0x00, 0x00),
+      cmd(CMD_DATA_ENTRY_MODE),
+      data(0x03),
+      cmd(CMD_SET_RAMX_RANGE),
+      data(0x00, 0x01), // 2 bytes wide
+      cmd(CMD_SET_RAMY_RANGE),
+      data(0x00, 0x00, 0x02, 0x00), // rows 0..2
+      cmd(CMD_SET_RAMX_COUNTER),
+      data(0x00),
+      cmd(CMD_SET_RAMY_COUNTER),
+      data(0x00, 0x00),
     );
 
     // BW plane: row 0 all-black, row 1 all-white, row 2 mixed (left half black)
@@ -258,27 +254,29 @@ describe('SSD168xDecoder — tri-colour B/W/R pipeline', () => {
       d,
       cmd(CMD_WRITE_BLACK_VRAM),
       data(
-        0x00, 0x00, // row 0
-        0xff, 0xff, // row 1
-        0x00, 0xff, // row 2
+        0x00,
+        0x00, // row 0
+        0xff,
+        0xff, // row 1
+        0x00,
+        0xff, // row 2
       ),
     );
 
     // Reset cursor for the red plane.
-    feedAll(
-      d,
-      cmd(CMD_SET_RAMX_COUNTER), data(0x00),
-      cmd(CMD_SET_RAMY_COUNTER), data(0x00, 0x00),
-    );
+    feedAll(d, cmd(CMD_SET_RAMX_COUNTER), data(0x00), cmd(CMD_SET_RAMY_COUNTER), data(0x00, 0x00));
 
     // Red plane: row 0 nothing, row 1 first 4 px red, row 2 nothing.
     feedAll(
       d,
       cmd(CMD_WRITE_RED_VRAM),
       data(
-        0x00, 0x00, // row 0 — no red
-        0xf0, 0x00, // row 1 — first 4 px red
-        0x00, 0x00, // row 2 — no red
+        0x00,
+        0x00, // row 0 — no red
+        0xf0,
+        0x00, // row 1 — first 4 px red
+        0x00,
+        0x00, // row 2 — no red
       ),
     );
 
@@ -308,11 +306,16 @@ describe('SSD168xDecoder — tri-colour B/W/R pipeline', () => {
     });
     feedAll(
       d,
-      cmd(CMD_DATA_ENTRY_MODE), data(0x03),
-      cmd(CMD_SET_RAMX_RANGE),  data(0x00, 0x00),
-      cmd(CMD_SET_RAMY_RANGE),  data(0x00, 0x00, 0x00, 0x00),
-      cmd(CMD_SET_RAMX_COUNTER), data(0x00),
-      cmd(CMD_SET_RAMY_COUNTER), data(0x00, 0x00),
+      cmd(CMD_DATA_ENTRY_MODE),
+      data(0x03),
+      cmd(CMD_SET_RAMX_RANGE),
+      data(0x00, 0x00),
+      cmd(CMD_SET_RAMY_RANGE),
+      data(0x00, 0x00, 0x00, 0x00),
+      cmd(CMD_SET_RAMX_COUNTER),
+      data(0x00),
+      cmd(CMD_SET_RAMY_COUNTER),
+      data(0x00, 0x00),
       cmd(CMD_WRITE_RED_VRAM),
       data(0xaa), // alternating red pixels (1010 1010)
       cmd(CMD_MASTER_ACTIVATION),

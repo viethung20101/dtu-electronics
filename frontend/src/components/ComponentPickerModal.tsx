@@ -42,6 +42,9 @@ const BOARD_DESCRIPTIONS: Record<BoardKind, string> = {
   'arduino-mega': '8-bit AVR, 256KB flash, 54 digital I/O',
   'raspberry-pi-pico': 'RP2040 dual-core Cortex-M0+',
   'pi-pico-w': 'RP2040 + WiFi/BT, same emulator as Pico',
+  'raspberry-pi-zero': 'ARM Cortex-A7 single-core (armhf), Linux/Python (QEMU)',
+  'raspberry-pi-1': 'ARM Cortex-A7 single-core (armhf), Linux/Python (QEMU)',
+  'raspberry-pi-2': 'ARM Cortex-A7 quad-core (armhf), Linux/Python (QEMU)',
   'raspberry-pi-3': 'ARM64 Cortex-A53 quad-core, Linux/Python (QEMU)',
   'raspberry-pi-4': 'ARM64 Cortex-A72 quad-core, Linux/Python (QEMU)',
   'raspberry-pi-5': 'ARM64 Cortex-A76 quad-core + RP1 I/O, Linux/Python (QEMU)',
@@ -72,6 +75,9 @@ const ALL_BOARDS: BoardKind[] = [
   'arduino-mega',
   'raspberry-pi-pico',
   'pi-pico-w',
+  'raspberry-pi-zero',
+  'raspberry-pi-1',
+  'raspberry-pi-2',
   'raspberry-pi-3',
   'raspberry-pi-4',
   'raspberry-pi-5',
@@ -158,7 +164,11 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
         {/* Header */}
         <div className="modal-header">
           <h2>{t('editor.componentPicker.title')}</h2>
-          <button className="close-btn" onClick={onClose} aria-label={t('editor.componentPicker.close')}>
+          <button
+            className="close-btn"
+            onClick={onClose}
+            aria-label={t('editor.componentPicker.close')}
+          >
             X
           </button>
         </div>
@@ -288,9 +298,11 @@ export const ComponentPickerModal: React.FC<ComponentPickerModalProps> = ({
                         // components by setting window.__velxio_pro_gate__.
                         // Returning true means "handled — do not pass through".
                         if (component.pro_only) {
-                          const gate = (window as unknown as {
-                            __velxio_pro_gate__?: (c: typeof component) => boolean;
-                          }).__velxio_pro_gate__;
+                          const gate = (
+                            window as unknown as {
+                              __velxio_pro_gate__?: (c: typeof component) => boolean;
+                            }
+                          ).__velxio_pro_gate__;
                           if (gate && gate(component)) return;
                         }
                         onSelectComponent(component);

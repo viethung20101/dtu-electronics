@@ -31,10 +31,7 @@ export type GateInfo = {
   grandfather_active: boolean;
 };
 
-export type TauriInvoke = <T = unknown>(
-  cmd: string,
-  args?: Record<string, unknown>,
-) => Promise<T>;
+export type TauriInvoke = <T = unknown>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
 
 export type TauriListen = <T = unknown>(
   event: string,
@@ -94,15 +91,15 @@ export async function openExternal(url: string): Promise<void> {
     // tauri-plugin-opener — the official Tauri 2.x way for opening
     // URLs in the system browser. Most reliable, try first.
     ['invoke opener.open_url', () => invoke('plugin:opener|open_url', { url })],
-    ['invoke opener.open',     () => invoke('plugin:opener|open_url', { path: url })],
+    ['invoke opener.open', () => invoke('plugin:opener|open_url', { path: url })],
     // tauri-plugin-shell open — older path, arg shape varies between
     // 2.x releases; try both.
     ['invoke shell.open path', () => invoke('plugin:shell|open', { path: url, with: null })],
-    ['invoke shell.open url',  () => invoke('plugin:shell|open', { url })],
+    ['invoke shell.open url', () => invoke('plugin:shell|open', { url })],
     // Global wrappers (only present in specific Tauri 2.x configs).
-    ['shell.open',     () => tg.shell?.open?.(url)],
+    ['shell.open', () => tg.shell?.open?.(url)],
     ['opener.openUrl', () => tg.opener?.openUrl?.(url)],
-    ['opener.open',    () => tg.opener?.open?.(url)],
+    ['opener.open', () => tg.opener?.open?.(url)],
   ];
 
   let lastError: unknown = null;
@@ -143,8 +140,11 @@ function tryLog(message: string, extra?: unknown): void {
   if (!fn) return;
   let line = message;
   if (extra !== undefined) {
-    try { line += ' ' + JSON.stringify(extra); }
-    catch { line += ' ' + String(extra); }
+    try {
+      line += ' ' + JSON.stringify(extra);
+    } catch {
+      line += ' ' + String(extra);
+    }
   }
   void (fn as TauriInvoke)('write_debug_log', { message: line }).catch(() => {});
 }
@@ -232,8 +232,7 @@ export async function restartApp(): Promise<void> {
 export async function beginSignIn(apiBase = 'https://velxio.dev'): Promise<string> {
   const state = randomNonce();
   await invoke('license_register_nonce', { nonce: state });
-  const signInUrl =
-    `${apiBase.replace(/\/+$/, '')}/auth/desktop?state=${encodeURIComponent(state)}`;
+  const signInUrl = `${apiBase.replace(/\/+$/, '')}/auth/desktop?state=${encodeURIComponent(state)}`;
   await openExternal(signInUrl);
   return state;
 }

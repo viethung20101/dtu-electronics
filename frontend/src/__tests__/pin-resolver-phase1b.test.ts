@@ -19,13 +19,25 @@ import {
 function mockSource(opts: { initialVoltage?: number | null } = {}): {
   source: SpiceVoltageSource;
   fire: (state: 'HIGH' | 'LOW' | 'FLOATING' | 'CONFLICT', voltage: number) => void;
-  subscribers: Array<{ componentId: string; pinName: string; cb: (state: string, v: number) => void }>;
+  subscribers: Array<{
+    componentId: string;
+    pinName: string;
+    cb: (state: string, v: number) => void;
+  }>;
 } {
-  const subscribers: Array<{ componentId: string; pinName: string; cb: (state: string, v: number) => void }> = [];
+  const subscribers: Array<{
+    componentId: string;
+    pinName: string;
+    cb: (state: string, v: number) => void;
+  }> = [];
   let voltage = opts.initialVoltage ?? null;
   const source: SpiceVoltageSource = {
     subscribe(componentId, componentPinName, cb) {
-      const entry = { componentId, pinName: componentPinName, cb: cb as (s: string, v: number) => void };
+      const entry = {
+        componentId,
+        pinName: componentPinName,
+        cb: cb as (s: string, v: number) => void,
+      };
       subscribers.push(entry);
       return () => {
         const idx = subscribers.indexOf(entry);
@@ -142,17 +154,17 @@ describe('createSpiceResolvedPinResolver', () => {
     const cb = vi.fn();
     r.onChange(cb);
 
-    fire('LOW', 2.0);  // in the dead band — stays LOW
+    fire('LOW', 2.0); // in the dead band — stays LOW
     expect(cb).not.toHaveBeenCalled();
 
-    fire('HIGH', 3.5);  // crosses upper threshold → HIGH
+    fire('HIGH', 3.5); // crosses upper threshold → HIGH
     expect(cb).toHaveBeenCalledWith('HIGH', 3.5);
     cb.mockClear();
 
-    fire('HIGH', 2.0);  // back in dead band — stays HIGH (hysteresis)
+    fire('HIGH', 2.0); // back in dead band — stays HIGH (hysteresis)
     expect(cb).not.toHaveBeenCalled();
 
-    fire('LOW', 1.0);  // crosses lower threshold → LOW
+    fire('LOW', 1.0); // crosses lower threshold → LOW
     expect(cb).toHaveBeenCalledWith('LOW', 1.0);
   });
 

@@ -60,7 +60,7 @@ function deepEqualWithTolerance(
     if (keysA[i] !== keysB[i]) {
       return {
         ok: false,
-        mismatch: { key: keysA[i]!, a: a[keysA[i]!]!, b: b[keysB[i]!]!},
+        mismatch: { key: keysA[i]!, a: a[keysA[i]!]!, b: b[keysB[i]!]! },
       };
     }
   }
@@ -81,30 +81,34 @@ describe('Solver determinism — same netlist → same vectors across runs', () 
       it.skip(`${id} (not found in canonical examples — list out of sync)`, () => {});
       continue;
     }
-    it(`${id} converges to the same nodeVoltages across 3 consecutive solves`, { timeout: 30_000 }, async () => {
-      const input = exampleToBuildNetlistInput(example);
-      const run1 = await solveInput(input);
-      const run2 = await solveInput(input);
-      const run3 = await solveInput(input);
+    it(
+      `${id} converges to the same nodeVoltages across 3 consecutive solves`,
+      { timeout: 30_000 },
+      async () => {
+        const input = exampleToBuildNetlistInput(example);
+        const run1 = await solveInput(input);
+        const run2 = await solveInput(input);
+        const run3 = await solveInput(input);
 
-      const cmp12 = deepEqualWithTolerance(run1.nodeVoltages, run2.nodeVoltages);
-      const cmp23 = deepEqualWithTolerance(run2.nodeVoltages, run3.nodeVoltages);
+        const cmp12 = deepEqualWithTolerance(run1.nodeVoltages, run2.nodeVoltages);
+        const cmp23 = deepEqualWithTolerance(run2.nodeVoltages, run3.nodeVoltages);
 
-      if (!cmp12.ok) {
-        throw new Error(
-          `[${id}] run1 != run2 at "${cmp12.mismatch?.key}": ${cmp12.mismatch?.a} vs ${cmp12.mismatch?.b}`,
-        );
-      }
-      if (!cmp23.ok) {
-        throw new Error(
-          `[${id}] run2 != run3 at "${cmp23.mismatch?.key}": ${cmp23.mismatch?.a} vs ${cmp23.mismatch?.b}`,
-        );
-      }
-      // Pin the analysisMode + converged flag too — the underlying
-      // analysis pick shouldn't flap.
-      expect(run1.analysisMode).toBe(run3.analysisMode);
-      expect(run1.converged).toBe(run3.converged);
-    });
+        if (!cmp12.ok) {
+          throw new Error(
+            `[${id}] run1 != run2 at "${cmp12.mismatch?.key}": ${cmp12.mismatch?.a} vs ${cmp12.mismatch?.b}`,
+          );
+        }
+        if (!cmp23.ok) {
+          throw new Error(
+            `[${id}] run2 != run3 at "${cmp23.mismatch?.key}": ${cmp23.mismatch?.a} vs ${cmp23.mismatch?.b}`,
+          );
+        }
+        // Pin the analysisMode + converged flag too — the underlying
+        // analysis pick shouldn't flap.
+        expect(run1.analysisMode).toBe(run3.analysisMode);
+        expect(run1.converged).toBe(run3.converged);
+      },
+    );
   }
 
   it('solveInput state does not leak between unrelated examples', { timeout: 30_000 }, async () => {

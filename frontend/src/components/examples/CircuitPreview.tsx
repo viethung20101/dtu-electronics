@@ -89,9 +89,26 @@ const Attiny85InlinePreview: React.FC<{ w: number; h: number }> = ({ w, h }) => 
       </g>
     ))}
     {/* IC body */}
-    <rect x="30" y="10" width="100" height="80" rx="4" fill="#1a1a2e" stroke="#4a4a7a" strokeWidth="1.5" />
+    <rect
+      x="30"
+      y="10"
+      width="100"
+      height="80"
+      rx="4"
+      fill="#1a1a2e"
+      stroke="#4a4a7a"
+      strokeWidth="1.5"
+    />
     <path d="M73 10 A7 7 0 0 1 87 10" fill="none" stroke="#4a4a7a" strokeWidth="1.5" />
-    <text x="80" y="48" fontSize="10" fontWeight="bold" fontFamily="monospace" fill="#c8c8f0" textAnchor="middle">
+    <text
+      x="80"
+      y="48"
+      fontSize="10"
+      fontWeight="bold"
+      fontFamily="monospace"
+      fill="#c8c8f0"
+      textAnchor="middle"
+    >
       ATtiny85
     </text>
     <text x="80" y="62" fontSize="8" fontFamily="monospace" fill="#7a7aaa" textAnchor="middle">

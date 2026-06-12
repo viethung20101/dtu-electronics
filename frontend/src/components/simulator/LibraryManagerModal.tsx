@@ -24,8 +24,7 @@ type Tab = 'project' | 'search' | 'installed';
 /** Case/separator-insensitive name match, matching the backend's
  *  _norm_lib_name (lowercased, alphanumerics only) so the UI's "in project"
  *  state agrees with what the compiler scopes. */
-const normLib = (s: string): string =>
-  (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const normLib = (s: string): string => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
@@ -143,9 +142,15 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
         // with another project's libs. The user can remove it in the Project tab.
         addToManifest(libName);
         if (result.fallback) {
-          setStatusMsg({ type: 'success', text: `"${libName}" installed and added to this project (latest — requested @${result.requested_version} was not available)` });
+          setStatusMsg({
+            type: 'success',
+            text: `"${libName}" installed and added to this project (latest — requested @${result.requested_version} was not available)`,
+          });
         } else {
-          setStatusMsg({ type: 'success', text: `"${libName}${version ? ' @' + version : ''}" installed and added to this project!` });
+          setStatusMsg({
+            type: 'success',
+            text: `"${libName}${version ? ' @' + version : ''}" installed and added to this project!`,
+          });
         }
         fetchInstalled();
       } else {
@@ -438,10 +443,9 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
               <strong style={{ color: '#a5d6a7' }}>
                 {activeBoard ? boardDisplayName(activeBoard) : 'this board'}
               </strong>{' '}
-              (its <strong style={{ color: '#ffd60a' }}>velxio.json</strong>). Each
-              board has its own list, so two boards can use different libraries
-              without clashing. Installing a library adds it here automatically;
-              start typing below to add more.
+              (its <strong style={{ color: '#ffd60a' }}>velxio.json</strong>). Each board has its
+              own list, so two boards can use different libraries without clashing. Installing a
+              library adds it here automatically; start typing below to add more.
             </div>
 
             {/* Declared libraries as removable rows */}
@@ -450,8 +454,8 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                 <div className="lib-empty">
                   <p>No libraries declared.</p>
                   <p className="lib-empty-sub">
-                    Core libraries (WiFi, Wire, SPI, WebServer…) are always
-                    available. Add external libraries from the Search tab or below.
+                    Core libraries (WiFi, Wire, SPI, WebServer…) are always available. Add external
+                    libraries from the Search tab or below.
                   </p>
                 </div>
               )}
@@ -664,7 +668,23 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                         <>
                           <span className="lib-item-version lib-installed-badge">
                             {selectedVersions[lib.name] ?? lib.latest?.version ?? ''}
-                            <svg style={{ display: 'inline', marginLeft: '4px', verticalAlign: 'middle' }} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                            <svg
+                              style={{
+                                display: 'inline',
+                                marginLeft: '4px',
+                                verticalAlign: 'middle',
+                              }}
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
                           </span>
                           <button
                             className="lib-uninstall-btn"
@@ -682,10 +702,17 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                             <select
                               className="lib-version-select"
                               value={selectedVersions[lib.name] ?? lib.latest?.version ?? ''}
-                              onChange={(e) => setSelectedVersions((prev) => ({ ...prev, [lib.name]: e.target.value }))}
+                              onChange={(e) =>
+                                setSelectedVersions((prev) => ({
+                                  ...prev,
+                                  [lib.name]: e.target.value,
+                                }))
+                              }
                             >
                               {Object.entries(lib.releases).map(([ver]) => (
-                                <option key={ver} value={ver}>{ver}</option>
+                                <option key={ver} value={ver}>
+                                  {ver}
+                                </option>
                               ))}
                             </select>
                           )}
@@ -695,7 +722,9 @@ export const LibraryManagerModal: React.FC<LibraryManagerModalProps> = ({ isOpen
                             disabled={installingLib !== null}
                           >
                             {installingLib === getLibName(lib) ? (
-                              <span className="lib-installing">{t('editor.libraryManager.installing')}</span>
+                              <span className="lib-installing">
+                                {t('editor.libraryManager.installing')}
+                              </span>
                             ) : (
                               t('editor.libraryManager.install')
                             )}

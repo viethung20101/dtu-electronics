@@ -19,7 +19,7 @@ const META = getSeoMeta('/custom-chip-simulator')!;
 const FAQ_ITEMS = [
   {
     q: 'What is a custom chip in CVS?',
-    a: 'A custom chip is a user-defined integrated circuit. You write the chip\'s logic in C, Rust, or AssemblyScript — CVS compiles it to WebAssembly, instantiates it on the canvas like any other component, and drives its pins from the simulator.',
+    a: "A custom chip is a user-defined integrated circuit. You write the chip's logic in C, Rust, or AssemblyScript — CVS compiles it to WebAssembly, instantiates it on the canvas like any other component, and drives its pins from the simulator.",
   },
   {
     q: 'Which API does CVS use?',
@@ -27,7 +27,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What can I build?',
-    a: 'Behavioural models of real ICs (sensors, decoders, level translators, protocol bridges), custom digital logic, sensor stand-ins for hardware you don\'t have yet, and protocol-level mocks for testing firmware. Chips can drive pins, read attributes, register timers, and bridge to I²C / SPI buses.',
+    a: "Behavioural models of real ICs (sensors, decoders, level translators, protocol bridges), custom digital logic, sensor stand-ins for hardware you don't have yet, and protocol-level mocks for testing firmware. Chips can drive pins, read attributes, register timers, and bridge to I²C / SPI buses.",
   },
   {
     q: 'How do I share or reuse a chip?',

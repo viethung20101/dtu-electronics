@@ -11,7 +11,12 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { resetBusNets } from '../simulation/customChips/busNets';
-import { buildDigitalNetwork, isAllDigital, type DigitalComponent, type DigitalWire } from '../simulation/digital/digitalGateEngine';
+import {
+  buildDigitalNetwork,
+  isAllDigital,
+  type DigitalComponent,
+  type DigitalWire,
+} from '../simulation/digital/digitalGateEngine';
 import { digitalExamples } from '../data/examples-digital';
 
 type Ex = { id: string; components: DigitalComponent[]; wires: DigitalWire[] };
@@ -40,21 +45,34 @@ describe('digital-gate-engine sweep — all gallery digital examples', () => {
       resetBusNets();
     }
     // The vast majority are pure gate circuits; only a couple (e.g. 7-seg) bail.
-    expect(handled.length, `handled: ${handled.length}, bailed: ${bailed.join(', ')}`).toBeGreaterThanOrEqual(33);
+    expect(
+      handled.length,
+      `handled: ${handled.length}, bailed: ${bailed.join(', ')}`,
+    ).toBeGreaterThanOrEqual(33);
     // eslint-disable-next-line no-console
-    console.log(`[sweep] engine handles ${handled.length}/${all.length}; bails (ngspice): ${bailed.join(', ') || 'none'}`);
+    console.log(
+      `[sweep] engine handles ${handled.length}/${all.length}; bails (ngspice): ${bailed.join(', ') || 'none'}`,
+    );
   });
 
   it('each handled example drives + reads every LED without throwing or oscillating', () => {
     const warn = console.warn;
     let oscillations = 0;
-    console.warn = (...a: unknown[]) => { if (String(a[0]).includes('did not converge')) oscillations++; };
+    console.warn = (...a: unknown[]) => {
+      if (String(a[0]).includes('did not converge')) oscillations++;
+    };
     try {
       for (const ex of all) {
         if (!isAllDigital(ex.components)) continue;
-        const switchIds = ex.components.filter((c) => String(c.metadataId ?? c.type ?? '').includes('slide-switch')).map((c) => c.id);
+        const switchIds = ex.components
+          .filter((c) => String(c.metadataId ?? c.type ?? '').includes('slide-switch'))
+          .map((c) => c.id);
         // a few input vectors: all-low, all-high, alternating
-        for (const pattern of [() => 0 as const, () => 1 as const, (i: number) => (i % 2) as 0 | 1]) {
+        for (const pattern of [
+          () => 0 as const,
+          () => 1 as const,
+          (i: number) => (i % 2) as 0 | 1,
+        ]) {
           const net = buildDigitalNetwork(ex.components, ex.wires);
           expect(net.ok).toBe(true);
           switchIds.forEach((id, i) => net.setSwitch(id, pattern(i)));

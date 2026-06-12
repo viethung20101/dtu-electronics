@@ -31,9 +31,17 @@ function dividerWithWires(supplyWire: { length_cm?: number }): BuildNetlistInput
         length_cm: supplyWire.length_cm,
       },
       // r1 pin 2 → r2 pin 1 (the divider mid)
-      { id: 'w_mid', start: { componentId: 'r1', pinName: '2' }, end: { componentId: 'r2', pinName: '1' } },
+      {
+        id: 'w_mid',
+        start: { componentId: 'r1', pinName: '2' },
+        end: { componentId: 'r2', pinName: '1' },
+      },
       // r2 pin 2 → GND
-      { id: 'w_gnd', start: { componentId: 'r2', pinName: '2' }, end: { componentId: 'uno', pinName: 'GND' } },
+      {
+        id: 'w_gnd',
+        start: { componentId: 'r2', pinName: '2' },
+        end: { componentId: 'uno', pinName: 'GND' },
+      },
     ],
     boards: [
       {
@@ -78,20 +86,16 @@ describe('Phase 4 — wire resistance (opt-in via length_cm)', () => {
     },
   );
 
-  it(
-    'a 500 cm supply wire shifts the divider midpoint visibly',
-    { timeout: 30_000 },
-    async () => {
-      const { netlist, pinNetMap } = buildNetlist(dividerWithWires({ length_cm: 500 }));
-      const result = await runNetlist(netlist);
-      const midNet = pinNetMap.get('r1:2');
-      const vMid = result.dcValue(`v(${midNet})`);
-      // 500 cm × 0.01 ohm/cm = 5 ohm in series with 200 ohm divider.
-      // Effective: 5V × 100 / (5+100+100) ≈ 2.439 V.
-      expect(vMid).toBeGreaterThan(2.40);
-      expect(vMid).toBeLessThan(2.46);
-    },
-  );
+  it('a 500 cm supply wire shifts the divider midpoint visibly', { timeout: 30_000 }, async () => {
+    const { netlist, pinNetMap } = buildNetlist(dividerWithWires({ length_cm: 500 }));
+    const result = await runNetlist(netlist);
+    const midNet = pinNetMap.get('r1:2');
+    const vMid = result.dcValue(`v(${midNet})`);
+    // 500 cm × 0.01 ohm/cm = 5 ohm in series with 200 ohm divider.
+    // Effective: 5V × 100 / (5+100+100) ≈ 2.439 V.
+    expect(vMid).toBeGreaterThan(2.4);
+    expect(vMid).toBeLessThan(2.46);
+  });
 
   it('length_cm = 0 falls back to perfect-conductor behaviour', () => {
     const { netlist } = buildNetlist(dividerWithWires({ length_cm: 0 }));

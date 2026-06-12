@@ -5,6 +5,8 @@ import { AppHeader } from '../components/layout/AppHeader';
 import { CodeBlock } from '../components/layout/CodeBlock';
 import { useLocalizedHref } from '../i18n/useLocalizedNavigate';
 import './DocsPage.css';
+import IconVectorHero from '../assets/generated/vector_167_439.svg';
+import IconVectorFeatures from '../assets/generated/vector_186_600.svg';
 
 const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
 const BASE_URL = 'https://cvs.local';
@@ -58,24 +60,124 @@ const VALID_SECTIONS: SectionId[] = [
 interface NavItem {
   id: SectionId;
   labelKey: string;
+  icon?: React.ReactNode;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { id: 'intro', labelKey: 'docs.nav.intro' },
-  { id: 'getting-started', labelKey: 'docs.nav.gettingStarted' },
-  { id: 'emulator', labelKey: 'docs.nav.emulator' },
-  { id: 'riscv-emulation', labelKey: 'docs.nav.riscvEmulation' },
-  { id: 'esp32-emulation', labelKey: 'docs.nav.esp32Emulation' },
-  { id: 'rp2040-emulation', labelKey: 'docs.nav.rp2040Emulation' },
-  { id: 'raspberry-pi3-emulation', labelKey: 'docs.nav.raspberryPi3Emulation' },
-  { id: 'components', labelKey: 'docs.nav.components' },
-  { id: 'architecture', labelKey: 'docs.nav.architecture' },
-  { id: 'third-party', labelKey: 'docs.nav.thirdParty' },
-  { id: 'mcp', labelKey: 'docs.nav.mcp' },
-  { id: 'setup', labelKey: 'docs.nav.setup' },
-  { id: 'build-qemu', labelKey: 'docs.nav.buildQemu' },
-  { id: 'roadmap', labelKey: 'docs.nav.roadmap' },
+interface NavGroup {
+  labelKey: string;
+  items: NavItem[];
+}
+
+/* ── Sidebar Icons ────────────────────────────────────── */
+const IcoBook = () => (
+  <svg
+    className="nav-item-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+  </svg>
+);
+
+const IcoCpu = () => (
+  <svg
+    className="nav-item-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
+    <rect x="9" y="9" width="6" height="6" />
+    <line x1="9" y1="1" x2="9" y2="4" />
+    <line x1="15" y1="1" x2="15" y2="4" />
+    <line x1="9" y1="20" x2="9" y2="23" />
+    <line x1="15" y1="20" x2="15" y2="23" />
+    <line x1="20" y1="9" x2="23" y2="9" />
+    <line x1="20" y1="15" x2="23" y2="15" />
+    <line x1="1" y1="9" x2="4" y2="9" />
+    <line x1="1" y1="15" x2="4" y2="15" />
+  </svg>
+);
+
+const IcoServer = () => (
+  <svg
+    className="nav-item-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="2" width="20" height="8" rx="2" ry="2" />
+    <rect x="2" y="14" width="20" height="8" rx="2" ry="2" />
+    <line x1="6" y1="6" x2="6.01" y2="6" />
+    <line x1="6" y1="18" x2="6.01" y2="18" />
+  </svg>
+);
+
+const IcoRoadmap = () => (
+  <svg
+    className="nav-item-icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="6" y1="3" x2="6" y2="15" />
+    <circle cx="18" cy="6" r="3" />
+    <circle cx="6" cy="18" r="3" />
+    <path d="M18 9a9 9 0 0 1-9 9" />
+  </svg>
+);
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    labelKey: 'docs.sidebarGroup.docs',
+    items: [
+      { id: 'intro', labelKey: 'docs.nav.intro', icon: <IcoBook /> },
+      { id: 'getting-started', labelKey: 'docs.nav.gettingStarted', icon: <IcoBook /> },
+      { id: 'emulator', labelKey: 'docs.nav.emulator', icon: <IcoBook /> },
+    ],
+  },
+  {
+    labelKey: 'docs.sidebarGroup.cores',
+    items: [
+      { id: 'riscv-emulation', labelKey: 'docs.nav.riscvEmulation', icon: <IcoCpu /> },
+      { id: 'esp32-emulation', labelKey: 'docs.nav.esp32Emulation', icon: <IcoCpu /> },
+      { id: 'rp2040-emulation', labelKey: 'docs.nav.rp2040Emulation', icon: <IcoCpu /> },
+      {
+        id: 'raspberry-pi3-emulation',
+        labelKey: 'docs.nav.raspberryPi3Emulation',
+        icon: <IcoCpu />,
+      },
+    ],
+  },
+  {
+    labelKey: 'docs.sidebarGroup.system',
+    items: [
+      { id: 'components', labelKey: 'docs.nav.components', icon: <IcoBook /> },
+      { id: 'architecture', labelKey: 'docs.nav.architecture', icon: <IcoBook /> },
+      { id: 'third-party', labelKey: 'docs.nav.thirdParty', icon: <IcoBook /> },
+      { id: 'mcp', labelKey: 'docs.nav.mcp', icon: <IcoServer /> },
+      { id: 'setup', labelKey: 'docs.nav.setup', icon: <IcoBook /> },
+      { id: 'build-qemu', labelKey: 'docs.nav.buildQemu', icon: <IcoBook /> },
+      { id: 'roadmap', labelKey: 'docs.nav.roadmap', icon: <IcoRoadmap /> },
+    ],
+  },
 ];
+
+const NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 
 /* ── Per-section SEO metadata ──────────────────────────── */
 interface SectionMeta {
@@ -144,72 +246,117 @@ const SECTION_META: Record<SectionId, SectionMeta> = {
 /* ── Section content ───────────────────────────────────── */
 const IntroSection: React.FC = () => {
   const { t } = useTranslation();
+  const localize = useLocalizedHref();
+
+  // Helper to split strong and text for clean feature cards
+  const renderCardText = (key: string, icon: string) => {
+    const text = t(key);
+    const parts = text.split(/<\/strong>:?/);
+    const title = parts[0].replace(/<strong>/, '').trim();
+    const desc = parts[1] ? parts[1].trim() : '';
+    return (
+      <div className="docs-feature-card" key={key}>
+        <h4></h4>
+        <p>{desc}</p>
+      </div>
+    );
+  };
+
   return (
     <div className="docs-section">
-      <span className="docs-label">{t('docs.intro.label')}</span>
       <h1>{t('docs.intro.heading')}</h1>
-      <p>
+      <p className="docs-lead-p">
         <Trans i18nKey="docs.intro.lead" components={{ strong: <strong />, code: <code /> }} />
       </p>
 
-      <h2>{t('docs.intro.whyHeading')}</h2>
-      <ul>
-        <li>
-          <Trans i18nKey="docs.intro.whyNoInstall" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.intro.whyRealEmulation" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.intro.whyInteractive" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.intro.whyOpenSource" components={{ strong: <strong /> }} />
-        </li>
-      </ul>
+      <div className="docs-progress-banner">
+        <span className="progress-value">Nền tảng giả lập trực tuyến: V1.0.0</span>
+        <span className="progress-label">Hỗ trợ đầy đủ AVR & RP2040, QEMU cho ESP32</span>
+      </div>
 
-      <h2>{t('docs.intro.boardsHeading')}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.intro.thBoard')}</th>
-            <th>{t('docs.intro.thCpu')}</th>
-            <th>{t('docs.intro.thEmulator')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.intro.boardArduinoUno')}</td>
-            <td>{t('docs.intro.cpuAtmega328p')}</td>
-            <td>{t('docs.intro.emuAvr8js')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.intro.boardArduinoNano')}</td>
-            <td>{t('docs.intro.cpuAtmega328p')}</td>
-            <td>{t('docs.intro.emuAvr8js')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.intro.boardArduinoMega')}</td>
-            <td>{t('docs.intro.cpuAtmega2560')}</td>
-            <td>{t('docs.intro.emuAvr8js')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.intro.boardPiPico')}</td>
-            <td>{t('docs.intro.cpuRp2040')}</td>
-            <td>{t('docs.intro.emuRp2040js')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.intro.boardEsp32C3')}</td>
-            <td>{t('docs.intro.cpuRv32imc')}</td>
-            <td>{t('docs.intro.emuEsp32C3')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.intro.boardEsp32')}</td>
-            <td>{t('docs.intro.cpuXtensa')}</td>
-            <td>{t('docs.intro.emuQemu')}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>
+        <span className="section-title-icon">⚡</span> {t('docs.intro.whyHeading')}
+      </h2>
+      <div className="docs-feature-grid">
+        {renderCardText('docs.intro.whyNoInstall', '☁️')}
+        {renderCardText('docs.intro.whyRealEmulation', '⚙️')}
+        {renderCardText('docs.intro.whyInteractive', '🔌')}
+        {renderCardText('docs.intro.whyOpenSource', '📂')}
+      </div>
+
+      <h2>
+        <span className="section-title-icon">📋</span> {t('docs.intro.boardsHeading')}
+      </h2>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.intro.thBoard')}</th>
+              <th>{t('docs.intro.thCpu')}</th>
+              <th>{t('docs.intro.thEmulator')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('docs.intro.boardArduinoUno')}</td>
+              <td>{t('docs.intro.cpuAtmega328p')}</td>
+              <td>{t('docs.intro.emuAvr8js')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.intro.boardArduinoNano')}</td>
+              <td>{t('docs.intro.cpuAtmega328p')}</td>
+              <td>{t('docs.intro.emuAvr8js')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.intro.boardArduinoMega')}</td>
+              <td>{t('docs.intro.cpuAtmega2560')}</td>
+              <td>{t('docs.intro.emuAvr8js')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.intro.boardPiPico')}</td>
+              <td>{t('docs.intro.cpuRp2040')}</td>
+              <td>{t('docs.intro.emuRp2040js')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.intro.boardEsp32C3')}</td>
+              <td>{t('docs.intro.cpuRv32imc')}</td>
+              <td>{t('docs.intro.emuEsp32C3')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.intro.boardEsp32')}</td>
+              <td>{t('docs.intro.cpuXtensa')}</td>
+              <td>{t('docs.intro.emuQemu')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">{'<>'}</span> Code Ví dụ
+      </h2>
+      <div className="docs-code-container">
+        <CodeBlock language="cpp">{`void setup() {
+  pinMode(13, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(13, HIGH);
+  delay(1000);
+  digitalWrite(13, LOW);
+  delay(1000);
+}`}</CodeBlock>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">⚠️</span> Hạn chế hiện tại
+      </h2>
+      <div className="docs-limitations">
+        <ul>
+          <li>Mô phỏng ESP32 yêu cầu kết nối với QEMU backend</li>
+          <li>Một số tính năng WiFi/Bluetooth nâng cao đang được phát triển</li>
+          <li>Các cảm biến phức tạp chưa tích hợp đầy đủ trên canvas</li>
+        </ul>
+      </div>
 
       <div className="docs-callout">
         <Trans
@@ -219,6 +366,19 @@ const IntroSection: React.FC = () => {
             a: <a href="https://cvs.local" target="_blank" rel="noopener noreferrer" />,
           }}
         />
+      </div>
+
+      <div className="docs-cta">
+        <Link
+          to={localize('/docs/getting-started')}
+          className="docs-cta-btn"
+          style={{ color: '#fff' }}
+        >
+          <svg viewBox="0 0 24 24" fill="#fff" style={{ color: '#fff' }}>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          {t('docs.intro.startCTA', 'Bắt đầu học ngay')}
+        </Link>
       </div>
     </div>
   );
@@ -276,7 +436,10 @@ uvicorn app.main:app --reload --port 8001`}</CodeBlock>
 npm install
 npm run dev`}</CodeBlock>
       <p>
-        <Trans i18nKey="docs.gettingStarted.option3Step3After" components={{ strong: <strong /> }} />
+        <Trans
+          i18nKey="docs.gettingStarted.option3Step3After"
+          components={{ strong: <strong /> }}
+        />
       </p>
 
       <h3>{t('docs.gettingStarted.option3Step4')}</h3>
@@ -424,7 +587,9 @@ const EmulatorSection: React.FC = () => {
         <Trans
           i18nKey="docs.emulator.avr8Body"
           components={{
-            a: <a href="https://github.com/wokwi/avr8js" target="_blank" rel="noopener noreferrer" />,
+            a: (
+              <a href="https://github.com/wokwi/avr8js" target="_blank" rel="noopener noreferrer" />
+            ),
           }}
         />
       </p>
@@ -505,7 +670,13 @@ cpu.tick();           // advance peripheral timers and counters`}</CodeBlock>
         <Trans
           i18nKey="docs.emulator.rp2040Body"
           components={{
-            a: <a href="https://github.com/wokwi/rp2040js" target="_blank" rel="noopener noreferrer" />,
+            a: (
+              <a
+                href="https://github.com/wokwi/rp2040js"
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            ),
           }}
         />
       </p>
@@ -644,49 +815,57 @@ const ComponentsSection: React.FC = () => {
         <tbody>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#ef4444' }} /> {t('docs.components.colorRed')}
+              <span className="wire-dot" style={{ background: '#ef4444' }} />{' '}
+              {t('docs.components.colorRed')}
             </td>
             <td>{t('docs.components.sigVcc')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#374151' }} /> {t('docs.components.colorBlack')}
+              <span className="wire-dot" style={{ background: '#374151' }} />{' '}
+              {t('docs.components.colorBlack')}
             </td>
             <td>{t('docs.components.sigGnd')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#3b82f6' }} /> {t('docs.components.colorBlue')}
+              <span className="wire-dot" style={{ background: '#3b82f6' }} />{' '}
+              {t('docs.components.colorBlue')}
             </td>
             <td>{t('docs.components.sigAnalog')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#22c55e' }} /> {t('docs.components.colorGreen')}
+              <span className="wire-dot" style={{ background: '#22c55e' }} />{' '}
+              {t('docs.components.colorGreen')}
             </td>
             <td>{t('docs.components.sigDigital')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#a855f7' }} /> {t('docs.components.colorPurple')}
+              <span className="wire-dot" style={{ background: '#a855f7' }} />{' '}
+              {t('docs.components.colorPurple')}
             </td>
             <td>{t('docs.components.sigPwm')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#eab308' }} /> {t('docs.components.colorGold')}
+              <span className="wire-dot" style={{ background: '#eab308' }} />{' '}
+              {t('docs.components.colorGold')}
             </td>
             <td>{t('docs.components.sigI2c')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#f97316' }} /> {t('docs.components.colorOrange')}
+              <span className="wire-dot" style={{ background: '#f97316' }} />{' '}
+              {t('docs.components.colorOrange')}
             </td>
             <td>{t('docs.components.sigSpi')}</td>
           </tr>
           <tr>
             <td>
-              <span className="wire-dot" style={{ background: '#06b6d4' }} /> {t('docs.components.colorCyan')}
+              <span className="wire-dot" style={{ background: '#06b6d4' }} />{' '}
+              {t('docs.components.colorCyan')}
             </td>
             <td>{t('docs.components.sigUsart')}</td>
           </tr>
@@ -1867,13 +2046,19 @@ const RiscVEmulationSection: React.FC = () => {
   const { t } = useTranslation();
   return (
     <div className="docs-section">
-      <span className="docs-label">{t('docs.riscv.label')}</span>
       <h1>{t('docs.riscv.heading')}</h1>
-      <p>
+      <p className="docs-lead-p">
         <Trans i18nKey="docs.riscv.lead" components={{ strong: <strong />, code: <code /> }} />
       </p>
 
-      <h2>{t('docs.riscv.boardsHeading')}</h2>
+      <div className="docs-progress-banner">
+        <span className="progress-value">Hỗ trợ hiện tại: ~90%</span>
+        <span className="progress-label">Hoạt động ổn định</span>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">📋</span> {t('docs.riscv.boardsHeading')}
+      </h2>
       <div className="docs-board-gallery">
         <div className="docs-board-card">
           <img src="/boards/esp32-c3.svg" alt={t('docs.riscv.altEsp32C3')} />
@@ -1888,100 +2073,164 @@ const RiscVEmulationSection: React.FC = () => {
           <span>{t('docs.riscv.boardC3Super')}</span>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.riscv.thBoard')}</th>
-            <th>{t('docs.riscv.thCpu')}</th>
-            <th>{t('docs.riscv.thFlash')}</th>
-            <th>{t('docs.riscv.thRam')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.riscv.boardEsp32C3Name')}</td>
-            <td>{t('docs.riscv.cpuValue')}</td>
-            <td>{t('docs.riscv.flashValue')}</td>
-            <td>{t('docs.riscv.ramValue')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.boardXiaoC3Name')}</td>
-            <td>{t('docs.riscv.cpuValue')}</td>
-            <td>{t('docs.riscv.flashValue')}</td>
-            <td>{t('docs.riscv.ramValue')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.boardC3SuperName')}</td>
-            <td>{t('docs.riscv.cpuValue')}</td>
-            <td>{t('docs.riscv.flashValue')}</td>
-            <td>{t('docs.riscv.ramValue')}</td>
-          </tr>
-        </tbody>
-      </table>
 
-      <h2>{t('docs.riscv.memoryHeading')}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.riscv.thRegion')}</th>
-            <th>{t('docs.riscv.thBaseAddr')}</th>
-            <th>{t('docs.riscv.thSize')}</th>
-            <th>{t('docs.riscv.thDescription')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.riscv.regIrom')}</td>
-            <td>
-              <code>0x42000000</code>
-            </td>
-            <td>{t('docs.riscv.size4mb')}</td>
-            <td>{t('docs.riscv.regIromDesc')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.regDrom')}</td>
-            <td>
-              <code>0x3C000000</code>
-            </td>
-            <td>{t('docs.riscv.size4mb')}</td>
-            <td>{t('docs.riscv.regDromDesc')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.regDram')}</td>
-            <td>
-              <code>0x3FC80000</code>
-            </td>
-            <td>{t('docs.riscv.size384kb')}</td>
-            <td>{t('docs.riscv.regDramDesc')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.regIram')}</td>
-            <td>
-              <code>0x4037C000</code>
-            </td>
-            <td>{t('docs.riscv.size384kb')}</td>
-            <td>{t('docs.riscv.regIramDesc')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.regUart')}</td>
-            <td>
-              <code>0x60000000</code>
-            </td>
-            <td>{t('docs.riscv.size1kb')}</td>
-            <td>{t('docs.riscv.regUartDesc')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.riscv.regGpio')}</td>
-            <td>
-              <code>0x60004000</code>
-            </td>
-            <td>{t('docs.riscv.size512b')}</td>
-            <td>{t('docs.riscv.regGpioDesc')}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.riscv.thBoard')}</th>
+              <th>{t('docs.riscv.thCpu')}</th>
+              <th>{t('docs.riscv.thFlash')}</th>
+              <th>{t('docs.riscv.thRam')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('docs.riscv.boardEsp32C3Name')}</td>
+              <td>{t('docs.riscv.cpuValue')}</td>
+              <td>{t('docs.riscv.flashValue')}</td>
+              <td>{t('docs.riscv.ramValue')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.boardXiaoC3Name')}</td>
+              <td>{t('docs.riscv.cpuValue')}</td>
+              <td>{t('docs.riscv.flashValue')}</td>
+              <td>{t('docs.riscv.ramValue')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.boardC3SuperName')}</td>
+              <td>{t('docs.riscv.cpuValue')}</td>
+              <td>{t('docs.riscv.flashValue')}</td>
+              <td>{t('docs.riscv.ramValue')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h2>{t('docs.riscv.isaHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">⚡</span> Tính năng nổi bật
+      </h2>
+      <div className="docs-feature-grid">
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">⚙️</span> Kiến trúc RV32IMC
+          </h4>
+          <p>CPU RISC-V RV32IMC 32-bit chạy tại tần số 160 MHz</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🗺️</span> Bản đồ bộ nhớ
+          </h4>
+          <p>Mô phỏng đầy đủ phân vùng IROM, DROM, DRAM, IRAM</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🔌</span> Ngoại vi và GPIO
+          </h4>
+          <p>Hỗ trợ GPIO input/output, thanh ghi kích hoạt và UART0 FIFO</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🔸</span> Tập lệnh mở rộng M & C
+          </h4>
+          <p>Hỗ trợ đầy đủ tập lệnh nhân/chia (M) và lệnh nén 16-bit (C)</p>
+        </div>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">{'<>'}</span> Code Ví dụ
+      </h2>
+      <div className="docs-code-container">
+        <CodeBlock language="cpp">{`void setup() {
+  Serial.begin(115200);
+  Serial.println("Hello from ESP32-C3 RISC-V!");
+}
+
+void loop() {
+  delay(1000);
+  Serial.println("Running RV32IMC simulation...");
+}`}</CodeBlock>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">⚠️</span> Hạn chế hiện tại
+      </h2>
+      <div className="docs-limitations">
+        <ul>
+          <li>Hỗ trợ kết nối WiFi trên ESP32-C3 còn hạn chế</li>
+          <li>Một số thanh ghi điều khiển RISC-V đặc thù chưa giả lập hoàn toàn</li>
+        </ul>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">🧠</span> {t('docs.riscv.memoryHeading')}
+      </h2>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.riscv.thRegion')}</th>
+              <th>{t('docs.riscv.thBaseAddr')}</th>
+              <th>{t('docs.riscv.thSize')}</th>
+              <th>{t('docs.riscv.thDescription')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('docs.riscv.regIrom')}</td>
+              <td>
+                <code>0x42000000</code>
+              </td>
+              <td>{t('docs.riscv.size4mb')}</td>
+              <td>{t('docs.riscv.regIromDesc')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.regDrom')}</td>
+              <td>
+                <code>0x3C000000</code>
+              </td>
+              <td>{t('docs.riscv.size4mb')}</td>
+              <td>{t('docs.riscv.regDromDesc')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.regDram')}</td>
+              <td>
+                <code>0x3FC80000</code>
+              </td>
+              <td>{t('docs.riscv.size384kb')}</td>
+              <td>{t('docs.riscv.regDramDesc')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.regIram')}</td>
+              <td>
+                <code>0x4037C000</code>
+              </td>
+              <td>{t('docs.riscv.size384kb')}</td>
+              <td>{t('docs.riscv.regIramDesc')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.regUart')}</td>
+              <td>
+                <code>0x60000000</code>
+              </td>
+              <td>{t('docs.riscv.size1kb')}</td>
+              <td>{t('docs.riscv.regUartDesc')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.riscv.regGpio')}</td>
+              <td>
+                <code>0x60004000</code>
+              </td>
+              <td>{t('docs.riscv.size512b')}</td>
+              <td>{t('docs.riscv.regGpioDesc')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">📚</span> {t('docs.riscv.isaHeading')}
+      </h2>
       <ul>
         <li>
           <Trans i18nKey="docs.riscv.isaRv32i" components={{ strong: <strong /> }} />
@@ -1994,7 +2243,9 @@ const RiscVEmulationSection: React.FC = () => {
         </li>
       </ul>
 
-      <h2>{t('docs.riscv.compileFlowHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">🔄</span> {t('docs.riscv.compileFlowHeading')}
+      </h2>
       <p>
         <Trans i18nKey="docs.riscv.compileFlowLead" components={{ strong: <strong /> }} />
       </p>
@@ -2017,98 +2268,108 @@ const RiscVEmulationSection: React.FC = () => {
         <li>{t('docs.riscv.compileStep5')}</li>
       </ol>
 
-      <h2>{t('docs.riscv.gpioHeading')}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.riscv.thRegister')}</th>
-            <th>{t('docs.riscv.thOffset')}</th>
-            <th>{t('docs.riscv.thDescription')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <code>GPIO_OUT_REG</code>
-            </td>
-            <td>
-              <code>+0x04</code>
-            </td>
-            <td>{t('docs.riscv.regOutDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>GPIO_OUT_W1TS</code>
-            </td>
-            <td>
-              <code>+0x08</code>
-            </td>
-            <td>{t('docs.riscv.regW1tsDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>GPIO_OUT_W1TC</code>
-            </td>
-            <td>
-              <code>+0x0C</code>
-            </td>
-            <td>{t('docs.riscv.regW1tcDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>GPIO_ENABLE_REG</code>
-            </td>
-            <td>
-              <code>+0x20</code>
-            </td>
-            <td>{t('docs.riscv.regEnableDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>GPIO_IN_REG</code>
-            </td>
-            <td>
-              <code>+0x3C</code>
-            </td>
-            <td>{t('docs.riscv.regInDesc')}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>
+        <span className="section-title-icon">🛠️</span> {t('docs.riscv.gpioHeading')}
+      </h2>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.riscv.thRegister')}</th>
+              <th>{t('docs.riscv.thOffset')}</th>
+              <th>{t('docs.riscv.thDescription')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <code>GPIO_OUT_REG</code>
+              </td>
+              <td>
+                <code>+0x04</code>
+              </td>
+              <td>{t('docs.riscv.regOutDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>GPIO_OUT_W1TS</code>
+              </td>
+              <td>
+                <code>+0x08</code>
+              </td>
+              <td>{t('docs.riscv.regW1tsDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>GPIO_OUT_W1TC</code>
+              </td>
+              <td>
+                <code>+0x0C</code>
+              </td>
+              <td>{t('docs.riscv.regW1tcDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>GPIO_ENABLE_REG</code>
+              </td>
+              <td>
+                <code>+0x20</code>
+              </td>
+              <td>{t('docs.riscv.regEnableDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>GPIO_IN_REG</code>
+              </td>
+              <td>
+                <code>+0x3C</code>
+              </td>
+              <td>{t('docs.riscv.regInDesc')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h2>{t('docs.riscv.uart0Heading')}</h2>
+      <h2>
+        <span className="section-title-icon">📡</span> {t('docs.riscv.uart0Heading')}
+      </h2>
       <p>
         <Trans i18nKey="docs.riscv.uart0Body" components={{ code: <code /> }} />
       </p>
 
-      <h2>{t('docs.riscv.sourceFilesHeading')}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.riscv.thFile')}</th>
-            <th>{t('docs.riscv.thRole')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <code>simulation/RiscVCore.ts</code>
-            </td>
-            <td>{t('docs.riscv.fileRiscVCoreDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>simulation/Esp32C3Simulator.ts</code>
-            </td>
-            <td>{t('docs.riscv.fileEsp32C3SimDesc')}</td>
-          </tr>
-          <tr>
-            <td>
-              <code>utils/esp32ImageParser.ts</code>
-            </td>
-            <td>{t('docs.riscv.fileImageParserDesc')}</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>
+        <span className="section-title-icon">📂</span> {t('docs.riscv.sourceFilesHeading')}
+      </h2>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.riscv.thFile')}</th>
+              <th>{t('docs.riscv.thRole')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <code>simulation/RiscVCore.ts</code>
+              </td>
+              <td>{t('docs.riscv.fileRiscVCoreDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>simulation/Esp32C3Simulator.ts</code>
+              </td>
+              <td>{t('docs.riscv.fileEsp32C3SimDesc')}</td>
+            </tr>
+            <tr>
+              <td>
+                <code>utils/esp32ImageParser.ts</code>
+              </td>
+              <td>{t('docs.riscv.fileImageParserDesc')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div className="docs-callout">
         <Trans
@@ -2125,6 +2386,15 @@ const RiscVEmulationSection: React.FC = () => {
           }}
         />
       </div>
+
+      <div className="docs-cta">
+        <Link to="/editor?board=esp32-c3" className="docs-cta-btn" style={{ color: '#fff' }}>
+          <svg viewBox="0 0 24 24" fill="#fff" style={{ color: '#fff' }}>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Thử ngay ESP32-C3 Emulator
+        </Link>
+      </div>
     </div>
   );
 };
@@ -2133,17 +2403,23 @@ const Esp32EmulationSection: React.FC = () => {
   const { t } = useTranslation();
   return (
     <div className="docs-section">
-      <span className="docs-label">{t('docs.esp32.label')}</span>
       <h1>{t('docs.esp32.heading')}</h1>
-      <p>
+      <p className="docs-lead-p">
         <Trans i18nKey="docs.esp32.lead" components={{ strong: <strong /> }} />
       </p>
+
+      <div className="docs-progress-banner">
+        <span className="progress-value">Hỗ trợ hiện tại: ~85%</span>
+        <span className="progress-label">Đang được phát triển tích cực</span>
+      </div>
 
       <div className="docs-callout">
         <Trans i18nKey="docs.esp32.noteCallout" components={{ strong: <strong /> }} />
       </div>
 
-      <h2>{t('docs.esp32.howHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">⚙️</span> {t('docs.esp32.howHeading')}
+      </h2>
       <ol>
         <li>
           <Trans i18nKey="docs.esp32.how1" components={{ code: <code /> }} />
@@ -2156,7 +2432,9 @@ const Esp32EmulationSection: React.FC = () => {
         <li>{t('docs.esp32.how5')}</li>
       </ol>
 
-      <h2>{t('docs.esp32.boardsHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">📋</span> {t('docs.esp32.boardsHeading')}
+      </h2>
       <div className="docs-board-gallery">
         <div className="docs-board-card">
           <img src="/boards/esp32-devkit-c-v4.svg" alt={t('docs.esp32.altEsp32Devkit')} />
@@ -2179,54 +2457,98 @@ const Esp32EmulationSection: React.FC = () => {
           <span>{t('docs.esp32.boardNanoEsp32')}</span>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.esp32.thBoard')}</th>
-            <th>{t('docs.esp32.thCpu')}</th>
-            <th>{t('docs.esp32.thEmulation')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.esp32.boardEsp32')}</td>
-            <td>{t('docs.esp32.cpuLx6')}</td>
-            <td>{t('docs.esp32.emuQemu')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.esp32.boardEsp32S3Name')}</td>
-            <td>{t('docs.esp32.cpuLx7')}</td>
-            <td>{t('docs.esp32.emuQemu')}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.esp32.thBoard')}</th>
+              <th>{t('docs.esp32.thCpu')}</th>
+              <th>{t('docs.esp32.thEmulation')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('docs.esp32.boardEsp32')}</td>
+              <td>{t('docs.esp32.cpuLx6')}</td>
+              <td>{t('docs.esp32.emuQemu')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.esp32.boardEsp32S3Name')}</td>
+              <td>{t('docs.esp32.cpuLx7')}</td>
+              <td>{t('docs.esp32.emuQemu')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-      <h2>{t('docs.esp32.peripheralsHeading')}</h2>
-      <ul>
-        <li>
-          <Trans i18nKey="docs.esp32.perGpio" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans
-            i18nKey="docs.esp32.perUart"
-            components={{ strong: <strong />, code: <code /> }}
-          />
-        </li>
-        <li>
-          <Trans i18nKey="docs.esp32.perI2cSpi" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.esp32.perRmt" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.esp32.perLedc" components={{ strong: <strong /> }} />
-        </li>
-        <li>
-          <Trans i18nKey="docs.esp32.perWifi" components={{ strong: <strong /> }} />
-        </li>
-      </ul>
+      <h2>
+        <span className="section-title-icon">⚡</span> Tính năng nổi bật
+      </h2>
+      <div className="docs-feature-grid">
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">📶</span> WiFi + SoftAP
+          </h4>
+          <p>Hỗ trợ Station và Access Point mode với mạng ảo</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🔹</span> Bluetooth Low Energy
+          </h4>
+          <p>Advertising, GATT Server/Client cơ bản</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">⚙️</span> Dual Core Xtensa
+          </h4>
+          <p>Chạy song song trên 2 core LX6/LX7</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🔌</span> GPIO, ADC, PWM, I2C, SPI
+          </h4>
+          <p>Hỗ trợ đầy đủ các giao thức phổ biến</p>
+        </div>
+      </div>
 
-      <h2>{t('docs.esp32.requirementsHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">{'<>'}</span> Code Ví dụ
+      </h2>
+      <div className="docs-code-container">
+        <CodeBlock language="cpp">{`#include <WiFi.h>
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.begin("CVS-WiFi", "12345678");
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\\nConnected!");
+}
+
+void loop() {
+  Serial.println("IP: " + WiFi.localIP().toString());
+  delay(1500);
+}`}</CodeBlock>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">⚠️</span> Hạn chế hiện tại
+      </h2>
+      <div className="docs-limitations">
+        <ul>
+          <li>Camera (ESP32-CAM) chưa được hỗ trợ</li>
+          <li>Touch Sensor & Hall Sensor đang phát triển</li>
+          <li>Deep Sleep / Power Management chưa hoàn thiện</li>
+          <li>Một số peripheral ngoại vi đặc biệt chưa đầy đủ</li>
+        </ul>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">🛠️</span> {t('docs.esp32.requirementsHeading')}
+      </h2>
       <p>
         <Trans
           i18nKey="docs.esp32.requirementsBody"
@@ -2252,6 +2574,15 @@ const Esp32EmulationSection: React.FC = () => {
           }}
         />
       </div>
+
+      <div className="docs-cta">
+        <Link to="/editor?board=esp32" className="docs-cta-btn" style={{ color: '#fff' }}>
+          <svg viewBox="0 0 24 24" fill="#fff" style={{ color: '#fff' }}>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Thử ngay ESP32 Emulator
+        </Link>
+      </div>
     </div>
   );
 };
@@ -2261,18 +2592,30 @@ const Rp2040EmulationSection: React.FC = () => {
   const { t } = useTranslation();
   return (
     <div className="docs-section">
-      <span className="docs-label">{t('docs.rp2040.label')}</span>
       <h1>{t('docs.rp2040.heading')}</h1>
-      <p>
+      <p className="docs-lead-p">
         <Trans
           i18nKey="docs.rp2040.lead"
           components={{
-            a: <a href="https://github.com/wokwi/rp2040js" target="_blank" rel="noopener noreferrer" />,
+            a: (
+              <a
+                href="https://github.com/wokwi/rp2040js"
+                target="_blank"
+                rel="noopener noreferrer"
+              />
+            ),
           }}
         />
       </p>
 
-      <h2>{t('docs.rp2040.boardsHeading')}</h2>
+      <div className="docs-progress-banner">
+        <span className="progress-value">Hỗ trợ hiện tại: ~80%</span>
+        <span className="progress-label">Đang hoạt động ổn định trong trình duyệt</span>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">📋</span> {t('docs.rp2040.boardsHeading')}
+      </h2>
       <div className="docs-board-gallery">
         <div className="docs-board-card">
           <img src="/boards/pi-pico.svg" alt={t('docs.rp2040.altPico')} />
@@ -2283,33 +2626,101 @@ const Rp2040EmulationSection: React.FC = () => {
           <span>{t('docs.rp2040.boardPicoW')}</span>
         </div>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.rp2040.thBoard')}</th>
-            <th>{t('docs.rp2040.thFqbn')}</th>
-            <th>{t('docs.rp2040.thBuiltinLed')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.rp2040.boardPico')}</td>
-            <td>
-              <code>rp2040:rp2040:rpipico</code>
-            </td>
-            <td>{t('docs.rp2040.ledGpio25')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.boardPicoW')}</td>
-            <td>
-              <code>rp2040:rp2040:rpipicow</code>
-            </td>
-            <td>{t('docs.rp2040.ledCyw43')}</td>
-          </tr>
-        </tbody>
-      </table>
 
-      <h2>{t('docs.rp2040.binaryHeading')}</h2>
+      <div className="docs-table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>{t('docs.rp2040.thBoard')}</th>
+              <th>{t('docs.rp2040.thFqbn')}</th>
+              <th>{t('docs.rp2040.thBuiltinLed')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{t('docs.rp2040.boardPico')}</td>
+              <td>
+                <code>rp2040:rp2040:rpipico</code>
+              </td>
+              <td>{t('docs.rp2040.ledGpio25')}</td>
+            </tr>
+            <tr>
+              <td>{t('docs.rp2040.boardPicoW')}</td>
+              <td>
+                <code>rp2040:rp2040:rpipicow</code>
+              </td>
+              <td>{t('docs.rp2040.ledCyw43')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">⚡</span> Tính năng nổi bật
+      </h2>
+      <div className="docs-feature-grid">
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">⚙️</span> ARM Cortex-M0+
+          </h4>
+          <p>Mô phỏng 2 nhân Cortex-M0+ thực tế tại tần số 133 MHz trong trình duyệt</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">⚡</span> Tối ưu hóa WFI
+          </h4>
+          <p>Tự động nhảy thời gian khi CPU nhàn rỗi giúp giảm đáng kể mức chiếm dụng CPU</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🔌</span> Thiết bị Ngoại vi
+          </h4>
+          <p>Hỗ trợ GPIO, UART, 12-bit ADC, I2C, SPI loopback và Hardware Timers</p>
+        </div>
+        <div className="docs-feature-card">
+          <h4>
+            <span className="card-icon">🌐</span> Chạy Web Worker
+          </h4>
+          <p>Trình giả lập chạy mượt mà trong Web Worker riêng biệt không gây đơ giao diện</p>
+        </div>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">{'<>'}</span> Code Ví dụ
+      </h2>
+      <div className="docs-code-container">
+        <CodeBlock language="cpp">{`void setup() {
+  Serial.begin(115200);
+  pinMode(25, OUTPUT);
+}
+
+void loop() {
+  digitalWrite(25, HIGH);
+  delay(1000);
+  digitalWrite(25, LOW);
+  delay(1000);
+  Serial.println("Pico built-in LED blinked!");
+}`}</CodeBlock>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">⚠️</span> Hạn chế hiện tại
+      </h2>
+      <div className="docs-limitations">
+        <ul>
+          <li>{t('docs.rp2040.limit1')}</li>
+          <li>{t('docs.rp2040.limit2')}</li>
+          <li>{t('docs.rp2040.limit3')}</li>
+          <li>{t('docs.rp2040.limit4')}</li>
+          <li>
+            <Trans i18nKey="docs.rp2040.limit5" components={{ code: <code /> }} />
+          </li>
+        </ul>
+      </div>
+
+      <h2>
+        <span className="section-title-icon">💾</span> {t('docs.rp2040.binaryHeading')}
+      </h2>
       <p>
         <Trans i18nKey="docs.rp2040.binaryBody1" components={{ code: <code /> }} />
       </p>
@@ -2317,98 +2728,36 @@ const Rp2040EmulationSection: React.FC = () => {
         <Trans i18nKey="docs.rp2040.binaryBody2" components={{ code: <code /> }} />
       </p>
 
-      <h2>{t('docs.rp2040.peripheralsHeading')}</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('docs.rp2040.thPeripheral')}</th>
-            <th>{t('docs.rp2040.thSupport')}</th>
-            <th>{t('docs.rp2040.thNotes')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{t('docs.rp2040.perGpio')}</td>
-            <td>{t('docs.rp2040.supFull')}</td>
-            <td>{t('docs.rp2040.perGpioNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perUart')}</td>
-            <td>{t('docs.rp2040.supFull')}</td>
-            <td>{t('docs.rp2040.perUartNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perAdc')}</td>
-            <td>{t('docs.rp2040.supFull')}</td>
-            <td>{t('docs.rp2040.perAdcNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perI2c')}</td>
-            <td>{t('docs.rp2040.supPartial')}</td>
-            <td>{t('docs.rp2040.perI2cNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perSpi')}</td>
-            <td>{t('docs.rp2040.supLoopback')}</td>
-            <td>{t('docs.rp2040.perSpiNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perPwm')}</td>
-            <td>{t('docs.rp2040.supFreqOnly')}</td>
-            <td>{t('docs.rp2040.perPwmNotes')}</td>
-          </tr>
-          <tr>
-            <td>{t('docs.rp2040.perTimer')}</td>
-            <td>{t('docs.rp2040.supFull')}</td>
-            <td>
-              <Trans i18nKey="docs.rp2040.perTimerNotes" components={{ code: <code /> }} />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>{t('docs.rp2040.wfiHeading')}</h2>
+      <h2>
+        <span className="section-title-icon">🔄</span> {t('docs.rp2040.wfiHeading')}
+      </h2>
       <p>
-        <Trans
-          i18nKey="docs.rp2040.wfiBody"
-          components={{ strong: <strong />, code: <code /> }}
-        />
+        <Trans i18nKey="docs.rp2040.wfiBody" components={{ strong: <strong /> }} />
       </p>
 
-      <h2>{t('docs.rp2040.simLoopHeading')}</h2>
-      <p>
-        <Trans
-          i18nKey="docs.rp2040.simLoopBody"
-          components={{ strong: <strong />, code: <code /> }}
-        />
-      </p>
-
-      <h2>{t('docs.rp2040.limitsHeading')}</h2>
-      <ul>
-        <li>{t('docs.rp2040.limit1')}</li>
-        <li>{t('docs.rp2040.limit2')}</li>
-        <li>{t('docs.rp2040.limit3')}</li>
-        <li>{t('docs.rp2040.limit4')}</li>
-        <li>
-          <Trans i18nKey="docs.rp2040.limit5" components={{ code: <code /> }} />
-        </li>
-      </ul>
-
-      <h2>{t('docs.rp2040.fullDocsHeading')}</h2>
-      <p>
+      <div className="docs-callout">
         <Trans
           i18nKey="docs.rp2040.fullDocsBody"
           components={{
             a: (
               <a
-                href="https://github.com/viethung20101/dtu-electronics/blob/master/docs/RP2040_EMULATION.md"
+                href={`${GITHUB_URL}/blob/master/docs/RP2040_EMULATION.md`}
                 target="_blank"
                 rel="noopener noreferrer"
               />
             ),
           }}
         />
-      </p>
+      </div>
+
+      <div className="docs-cta">
+        <Link to="/editor?board=pico" className="docs-cta-btn" style={{ color: '#fff' }}>
+          <svg viewBox="0 0 24 24" fill="#fff" style={{ color: '#fff' }}>
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Thử ngay RP2040 Emulator
+        </Link>
+      </div>
     </div>
   );
 };
@@ -2466,10 +2815,7 @@ const RaspberryPi3EmulationSection: React.FC = () => {
 
       <h2>{t('docs.rpi3.shimHeading')}</h2>
       <p>
-        <Trans
-          i18nKey="docs.rpi3.shimBody1"
-          components={{ strong: <strong />, code: <code /> }}
-        />
+        <Trans i18nKey="docs.rpi3.shimBody1" components={{ strong: <strong />, code: <code /> }} />
       </p>
       <p>
         <Trans i18nKey="docs.rpi3.shimBody2" components={{ code: <code /> }} />
@@ -2530,43 +2876,37 @@ const BuildQemuSection: React.FC = () => {
       <span className="docs-label">Self-hosting</span>
       <h1>Build QEMU libraries from source</h1>
       <p>
-        CVS ships with prebuilt <code>libqemu-xtensa.so</code> and{' '}
-        <code>libqemu-riscv32.so</code> so ESP32 / ESP32-S3 / ESP32-C3
-        simulation works the moment you pull the docker image. The
-        prebuilts are a convenience — CVS is <strong>AGPLv3</strong>{' '}
-        and so is the QEMU fork it depends on, which means you can
-        always rebuild the libraries yourself from source and run
+        CVS ships with prebuilt <code>libqemu-xtensa.so</code> and <code>libqemu-riscv32.so</code>{' '}
+        so ESP32 / ESP32-S3 / ESP32-C3 simulation works the moment you pull the docker image. The
+        prebuilts are a convenience — CVS is <strong>AGPLv3</strong> and so is the QEMU fork it
+        depends on, which means you can always rebuild the libraries yourself from source and run
         those instead.
       </p>
 
       <h2>Why you might want to</h2>
       <ul>
         <li>
-          <strong>Audit the supply chain.</strong> Regulated deployments
-          often require that every shared object on the box was built
-          from a known-good source tree.
+          <strong>Audit the supply chain.</strong> Regulated deployments often require that every
+          shared object on the box was built from a known-good source tree.
         </li>
         <li>
-          <strong>Patch QEMU.</strong> Add a peripheral the upstream
-          fork doesn't emulate, or backport a fix from mainline QEMU.
+          <strong>Patch QEMU.</strong> Add a peripheral the upstream fork doesn't emulate, or
+          backport a fix from mainline QEMU.
         </li>
         <li>
-          <strong>You're on an unusual platform.</strong> We currently
-          publish Linux x86_64, Linux ARM64, macOS ARM64 and Windows
-          x86_64. BSDs, exotic libc, macOS Intel — build your own.
+          <strong>You're on an unusual platform.</strong> We currently publish Linux x86_64, Linux
+          ARM64, macOS ARM64 and Windows x86_64. BSDs, exotic libc, macOS Intel — build your own.
         </li>
         <li>
-          <strong>Trust nothing.</strong> A valid reason. Drop our
-          binaries, rebuild from sources you've audited, and the
-          chain is your tree only.
+          <strong>Trust nothing.</strong> A valid reason. Drop our binaries, rebuild from sources
+          you've audited, and the chain is your tree only.
         </li>
       </ul>
 
       <h2>The short version</h2>
-      <p>
-        On a Linux box with a working C toolchain:
-      </p>
-      <pre><code>{`git clone https://github.com/lcgamboa/qemu.git
+      <p>On a Linux box with a working C toolchain:</p>
+      <pre>
+        <code>{`git clone https://github.com/lcgamboa/qemu.git
 cd qemu
 
 # ESP32 (Xtensa)
@@ -2582,24 +2922,22 @@ mkdir build-riscv32 && cd build-riscv32
 ../configure --target-list=riscv32-softmmu --enable-shared-lib \\
              --disable-werror --disable-tools --disable-docs
 ninja
-# → produces libqemu-riscv32.so (~45 MB)`}</code></pre>
+# → produces libqemu-riscv32.so (~45 MB)`}</code>
+      </pre>
 
       <p>
-        Drop both <code>.so</code> files into <code>/app/lib/</code>{' '}
-        inside the running CVS container (or whatever host path you
-        bind-mount to it) and restart. The backend dlopens whichever
-        library is on disk on the next simulation start, so this
-        replaces the shipped binaries cleanly.
+        Drop both <code>.so</code> files into <code>/app/lib/</code> inside the running CVS
+        container (or whatever host path you bind-mount to it) and restart. The backend dlopens
+        whichever library is on disk on the next simulation start, so this replaces the shipped
+        binaries cleanly.
       </p>
 
       <h2>The full guide</h2>
       <p>
-        Step-by-step build instructions, dependency lists per OS
-        (Debian / Arch / macOS), the canonical commit ID we anchor the
-        prebuilts to, troubleshooting for the common configure / ninja
-        failures, and the licensing notes (QEMU is GPL-2.0, CVS is
-        AGPLv3, the dlopen boundary keeps them orthogonal) live in the
-        full document:
+        Step-by-step build instructions, dependency lists per OS (Debian / Arch / macOS), the
+        canonical commit ID we anchor the prebuilts to, troubleshooting for the common configure /
+        ninja failures, and the licensing notes (QEMU is GPL-2.0, CVS is AGPLv3, the dlopen boundary
+        keeps them orthogonal) live in the full document:
       </p>
       <p>
         <a
@@ -2613,21 +2951,14 @@ ninja
 
       <h2>Or use the prebuilts</h2>
       <p>
-        If you don't have a 15-30 minute build in you, the
-        sha256-pinned prebuilts are available at{' '}
-        <a
-          href="https://cvs.local/license/signup"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        If you don't have a 15-30 minute build in you, the sha256-pinned prebuilts are available at{' '}
+        <a href="https://cvs.local/license/signup" target="_blank" rel="noopener noreferrer">
           cvs.local/license/signup
         </a>{' '}
-        (free personal-use key, takes a minute), and the existing
-        public release at <code>github.com/viethung20101/dtu-electronics
-        /releases/tag/qemu-prebuilt</code> still serves the same files
-        byte-for-byte. Both produce identical libraries to what this
-        guide builds — there's no "blessed" version, just convenience
-        choices.
+        (free personal-use key, takes a minute), and the existing public release at{' '}
+        <code>github.com/viethung20101/dtu-electronics /releases/tag/qemu-prebuilt</code> still
+        serves the same files byte-for-byte. Both produce identical libraries to what this guide
+        builds — there's no "blessed" version, just convenience choices.
       </p>
     </div>
   );
@@ -2786,86 +3117,49 @@ export const DocsPage: React.FC = () => {
 
   return (
     <div className="docs-page">
-      <AppHeader />
-      <div className="docs-mobile-bar">
-        <button
-          className="docs-sidebar-toggle"
-          onClick={() => setSidebarOpen((v) => !v)}
-          aria-label={t('docs.toggleSidebar')}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </button>
-        <span className="docs-mobile-bar-title">{t('docs.pageTitle')}</span>
-      </div>
+      <div className="docs-ellipse-left" />
+      <div className="docs-ellipse-right" />
+      <img src={IconVectorHero} className="docs-vector docs-vector-left" alt="" />
+      <img src={IconVectorFeatures} className="docs-vector docs-vector-right" alt="" />
 
-      <div className="docs-body">
-        {/* Sidebar */}
-        <aside className={`docs-sidebar${sidebarOpen ? ' docs-sidebar--open' : ''}`}>
-          <div className="docs-sidebar-title">{t('docs.pageTitle')}</div>
-          <nav className="docs-sidebar-nav">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.id}
-                to={localize(`/docs/${item.id}`)}
-                className={`docs-sidebar-item${activeSection === item.id ? ' docs-sidebar-item--active' : ''}`}
-                onClick={() => setSidebarOpen(false)}
-              >
-                {t(item.labelKey)}
-              </Link>
-            ))}
-          </nav>
-          <div className="docs-sidebar-divider" />
-          <div className="docs-sidebar-title docs-sidebar-title--pages">{t('docs.pages')}</div>
-          <nav className="docs-sidebar-nav">
-            <Link
-              to={localize('/')}
-              className="docs-sidebar-item docs-sidebar-link"
-              onClick={() => setSidebarOpen(false)}
-            >
-              {t('docs.pagesNav.home')}
-            </Link>
-            <Link
-              to={localize('/editor')}
-              className="docs-sidebar-item docs-sidebar-link"
-              onClick={() => setSidebarOpen(false)}
-            >
-              {t('docs.pagesNav.editor')}
-            </Link>
-            <Link
-              to={localize('/examples')}
-              className="docs-sidebar-item docs-sidebar-link"
-              onClick={() => setSidebarOpen(false)}
-            >
-              {t('docs.pagesNav.examples')}
-            </Link>
-          </nav>
-          <div className="docs-sidebar-footer">
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="docs-sidebar-gh"
-            >
-              <IcoGitHub /> {t('docs.viewOnGitHub')}
-            </a>
-          </div>
-        </aside>
+      <div className="docs-container-centered">
+        <AppHeader />
+        <div className="docs-mobile-bar">
+          <span className="docs-mobile-bar-title">{t('docs.pageTitle')}</span>
+        </div>
 
-        {/* Main content */}
-        <main className="docs-main">
-          <ActiveContent />
+        <div className="docs-body">
+          {/* Sidebar */}
+          <aside className={`docs-sidebar${sidebarOpen ? ' docs-sidebar--open' : ''}`}>
+            <div className="docs-sidebar-brand">CVS Emulator</div>
+            <nav className="docs-sidebar-nav">
+              {NAV_GROUPS.map((group) => (
+                <div key={group.labelKey} className="docs-sidebar-group">
+                  <div className="docs-sidebar-group-title">{t(group.labelKey)}</div>
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.id}
+                      to={localize(`/docs/${item.id}`)}
+                      className={`docs-sidebar-item${activeSection === item.id ? ' docs-sidebar-item--active' : ''}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      {item.icon}
+                      <span>{t(item.labelKey)}</span>
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </nav>
+          </aside>
 
-          {/* Prev / Next navigation */}
+          {/* Main content */}
+          <main className="docs-main">
+            <ActiveContent />
+          </main>
+        </div>
+
+        {/* Prev / Next navigation */}
+        <div className="docs-pagination-container">
           <div className="docs-pagination">
             {activeIdx > 0 && (
               <Link
@@ -2886,7 +3180,7 @@ export const DocsPage: React.FC = () => {
               </Link>
             )}
           </div>
-        </main>
+        </div>
       </div>
     </div>
   );

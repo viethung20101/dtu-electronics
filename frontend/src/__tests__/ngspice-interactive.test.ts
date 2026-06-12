@@ -32,20 +32,20 @@ const hasWorker = typeof Worker !== 'undefined';
 
 describe.skipIf(!hasWorker)('NgSpiceInteractive — Phase 1a POC', () => {
   it('loads the WASM and runs a simple .op analysis', async () => {
-    const { NgSpiceInteractive } = await import(
-      '../simulation/spice/wasm/NgSpiceInteractive'
-    );
+    const { NgSpiceInteractive } = await import('../simulation/spice/wasm/NgSpiceInteractive');
     const ng = new NgSpiceInteractive();
     try {
       await ng.init();
-      await ng.loadNetlist(`
+      await ng.loadNetlist(
+        `
 * simple voltage divider
 Vsrc in 0 DC 5
 R1 in mid 1k
 R2 mid 0 1k
 .op
 .end
-      `.trim());
+      `.trim(),
+      );
       const result = await ng.command('op');
       expect(result.rc).toBe(0);
 
@@ -58,20 +58,20 @@ R2 mid 0 1k
   }, 30_000);
 
   it('handles a transient analysis and reads the time-series', async () => {
-    const { NgSpiceInteractive } = await import(
-      '../simulation/spice/wasm/NgSpiceInteractive'
-    );
+    const { NgSpiceInteractive } = await import('../simulation/spice/wasm/NgSpiceInteractive');
     const ng = new NgSpiceInteractive();
     try {
       await ng.init();
-      await ng.loadNetlist(`
+      await ng.loadNetlist(
+        `
 * RC step response
 Vsrc in 0 DC 5
 R1 in cap 1k
 C1 cap 0 1u
 .tran 100us 5ms uic
 .end
-      `.trim());
+      `.trim(),
+      );
       await ng.command('tran');
 
       const vcap = await ng.readVec('v(cap)');
@@ -87,19 +87,19 @@ C1 cap 0 1u
   }, 30_000);
 
   it('alters a source between transient phases (mixed-mode workaround)', async () => {
-    const { NgSpiceInteractive } = await import(
-      '../simulation/spice/wasm/NgSpiceInteractive'
-    );
+    const { NgSpiceInteractive } = await import('../simulation/spice/wasm/NgSpiceInteractive');
     const ng = new NgSpiceInteractive();
     try {
       await ng.init();
-      await ng.loadNetlist(`
+      await ng.loadNetlist(
+        `
 Vsrc in 0 DC 5
 R1 in cap 1k
 C1 cap 0 1u
 .tran 100us 5ms uic
 .end
-      `.trim());
+      `.trim(),
+      );
       // Run with Vsrc=5V
       await ng.command('tran');
       const v1 = await ng.readVec('v(cap)');

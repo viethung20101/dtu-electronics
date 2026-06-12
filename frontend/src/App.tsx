@@ -111,7 +111,7 @@ function App() {
               <Route key="root" path="/" element={r.element} />
             ) : (
               <Route key={r.path} path={`/${r.path}`} element={r.element} />
-            )
+            ),
           )}
 
           {/*
@@ -126,12 +126,8 @@ function App() {
                 r.index ? (
                   <Route key={`${locale}-root`} index element={r.element} />
                 ) : (
-                  <Route
-                    key={`${locale}-${r.path}`}
-                    path={r.path}
-                    element={r.element}
-                  />
-                )
+                  <Route key={`${locale}-${r.path}`} path={r.path} element={r.element} />
+                ),
               )}
             </Route>
           ))}

@@ -12,7 +12,11 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { resetBusNets } from '../simulation/customChips/busNets';
-import { buildDigitalNetwork, type DigitalComponent, type DigitalWire } from '../simulation/digital/digitalGateEngine';
+import {
+  buildDigitalNetwork,
+  type DigitalComponent,
+  type DigitalWire,
+} from '../simulation/digital/digitalGateEngine';
 import { digitalExamples } from '../data/examples-digital';
 
 beforeEach(() => resetBusNets());
@@ -23,12 +27,18 @@ const byId = (id: string): Ex => {
   if (!ex) throw new Error(`example ${id} not found`);
   return ex;
 };
-const switchIds = (ex: Ex) => ex.components.filter((c) => c.type === 'wokwi-slide-switch').map((c) => c.id);
+const switchIds = (ex: Ex) =>
+  ex.components.filter((c) => c.type === 'wokwi-slide-switch').map((c) => c.id);
 const ledIds = (ex: Ex) => ex.components.filter((c) => c.type === 'wokwi-led').map((c) => c.id);
 
 describe('digital-gate-engine Phase 1 — real examples on the engine', () => {
   it('builds without bailing (all primitives recognised) for a sample of examples', () => {
-    for (const id of ['digital-and-two-switches', 'digital-xor-difference', 'digital-full-adder', 'digital-adder-subtractor-4bit']) {
+    for (const id of [
+      'digital-and-two-switches',
+      'digital-xor-difference',
+      'digital-full-adder',
+      'digital-adder-subtractor-4bit',
+    ]) {
       const ex = byId(id);
       const net = buildDigitalNetwork(ex.components, ex.wires);
       expect(net.ok, `${id} should be all-digital`).toBe(true);
@@ -98,7 +108,8 @@ describe('digital-gate-engine Phase 1 — real examples on the engine', () => {
     const A = [0, 1, 2, 3].map((i) => `asA${i}`);
     const B = [0, 1, 2, 3].map((i) => `asB${i}`);
     const S = [0, 1, 2, 3].map((i) => `asLS${i}`);
-    const M = 'asM', CO = 'asLCo';
+    const M = 'asM',
+      CO = 'asLCo';
 
     const run = (a: number, b: number, m: 0 | 1) => {
       const net = buildDigitalNetwork(ex.components, ex.wires);

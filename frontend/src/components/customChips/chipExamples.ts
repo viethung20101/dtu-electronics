@@ -9,78 +9,86 @@
  */
 
 // .c sources — original Velxio chip collection
-import inverterC      from './examples/inverter.c?raw';
-import xorC           from './examples/xor.c?raw';
-import cd4094C        from './examples/cd4094.c?raw';
-import eeprom24c01C   from './examples/eeprom-24c01.c?raw';
+import inverterC from './examples/inverter.c?raw';
+import xorC from './examples/xor.c?raw';
+import cd4094C from './examples/cd4094.c?raw';
+import eeprom24c01C from './examples/eeprom-24c01.c?raw';
 import eeprom24lc256C from './examples/eeprom-24lc256.c?raw';
-import uartRot13C     from './examples/uart-rot13.c?raw';
-import sn74hc595C     from './examples/sn74hc595.c?raw';
-import mcp3008C       from './examples/mcp3008.c?raw';
-import pcf8574C       from './examples/pcf8574.c?raw';
-import ds3231C        from './examples/ds3231.c?raw';
-import pulseCounterC  from './examples/pulse-counter.c?raw';
+import uartRot13C from './examples/uart-rot13.c?raw';
+import sn74hc595C from './examples/sn74hc595.c?raw';
+import mcp3008C from './examples/mcp3008.c?raw';
+import pcf8574C from './examples/pcf8574.c?raw';
+import ds3231C from './examples/ds3231.c?raw';
+import pulseCounterC from './examples/pulse-counter.c?raw';
 
 // .chip.json sources
-import inverterJ      from './examples/inverter.chip.json?raw';
-import xorJ           from './examples/xor.chip.json?raw';
-import cd4094J        from './examples/cd4094.chip.json?raw';
-import eeprom24c01J   from './examples/eeprom-24c01.chip.json?raw';
+import inverterJ from './examples/inverter.chip.json?raw';
+import xorJ from './examples/xor.chip.json?raw';
+import cd4094J from './examples/cd4094.chip.json?raw';
+import eeprom24c01J from './examples/eeprom-24c01.chip.json?raw';
 import eeprom24lc256J from './examples/eeprom-24lc256.chip.json?raw';
-import uartRot13J     from './examples/uart-rot13.chip.json?raw';
-import sn74hc595J     from './examples/sn74hc595.chip.json?raw';
-import mcp3008J       from './examples/mcp3008.chip.json?raw';
-import pcf8574J       from './examples/pcf8574.chip.json?raw';
-import ds3231J        from './examples/ds3231.chip.json?raw';
-import pulseCounterJ  from './examples/pulse-counter.chip.json?raw';
+import uartRot13J from './examples/uart-rot13.chip.json?raw';
+import sn74hc595J from './examples/sn74hc595.chip.json?raw';
+import mcp3008J from './examples/mcp3008.chip.json?raw';
+import pcf8574J from './examples/pcf8574.chip.json?raw';
+import ds3231J from './examples/ds3231.chip.json?raw';
+import pulseCounterJ from './examples/pulse-counter.chip.json?raw';
 
 // .c sources — clean-room retro Intel/Zilog CPUs and bus chips
 // (test/test_intel — 129 tests, all passing; manuals cited in autosearch/)
-import cpu4004C       from './examples/intel/4004.c?raw';
-import cpu4040C       from './examples/intel/4040.c?raw';
-import cpu8080C       from './examples/intel/8080.c?raw';
-import cpu8086C       from './examples/intel/8086.c?raw';
-import cpuZ80C        from './examples/intel/z80.c?raw';
-import busRom32kC     from './examples/intel/rom-32k.c?raw';
-import busRam64kC     from './examples/intel/ram-64k.c?raw';
-import busRom1mC      from './examples/intel/rom-1m.c?raw';
-import busLatch8282C  from './examples/intel/latch-8282.c?raw';
-import bus4001RomC    from './examples/intel/4001-rom.c?raw';
-import bus4002RamC    from './examples/intel/4002-ram.c?raw';
-import bus8255PpiC    from './examples/intel/8255-ppi.c?raw';
-import bus8251UsartC  from './examples/intel/8251-usart.c?raw';
-import bus8259PicC    from './examples/intel/8259-pic.c?raw';
-import bus8253PitC    from './examples/intel/8253-pit.c?raw';
-import i8080ReplC     from './examples/intel/i8080-repl.c?raw';
-import i8080CounterC  from './examples/intel/i8080-counter.c?raw';
-import i8080CpuC      from './examples/intel/i8080-cpu.c?raw';
-import z80CpuC         from './examples/intel/z80-cpu.c?raw';
+import cpu4004C from './examples/intel/4004.c?raw';
+import cpu4040C from './examples/intel/4040.c?raw';
+import cpu8080C from './examples/intel/8080.c?raw';
+import cpu8086C from './examples/intel/8086.c?raw';
+import cpuZ80C from './examples/intel/z80.c?raw';
+import busRom32kC from './examples/intel/rom-32k.c?raw';
+import busRam64kC from './examples/intel/ram-64k.c?raw';
+import busRom1mC from './examples/intel/rom-1m.c?raw';
+import busLatch8282C from './examples/intel/latch-8282.c?raw';
+import bus4001RomC from './examples/intel/4001-rom.c?raw';
+import bus4002RamC from './examples/intel/4002-ram.c?raw';
+import bus8255PpiC from './examples/intel/8255-ppi.c?raw';
+import bus8251UsartC from './examples/intel/8251-usart.c?raw';
+import bus8259PicC from './examples/intel/8259-pic.c?raw';
+import bus8253PitC from './examples/intel/8253-pit.c?raw';
+import i8080ReplC from './examples/intel/i8080-repl.c?raw';
+import i8080CounterC from './examples/intel/i8080-counter.c?raw';
+import i8080CpuC from './examples/intel/i8080-cpu.c?raw';
+import z80CpuC from './examples/intel/z80-cpu.c?raw';
 
-import cpu4004J       from './examples/intel/4004.chip.json?raw';
-import cpu4040J       from './examples/intel/4040.chip.json?raw';
-import cpu8080J       from './examples/intel/8080.chip.json?raw';
-import cpu8086J       from './examples/intel/8086.chip.json?raw';
-import cpuZ80J        from './examples/intel/z80.chip.json?raw';
-import busRom32kJ     from './examples/intel/rom-32k.chip.json?raw';
-import busRam64kJ     from './examples/intel/ram-64k.chip.json?raw';
-import busRom1mJ      from './examples/intel/rom-1m.chip.json?raw';
-import busLatch8282J  from './examples/intel/latch-8282.chip.json?raw';
-import bus4001RomJ    from './examples/intel/4001-rom.chip.json?raw';
-import bus4002RamJ    from './examples/intel/4002-ram.chip.json?raw';
-import bus8255PpiJ    from './examples/intel/8255-ppi.chip.json?raw';
-import bus8251UsartJ  from './examples/intel/8251-usart.chip.json?raw';
-import bus8259PicJ    from './examples/intel/8259-pic.chip.json?raw';
-import bus8253PitJ    from './examples/intel/8253-pit.chip.json?raw';
-import i8080ReplJ     from './examples/intel/i8080-repl.chip.json?raw';
-import i8080CounterJ  from './examples/intel/i8080-counter.chip.json?raw';
-import i8080CpuJ      from './examples/intel/i8080-cpu.chip.json?raw';
-import z80CpuJ         from './examples/intel/z80-cpu.chip.json?raw';
+import cpu4004J from './examples/intel/4004.chip.json?raw';
+import cpu4040J from './examples/intel/4040.chip.json?raw';
+import cpu8080J from './examples/intel/8080.chip.json?raw';
+import cpu8086J from './examples/intel/8086.chip.json?raw';
+import cpuZ80J from './examples/intel/z80.chip.json?raw';
+import busRom32kJ from './examples/intel/rom-32k.chip.json?raw';
+import busRam64kJ from './examples/intel/ram-64k.chip.json?raw';
+import busRom1mJ from './examples/intel/rom-1m.chip.json?raw';
+import busLatch8282J from './examples/intel/latch-8282.chip.json?raw';
+import bus4001RomJ from './examples/intel/4001-rom.chip.json?raw';
+import bus4002RamJ from './examples/intel/4002-ram.chip.json?raw';
+import bus8255PpiJ from './examples/intel/8255-ppi.chip.json?raw';
+import bus8251UsartJ from './examples/intel/8251-usart.chip.json?raw';
+import bus8259PicJ from './examples/intel/8259-pic.chip.json?raw';
+import bus8253PitJ from './examples/intel/8253-pit.chip.json?raw';
+import i8080ReplJ from './examples/intel/i8080-repl.chip.json?raw';
+import i8080CounterJ from './examples/intel/i8080-counter.chip.json?raw';
+import i8080CpuJ from './examples/intel/i8080-cpu.chip.json?raw';
+import z80CpuJ from './examples/intel/z80-cpu.chip.json?raw';
 
 export interface ChipExample {
   id: string;
   name: string;
   description: string;
-  category: 'logic' | 'memory' | 'protocol' | 'analog' | 'utility' | 'retro-cpu' | 'retro-bus' | 'retro-bundle';
+  category:
+    | 'logic'
+    | 'memory'
+    | 'protocol'
+    | 'analog'
+    | 'utility'
+    | 'retro-cpu'
+    | 'retro-bus'
+    | 'retro-bundle';
   sourceC: string;
   chipJson: string;
 }
@@ -248,7 +256,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
     name: 'Intel 8080 CPU',
     description:
       '1975 — 8-bit ISA with 16-bit address bus. Validated against ' +
-      "Microcosm's 1980 CPUDIAG (\"CPU IS OPERATIONAL\").",
+      'Microcosm\'s 1980 CPUDIAG ("CPU IS OPERATIONAL").',
     category: 'retro-cpu',
     sourceC: cpu8080C,
     chipJson: cpu8080J,
@@ -278,8 +286,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
   {
     id: 'rom-32k',
     name: '27C256 ROM (32 KB)',
-    description:
-      'Generic 32 KB EPROM. 15-bit address bus, 8-bit data, /CE + /OE.',
+    description: 'Generic 32 KB EPROM. 15-bit address bus, 8-bit data, /CE + /OE.',
     category: 'retro-bus',
     sourceC: busRom32kC,
     chipJson: busRom32kJ,
@@ -287,8 +294,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
   {
     id: 'ram-64k',
     name: 'HM62256 SRAM (64 KB)',
-    description:
-      'Generic 64 KB static RAM. 16-bit address, 8-bit data, /CE + /OE + /WE.',
+    description: 'Generic 64 KB static RAM. 16-bit address, 8-bit data, /CE + /OE + /WE.',
     category: 'retro-bus',
     sourceC: busRam64kC,
     chipJson: busRam64kJ,
@@ -296,8 +302,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
   {
     id: 'rom-1m',
     name: '1 MB ROM (8086 boot)',
-    description:
-      '1 MB ROM with 64 KB mapped at 0xF0000 — the canonical 8086 reset-vector layout.',
+    description: '1 MB ROM with 64 KB mapped at 0xF0000 — the canonical 8086 reset-vector layout.',
     category: 'retro-bus',
     sourceC: busRom1mC,
     chipJson: busRom1mJ,
@@ -307,7 +312,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
     name: 'Intel 8282 Latch',
     description:
       'Octal address latch (8 inputs + 8 outputs + STB + /OE). ' +
-      "The classic 8086 AD-bus demuxer.",
+      'The classic 8086 AD-bus demuxer.',
     category: 'retro-bus',
     sourceC: busLatch8282C,
     chipJson: busLatch8282J,
@@ -325,8 +330,7 @@ export const CHIP_EXAMPLES: ChipExample[] = [
   {
     id: 'intel-4002-ram',
     name: 'Intel 4002 RAM (320 bits + I/O)',
-    description:
-      "320-bit RAM with 4 output lines — the 4004's original RAM companion.",
+    description: "320-bit RAM with 4 output lines — the 4004's original RAM companion.",
     category: 'retro-bus',
     sourceC: bus4002RamC,
     chipJson: bus4002RamJ,

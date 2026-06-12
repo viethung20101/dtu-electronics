@@ -282,12 +282,7 @@ describe('EPaperPart — AVR hook integration', () => {
     document.body.appendChild(el);
 
     const factory = PartSimulationRegistry.get('epaper-2in13-bwr')!;
-    const tearDown = factory.attachEvents!(
-      el,
-      sim as never,
-      () => null,
-      'epd-test',
-    ) as () => void;
+    const tearDown = factory.attachEvents!(el, sim as never, () => null, 'epd-test') as () => void;
 
     // The hook replaced onByte while attached.
     expect(sim.spi.onByte).not.toBe(installed);
@@ -305,11 +300,7 @@ describe('EPaperPart — AVR hook integration', () => {
 
 describe('EPaperPart — Web Component pinInfo', () => {
   it('reports 8 standard FPC pins for any panel kind', () => {
-    for (const kind of [
-      'epaper-1in54-bw',
-      'epaper-2in13-bwr',
-      'epaper-7in5-bw',
-    ]) {
+    for (const kind of ['epaper-1in54-bw', 'epaper-2in13-bwr', 'epaper-7in5-bw']) {
       const el = document.createElement('velxio-epaper') as HTMLElement & {
         pinInfo: Array<{ name: string; x: number; y: number }>;
       };

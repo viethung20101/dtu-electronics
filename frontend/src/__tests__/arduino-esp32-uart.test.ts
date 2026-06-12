@@ -188,8 +188,8 @@ describe('Arduino Uno ↔ ESP32 — hardware UART (byte shortcut over WS)', () =
     expect(typeof espBridge.onSerialData).toBe('function');
     espBridge.onSerialData('A', 0); // emit from UART0
     const fed_A =
-      (simUno.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'A')
-      || (simUno.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'A');
+      (simUno.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'A') ||
+      (simUno.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'A');
     expect(fed_A).toBe(true);
   });
 

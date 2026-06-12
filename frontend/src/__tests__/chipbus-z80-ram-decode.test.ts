@@ -45,18 +45,50 @@ const range = (n: number) => Array.from({ length: n }, (_, i) => i);
 const Z80_PINS = [
   ...range(16).map((i) => `A${i}`),
   ...range(8).map((i) => `D${i}`),
-  'M1', 'MREQ', 'IORQ', 'RD', 'WR', 'RFSH', 'HALT', 'WAIT',
-  'INT', 'NMI', 'RESET', 'BUSREQ', 'BUSACK', 'CLK', 'VCC', 'GND',
+  'M1',
+  'MREQ',
+  'IORQ',
+  'RD',
+  'WR',
+  'RFSH',
+  'HALT',
+  'WAIT',
+  'INT',
+  'NMI',
+  'RESET',
+  'BUSREQ',
+  'BUSACK',
+  'CLK',
+  'VCC',
+  'GND',
 ];
-const ROM_PINS = [...range(15).map((i) => `A${i}`), ...range(8).map((i) => `D${i}`), 'CE', 'OE', 'VCC', 'GND'];
-const RAM_PINS = [...range(16).map((i) => `A${i}`), ...range(8).map((i) => `D${i}`), 'CE', 'OE', 'WE', 'VCC', 'GND'];
+const ROM_PINS = [
+  ...range(15).map((i) => `A${i}`),
+  ...range(8).map((i) => `D${i}`),
+  'CE',
+  'OE',
+  'VCC',
+  'GND',
+];
+const RAM_PINS = [
+  ...range(16).map((i) => `A${i}`),
+  ...range(8).map((i) => `D${i}`),
+  'CE',
+  'OE',
+  'WE',
+  'VCC',
+  'GND',
+];
 const INV_PINS = ['IN', 'OUT'];
 
 const W: ChipNetState['wires'] = [];
 const wire = (a: string, ap: string, b: string, bp: string) =>
-  (W as { start: { componentId: string; pinName: string }; end: { componentId: string; pinName: string } }[]).push(
-    { start: { componentId: a, pinName: ap }, end: { componentId: b, pinName: bp } },
-  );
+  (
+    W as {
+      start: { componentId: string; pinName: string };
+      end: { componentId: string; pinName: string };
+    }[]
+  ).push({ start: { componentId: a, pinName: ap }, end: { componentId: b, pinName: bp } });
 // Address bus A0..A14 shared by Z80, ROM and RAM.
 for (const i of range(15)) {
   wire('z80', `A${i}`, 'rom', `A${i}`);
@@ -107,13 +139,33 @@ describe.skipIf(!haveFixtures)('chipbus Phase 3 core — Z80 + ROM + RAM + addre
 
   it('runs from ROM, round-trips RAM via the inverter-decoded bus, and HALTs', async () => {
     const pm = new PinManager();
-    const z80 = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.z80)), componentId: 'z80', pinManager: pm, wires: wiresFor('z80', Z80_PINS) });
+    const z80 = await ChipInstance.create({
+      wasm: new Uint8Array(readFileSync(paths.z80)),
+      componentId: 'z80',
+      pinManager: pm,
+      wires: wiresFor('z80', Z80_PINS),
+    });
     z80.start();
-    const rom = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.rom)), componentId: 'rom', pinManager: pm, wires: wiresFor('rom', ROM_PINS) });
+    const rom = await ChipInstance.create({
+      wasm: new Uint8Array(readFileSync(paths.rom)),
+      componentId: 'rom',
+      pinManager: pm,
+      wires: wiresFor('rom', ROM_PINS),
+    });
     rom.start();
-    const ram = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.ram)), componentId: 'ram', pinManager: pm, wires: wiresFor('ram', RAM_PINS) });
+    const ram = await ChipInstance.create({
+      wasm: new Uint8Array(readFileSync(paths.ram)),
+      componentId: 'ram',
+      pinManager: pm,
+      wires: wiresFor('ram', RAM_PINS),
+    });
     ram.start();
-    const inv = await ChipInstance.create({ wasm: new Uint8Array(readFileSync(paths.inv)), componentId: 'inv', pinManager: pm, wires: wiresFor('inv', INV_PINS) });
+    const inv = await ChipInstance.create({
+      wasm: new Uint8Array(readFileSync(paths.inv)),
+      componentId: 'inv',
+      pinManager: pm,
+      wires: wiresFor('inv', INV_PINS),
+    });
     inv.start();
 
     const halt = pinKey('z80', 'HALT');
@@ -129,6 +181,9 @@ describe.skipIf(!haveFixtures)('chipbus Phase 3 core — Z80 + ROM + RAM + addre
     // (CPU + ROM + RAM + inverter decode) works over the shared chip-to-chip bus.
     expect(pm.getPinState(halt)).toBe(false);
 
-    z80.dispose(); rom.dispose(); ram.dispose(); inv.dispose();
+    z80.dispose();
+    rom.dispose();
+    ram.dispose();
+    inv.dispose();
   });
 });

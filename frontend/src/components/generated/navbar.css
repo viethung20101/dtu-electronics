@@ -1,0 +1,79 @@
+.vector {
+  width: 191px;
+  height: 56px;
+}
+
+.frame {
+  width: 602px;
+  height: 56px;
+  display: flex;
+  gap: 45px;
+  align-items: center;
+}
+
+.button {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.trang_ch {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.ti_liu {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.v_d {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.thc_hnh {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.gii_thiu {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.ng_k {
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.workspace {
+  font-size: 13.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.svg {
+  width: 16px;
+  height: 16px;
+}

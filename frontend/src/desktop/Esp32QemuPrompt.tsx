@@ -61,7 +61,9 @@ export const Esp32QemuPrompt = () => {
   useEffect(() => {
     const invoke = tauriInvoke();
     if (!invoke) return;
-    invoke<QemuStatus>('esp32_qemu_status').then(setStatus).catch(() => undefined);
+    invoke<QemuStatus>('esp32_qemu_status')
+      .then(setStatus)
+      .catch(() => undefined);
     invoke<Eligibility>('esp32_qemu_eligibility')
       .then(setEligibility)
       .catch(() => setEligibility('eligible')); // pre-0.3.0 shell - fall through to install

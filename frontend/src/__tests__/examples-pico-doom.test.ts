@@ -52,9 +52,7 @@ describe('pico-doom-raycaster example', () => {
   it('exposes button ids fwd / back / left / right', () => {
     const e = findExample()!;
     const ids = e.components.map((c) => c.id);
-    expect(ids).toEqual(
-      expect.arrayContaining(['btn-fwd', 'btn-back', 'btn-left', 'btn-right']),
-    );
+    expect(ids).toEqual(expect.arrayContaining(['btn-fwd', 'btn-back', 'btn-left', 'btn-right']));
   });
 
   it('every wire endpoint references a real component (board id is implicit)', () => {
@@ -65,7 +63,8 @@ describe('pico-doom-raycaster example', () => {
     ]);
     const offenders: string[] = [];
     for (const w of e.wires) {
-      if (!knownIds.has(w.start.componentId)) offenders.push(`${w.id}:start=${w.start.componentId}`);
+      if (!knownIds.has(w.start.componentId))
+        offenders.push(`${w.id}:start=${w.start.componentId}`);
       if (!knownIds.has(w.end.componentId)) offenders.push(`${w.id}:end=${w.end.componentId}`);
     }
     expect(offenders).toEqual([]);
@@ -81,15 +80,15 @@ describe('pico-doom-raycaster example', () => {
     // example, the sketch + this list have to move together — fail
     // loud here so the mismatch can't slip into prod.
     const expected: Array<[string, string]> = [
-      ['3V3',   'VCC'],
+      ['3V3', 'VCC'],
       ['GND.5', 'GND'],
-      ['GP18',  'SCK'],
-      ['GP19',  'MOSI'],
-      ['GP16',  'MISO'],
-      ['GP17',  'CS'],
-      ['GP20',  'D/C'],
-      ['GP21',  'RST'],
-      ['GP22',  'LED'],
+      ['GP18', 'SCK'],
+      ['GP19', 'MOSI'],
+      ['GP16', 'MISO'],
+      ['GP17', 'CS'],
+      ['GP20', 'D/C'],
+      ['GP21', 'RST'],
+      ['GP22', 'LED'],
     ];
     for (const [picoPin, tftPin] of expected) {
       const match = e.wires.find(

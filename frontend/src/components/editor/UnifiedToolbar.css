@@ -1,0 +1,323 @@
+/* ── Unified Toolbar Stylesheet ── */
+
+.unified-toolbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  background: #1e1e1f;
+  border-bottom: 1px solid #2d2d30;
+  padding: 0 16px;
+  user-select: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color: #cccccc;
+  box-sizing: border-box;
+}
+
+/* ── Groups ─────────────────────────────────────── */
+.unified-tb-left,
+.unified-tb-center,
+.unified-tb-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unified-tb-left {
+  gap: 6px;
+}
+
+.unified-tb-center {
+  gap: 4px;
+}
+
+.unified-tb-right {
+  gap: 12px;
+}
+
+/* ── Dividers ───────────────────────────────────── */
+.unified-tb-divider {
+  width: 1px;
+  height: 20px;
+  background: #333336;
+  margin: 0 4px;
+}
+
+/* ── Buttons ────────────────────────────────────── */
+.unified-tb-btn {
+  background: transparent;
+  border: none;
+  color: #8a8a8f;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.unified-tb-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.unified-tb-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* File Actions Specific styles */
+.unified-tb-file-btn {
+  color: #a0a0a5;
+}
+
+/* Play/Stop/Reset simulation controls */
+.unified-tb-play-btn {
+  background: rgba(76, 175, 80, 0.12);
+  border: 1.5px solid rgba(76, 175, 80, 0.25);
+  color: #4caf50;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.unified-tb-play-btn:hover {
+  background: rgba(76, 175, 80, 0.22);
+  border-color: rgba(76, 175, 80, 0.4);
+  color: #81c784;
+}
+
+.unified-tb-stop-btn {
+  background: rgba(239, 83, 80, 0.12);
+  border: 1.5px solid rgba(239, 83, 80, 0.25);
+  color: #ef5350;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.unified-tb-stop-btn:hover {
+  background: rgba(239, 83, 80, 0.22);
+  border-color: rgba(239, 83, 80, 0.4);
+  color: #e57373;
+}
+
+.unified-tb-reset-btn {
+  color: #a0a0a5;
+  background: transparent;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+
+.unified-tb-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+/* Zoom Pill */
+.unified-tb-zoom-pill {
+  display: flex;
+  align-items: center;
+  background: #252528;
+  border: 1px solid #2d2d30;
+  border-radius: 6px;
+  height: 32px;
+  padding: 0 6px;
+  gap: 8px;
+}
+
+.unified-tb-zoom-pill button {
+  background: transparent;
+  border: none;
+  color: #8a8a8f;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.unified-tb-zoom-pill button:hover {
+  color: #ffffff;
+}
+
+.unified-tb-zoom-percentage {
+  font-size: 12px;
+  color: #cccccc;
+  font-weight: 500;
+  min-width: 36px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.unified-tb-zoom-percentage:hover {
+  color: #ffffff;
+}
+
+/* ── Edit Tools ─────────────────────────────────── */
+.unified-tb-tool-btn {
+  background: transparent;
+  border: none;
+  color: #8a8a8f;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.unified-tb-tool-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.unified-tb-tool-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Active glowing cyan styling for cursor selection tool */
+.unified-tb-tool-btn.active-cyan {
+  background: #00e5ff;
+  color: #121212;
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.45);
+}
+
+.unified-tb-tool-btn.active-tool {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* ── Right side controls ───────────────────────── */
+.unified-tb-search {
+  display: flex;
+  align-items: center;
+  background: #252528;
+  border: 1px solid #2d2d30;
+  border-radius: 6px;
+  padding: 0 8px;
+  gap: 6px;
+  height: 32px;
+  width: 180px;
+}
+
+.unified-tb-search svg {
+  color: #8a8a8f;
+  flex-shrink: 0;
+}
+
+.unified-tb-search input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 12px;
+  outline: none;
+  width: 100%;
+}
+
+.unified-tb-search input::placeholder {
+  color: #66666a;
+}
+
+/* Icons */
+.unified-tb-icon-btn {
+  background: transparent;
+  border: none;
+  color: #8a8a8f;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.unified-tb-icon-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Share Button */
+.unified-tb-share-btn {
+  display: flex;
+  align-items: center;
+  background: #00e5ff;
+  border: none;
+  border-radius: 6px;
+  color: #121212;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 12px;
+  gap: 6px;
+  height: 32px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.unified-tb-share-btn:hover {
+  background: #00b8d4;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.35);
+}
+
+/* User Avatar */
+.unified-tb-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #8a8a8f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a8a8f;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.unified-tb-avatar:hover {
+  border-color: #ffffff;
+  color: #ffffff;
+}
+
+/* Spinner for compile all states */
+.unified-tb-spin {
+  animation: unified-tb-spin-key 0.8s linear infinite;
+}
+
+@keyframes unified-tb-spin-key {
+  to {
+    transform: rotate(360deg);
+  }
+}

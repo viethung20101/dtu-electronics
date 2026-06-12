@@ -8,9 +8,7 @@
  * is comfortable on the new solver, this helper becomes thin
  * enough that test authors can use SolverPort directly.
  */
-import {
-  NgSpiceNodeAdapter,
-} from '../../simulation/spice/adapters/NgSpiceNodeAdapter';
+import { NgSpiceNodeAdapter } from '../../simulation/spice/adapters/NgSpiceNodeAdapter';
 
 /** Test-local copy of the complex-number shape consumers expect. */
 export interface ComplexNumber {
@@ -26,7 +24,9 @@ function getAdapter(): NgSpiceNodeAdapter {
 }
 
 /** Detect the analysis directive inside a netlist string. */
-function detectAnalysis(netlist: string):
+function detectAnalysis(
+  netlist: string,
+):
   | { kind: 'op' }
   | { kind: 'tran'; step: string; stop: string }
   | { kind: 'ac'; sweep: 'dec' | 'oct' | 'lin'; points: number; fstart: number; fstop: number } {
@@ -165,7 +165,11 @@ export async function runNetlist(netlist: string): Promise<SpiceTestResult> {
 /** Test teardown helper — release the singleton between describe blocks. */
 export function __disposeTestSolver(): void {
   if (singleton) {
-    try { singleton.dispose(); } catch { /* ignore */ }
+    try {
+      singleton.dispose();
+    } catch {
+      /* ignore */
+    }
   }
   singleton = null;
 }

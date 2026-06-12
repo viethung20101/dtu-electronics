@@ -36,9 +36,21 @@
 }
 
 /* Sizes */
-.ui-btn--sm { padding: 8px 14px; font-size: 13px; border-radius: var(--radius-pill); }
-.ui-btn--md { padding: 11px 18px; font-size: 15px; border-radius: var(--radius-pill); }
-.ui-btn--lg { padding: 14px 22px; font-size: 17px; border-radius: var(--radius-pill); }
+.ui-btn--sm {
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: var(--radius-pill);
+}
+.ui-btn--md {
+  padding: 11px 18px;
+  font-size: 15px;
+  border-radius: var(--radius-pill);
+}
+.ui-btn--lg {
+  padding: 14px 22px;
+  font-size: 17px;
+  border-radius: var(--radius-pill);
+}
 
 /* Variants */
 .ui-btn--primary {
@@ -86,5 +98,7 @@
 }
 
 @keyframes ui-btn-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

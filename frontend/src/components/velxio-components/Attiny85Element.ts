@@ -32,8 +32,8 @@
 
 const W = 160;
 const H = 132;
-const TOP_Y = 6;     // CSS px — y of all four top-edge pin tips
-const BOT_Y = 126;   // CSS px — y of all four bottom-edge pin tips
+const TOP_Y = 6; // CSS px — y of all four top-edge pin tips
+const BOT_Y = 126; // CSS px — y of all four bottom-edge pin tips
 const PIN_X = [20, 60, 100, 140] as const;
 
 const PIN_INFO: ReadonlyArray<{ name: string; x: number; y: number; description?: string }> = [

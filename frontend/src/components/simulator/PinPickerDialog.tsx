@@ -117,8 +117,7 @@ export const PinPickerDialog: React.FC<PinPickerDialogProps> = ({
           flexDirection: 'column',
           boxShadow: '0 -8px 24px rgba(0,0,0,0.6)',
           overflow: 'hidden',
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         }}
       >
         {/* Header */}
@@ -194,7 +193,9 @@ export const PinPickerDialog: React.FC<PinPickerDialogProps> = ({
           }}
         >
           {filteredPins.length === 0 ? (
-            <div style={{ padding: 16, color: '#999', fontSize: 13 }}>{t('editor.pinPicker.noMatch')}</div>
+            <div style={{ padding: 16, color: '#999', fontSize: 13 }}>
+              {t('editor.pinPicker.noMatch')}
+            </div>
           ) : (
             filteredPins.map((pin) => (
               <button

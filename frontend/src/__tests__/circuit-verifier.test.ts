@@ -43,52 +43,39 @@ function w(
 // ── Tests ────────────────────────────────────────────────────────────────
 
 describe('verifyCircuit — clean circuits report no errors', () => {
-  it(
-    'a 220Ω + red LED across 5 V is fine',
-    { timeout: 30_000 },
-    async () => {
-      const input: BuildNetlistInput = {
-        components: [pwr('src'), res('r1', '220'), led('led1')],
-        wires: [
-          w('w1', ['src', 'SIG'], ['r1', '1']),
-          w('w2', ['r1', '2'], ['led1', 'A']),
-          w('w3', ['led1', 'C'], ['src', 'GND']),
-        ],
-        boards: [],
-        analysis: { kind: 'op' },
-      };
-      const result = await verifyCircuit(input);
-      expect(result.errors, JSON.stringify(result.errors)).toEqual([]);
-      // No "led-no-current" warning either — 5V/220Ω is well above µA.
-      expect(
-        result.warnings.filter((w) => w.code !== 'solver-failed'),
-      ).toEqual([]);
-    },
-  );
+  it('a 220Ω + red LED across 5 V is fine', { timeout: 30_000 }, async () => {
+    const input: BuildNetlistInput = {
+      components: [pwr('src'), res('r1', '220'), led('led1')],
+      wires: [
+        w('w1', ['src', 'SIG'], ['r1', '1']),
+        w('w2', ['r1', '2'], ['led1', 'A']),
+        w('w3', ['led1', 'C'], ['src', 'GND']),
+      ],
+      boards: [],
+      analysis: { kind: 'op' },
+    };
+    const result = await verifyCircuit(input);
+    expect(result.errors, JSON.stringify(result.errors)).toEqual([]);
+    // No "led-no-current" warning either — 5V/220Ω is well above µA.
+    expect(result.warnings.filter((w) => w.code !== 'solver-failed')).toEqual([]);
+  });
 });
 
 describe('verifyCircuit — short circuit detection', () => {
-  it(
-    'fires an error when 5V is wired straight to GND',
-    { timeout: 30_000 },
-    async () => {
-      // Even with ESR-zero this represents a dead short — SPICE pushes huge
-      // current through the source. Use a tiny series R so SPICE doesn't
-      // produce a singular matrix, but well below 1Ω.
-      const input: BuildNetlistInput = {
-        components: [pwr('src'), res('rShort', '0.01')],
-        wires: [
-          w('w1', ['src', 'SIG'], ['rShort', '1']),
-          w('w2', ['rShort', '2'], ['src', 'GND']),
-        ],
-        boards: [],
-        analysis: { kind: 'op' },
-      };
-      const result = await verifyCircuit(input);
-      const codes = result.errors.map((e) => e.code);
-      expect(codes, JSON.stringify(result.errors)).toContain('short-circuit');
-    },
-  );
+  it('fires an error when 5V is wired straight to GND', { timeout: 30_000 }, async () => {
+    // Even with ESR-zero this represents a dead short — SPICE pushes huge
+    // current through the source. Use a tiny series R so SPICE doesn't
+    // produce a singular matrix, but well below 1Ω.
+    const input: BuildNetlistInput = {
+      components: [pwr('src'), res('rShort', '0.01')],
+      wires: [w('w1', ['src', 'SIG'], ['rShort', '1']), w('w2', ['rShort', '2'], ['src', 'GND'])],
+      boards: [],
+      analysis: { kind: 'op' },
+    };
+    const result = await verifyCircuit(input);
+    const codes = result.errors.map((e) => e.code);
+    expect(codes, JSON.stringify(result.errors)).toContain('short-circuit');
+  });
 });
 
 describe('verifyCircuit — LED overcurrent', () => {
@@ -126,10 +113,7 @@ describe('verifyCircuit — resistor over-power', () => {
       // 5V across 10Ω → I = 0.5 A → P = 2.5 W. Way past the 1/4 W default.
       const input: BuildNetlistInput = {
         components: [pwr('src'), res('rHot', '10')],
-        wires: [
-          w('w1', ['src', 'SIG'], ['rHot', '1']),
-          w('w2', ['rHot', '2'], ['src', 'GND']),
-        ],
+        wires: [w('w1', ['src', 'SIG'], ['rHot', '1']), w('w2', ['rHot', '2'], ['src', 'GND'])],
         boards: [],
         analysis: { kind: 'op' },
       };
@@ -142,32 +126,25 @@ describe('verifyCircuit — resistor over-power', () => {
     },
   );
 
-  it(
-    'respects a custom power property on the resistor',
-    { timeout: 30_000 },
-    async () => {
-      // 5V across 10Ω with explicit 5W rating → no overpower warning.
-      const r: BuildNetlistInput['components'][number] = {
-        id: 'rBig',
-        metadataId: 'resistor',
-        properties: { value: '10', power: 5 },
-      };
-      const input: BuildNetlistInput = {
-        components: [pwr('src'), r],
-        wires: [
-          w('w1', ['src', 'SIG'], ['rBig', '1']),
-          w('w2', ['rBig', '2'], ['src', 'GND']),
-        ],
-        boards: [],
-        analysis: { kind: 'op' },
-      };
-      const result = await verifyCircuit(input);
-      const overpowerErr = result.errors.find((e) => e.code === 'resistor-overpower');
-      const overpowerWarn = result.warnings.find((e) => e.code === 'resistor-overpower');
-      expect(overpowerErr, JSON.stringify(result.errors)).toBeUndefined();
-      expect(overpowerWarn, JSON.stringify(result.warnings)).toBeUndefined();
-    },
-  );
+  it('respects a custom power property on the resistor', { timeout: 30_000 }, async () => {
+    // 5V across 10Ω with explicit 5W rating → no overpower warning.
+    const r: BuildNetlistInput['components'][number] = {
+      id: 'rBig',
+      metadataId: 'resistor',
+      properties: { value: '10', power: 5 },
+    };
+    const input: BuildNetlistInput = {
+      components: [pwr('src'), r],
+      wires: [w('w1', ['src', 'SIG'], ['rBig', '1']), w('w2', ['rBig', '2'], ['src', 'GND'])],
+      boards: [],
+      analysis: { kind: 'op' },
+    };
+    const result = await verifyCircuit(input);
+    const overpowerErr = result.errors.find((e) => e.code === 'resistor-overpower');
+    const overpowerWarn = result.warnings.find((e) => e.code === 'resistor-overpower');
+    expect(overpowerErr, JSON.stringify(result.errors)).toBeUndefined();
+    expect(overpowerWarn, JSON.stringify(result.warnings)).toBeUndefined();
+  });
 });
 
 describe('verifyCircuit — threshold overrides', () => {
@@ -177,10 +154,7 @@ describe('verifyCircuit — threshold overrides', () => {
     async () => {
       const input: BuildNetlistInput = {
         components: [pwr('src'), res('rShort', '0.01')],
-        wires: [
-          w('w1', ['src', 'SIG'], ['rShort', '1']),
-          w('w2', ['rShort', '2'], ['src', 'GND']),
-        ],
+        wires: [w('w1', ['src', 'SIG'], ['rShort', '1']), w('w2', ['rShort', '2'], ['src', 'GND'])],
         boards: [],
         analysis: { kind: 'op' },
       };
@@ -216,37 +190,29 @@ function toInput(ex: { components: any[]; wires: any[] }): BuildNetlistInput {
 }
 
 describe('verifyCircuit — shipping gallery examples are clean', () => {
-  it(
-    'every digital example passes pre-flight verification',
-    { timeout: 180_000 },
-    async () => {
-      const failures: string[] = [];
-      for (const ex of digitalExamples) {
-        const result = await verifyCircuit(toInput(ex));
-        if (result.errors.length > 0) {
-          failures.push(
-            `${ex.id}: ${result.errors.map((e) => `${e.code}(${e.componentId ?? '-'})`).join(', ')}`,
-          );
-        }
+  it('every digital example passes pre-flight verification', { timeout: 180_000 }, async () => {
+    const failures: string[] = [];
+    for (const ex of digitalExamples) {
+      const result = await verifyCircuit(toInput(ex));
+      if (result.errors.length > 0) {
+        failures.push(
+          `${ex.id}: ${result.errors.map((e) => `${e.code}(${e.componentId ?? '-'})`).join(', ')}`,
+        );
       }
-      expect(failures, failures.join('\n')).toEqual([]);
-    },
-  );
+    }
+    expect(failures, failures.join('\n')).toEqual([]);
+  });
 
-  it(
-    'every analog example passes pre-flight verification',
-    { timeout: 180_000 },
-    async () => {
-      const failures: string[] = [];
-      for (const ex of analogExamples) {
-        const result = await verifyCircuit(toInput(ex));
-        if (result.errors.length > 0) {
-          failures.push(
-            `${ex.id}: ${result.errors.map((e) => `${e.code}(${e.componentId ?? '-'})`).join(', ')}`,
-          );
-        }
+  it('every analog example passes pre-flight verification', { timeout: 180_000 }, async () => {
+    const failures: string[] = [];
+    for (const ex of analogExamples) {
+      const result = await verifyCircuit(toInput(ex));
+      if (result.errors.length > 0) {
+        failures.push(
+          `${ex.id}: ${result.errors.map((e) => `${e.code}(${e.componentId ?? '-'})`).join(', ')}`,
+        );
       }
-      expect(failures, failures.join('\n')).toEqual([]);
-    },
-  );
+    }
+    expect(failures, failures.join('\n')).toEqual([]);
+  });
 });

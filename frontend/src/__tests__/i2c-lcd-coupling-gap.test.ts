@@ -54,10 +54,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import {
-  I2CBusManager,
-  VirtualPCF8574,
-} from '../simulation/I2CBusManager';
+import { I2CBusManager, VirtualPCF8574 } from '../simulation/I2CBusManager';
 import { HD44780Decoder } from '../simulation/HD44780Decoder';
 import { PartSimulationRegistry } from '../simulation/parts/PartSimulationRegistry';
 import '../simulation/parts/ProtocolParts';

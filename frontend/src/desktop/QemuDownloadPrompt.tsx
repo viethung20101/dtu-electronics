@@ -62,7 +62,9 @@ export const QemuDownloadPrompt = ({ config }: { config: QemuRuntimeConfig }) =>
   useEffect(() => {
     const invoke = tauriInvoke();
     if (!invoke) return;
-    invoke<QemuStatus>(config.statusCmd).then(setStatus).catch(() => undefined);
+    invoke<QemuStatus>(config.statusCmd)
+      .then(setStatus)
+      .catch(() => undefined);
     invoke<Eligibility>(config.eligibilityCmd)
       .then(setEligibility)
       .catch(() => setEligibility('eligible'));

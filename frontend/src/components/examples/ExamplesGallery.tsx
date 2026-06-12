@@ -83,11 +83,7 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
   // Pre-tokenise the search string once per keystroke. Each token must match
   // somewhere in the example's haystack, so users can type "esp32 oled dht"
   // and find every project that hits all three.
-  const searchTokens = search
-    .trim()
-    .toLowerCase()
-    .split(/\s+/)
-    .filter(Boolean);
+  const searchTokens = search.trim().toLowerCase().split(/\s+/).filter(Boolean);
 
   const exampleHaystack = (example: ExampleProject): string =>
     [
@@ -102,17 +98,18 @@ export const ExamplesGallery: React.FC<ExamplesGalleryProps> = ({ onLoadExample 
       .join(' ')
       .toLowerCase();
 
-  const filteredExamples = exampleProjects.filter((example) => {
-    const boardMatch =
-      selectedBoard === 'all' ||
-      (selectedBoard === 'retro' ? isRetro(example) : getBoardFilter(example) === selectedBoard);
-    const catMatch = selectedCategory === 'all' || example.category === selectedCategory;
-    const diffMatch = selectedDifficulty === 'all' || example.difficulty === selectedDifficulty;
-    if (!boardMatch || !catMatch || !diffMatch) return false;
-    if (searchTokens.length === 0) return true;
-    const hay = exampleHaystack(example);
-    return searchTokens.every((tok) => hay.includes(tok));
-  })
+  const filteredExamples = exampleProjects
+    .filter((example) => {
+      const boardMatch =
+        selectedBoard === 'all' ||
+        (selectedBoard === 'retro' ? isRetro(example) : getBoardFilter(example) === selectedBoard);
+      const catMatch = selectedCategory === 'all' || example.category === selectedCategory;
+      const diffMatch = selectedDifficulty === 'all' || example.difficulty === selectedDifficulty;
+      if (!boardMatch || !catMatch || !diffMatch) return false;
+      if (searchTokens.length === 0) return true;
+      const hay = exampleHaystack(example);
+      return searchTokens.every((tok) => hay.includes(tok));
+    })
     .sort((a, b) => {
       // Order by board following the BOARD_TABS order (so Arduino Uno comes
       // first), then alphabetically by title within each board.

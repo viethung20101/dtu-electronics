@@ -74,9 +74,7 @@ export function bannerFor(status: LicenseStatus, now: number): BannerInfo | null
     // under normal online use. Fall back to claims.exp only when
     // neither real-expiry field is present.
     const isTrial = status.claims.plan === 'trial';
-    const realExp = isTrial
-      ? status.claims.trial_ends_at
-      : status.claims.subscription_period_end;
+    const realExp = isTrial ? status.claims.trial_ends_at : status.claims.subscription_period_end;
     const effectiveExp = realExp ?? status.claims.exp;
     const secondsUntilExp = effectiveExp - Math.floor(now / 1000);
     if (secondsUntilExp <= 0) return null; // shell hasn't transitioned state yet, ignore
@@ -136,7 +134,9 @@ export const GraceBanner = () => {
 
   // Initial load + event subscription + polling timer.
   useEffect(() => {
-    invoke<LicenseStatus>('license_status').then(setStatus).catch(() => undefined);
+    invoke<LicenseStatus>('license_status')
+      .then(setStatus)
+      .catch(() => undefined);
 
     let disposeEvent: (() => void) | null = null;
     listen<LicenseStatus>('velxio://license-status', (event) => {
@@ -153,7 +153,9 @@ export const GraceBanner = () => {
       try {
         const next = await invoke<LicenseStatus>('license_status');
         setStatus(next);
-      } catch { /* shell may be exiting */ }
+      } catch {
+        /* shell may be exiting */
+      }
     };
     const id = window.setInterval(tick, POLL_MS);
 
@@ -186,10 +188,7 @@ export const GraceBanner = () => {
   // Reset dismissal if the underlying status changes shape - e.g.
   // user dismissed amber at T-3d, then sub got renewed and status
   // is back to "exp > 5d". Dismissal flag should not stick.
-  const banner = useMemo(
-    () => (status ? bannerFor(status, nowMs) : null),
-    [status, nowMs],
-  );
+  const banner = useMemo(() => (status ? bannerFor(status, nowMs) : null), [status, nowMs]);
 
   // On every change in banner identity (tone + dismissibility),
   // re-evaluate the session-storage dismissal flag.
@@ -222,14 +221,20 @@ export const GraceBanner = () => {
   };
 
   const onDismiss = () => {
-    try { sessionStorage.setItem(DISMISS_KEY, banner.tone); } catch { /* noop */ }
+    try {
+      sessionStorage.setItem(DISMISS_KEY, banner.tone);
+    } catch {
+      /* noop */
+    }
     setDismissed(true);
   };
 
   const isPreExpiry = status?.state === 'active';
 
   return (
-    <div className={`vlx-desktop-grace vlx-desktop-grace-${banner.tone === 'amber' ? 'warn' : 'error'}`}>
+    <div
+      className={`vlx-desktop-grace vlx-desktop-grace-${banner.tone === 'amber' ? 'warn' : 'error'}`}
+    >
       <span className="vlx-desktop-grace-text">{banner.message}</span>
       <button
         type="button"

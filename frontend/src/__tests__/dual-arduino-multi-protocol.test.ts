@@ -134,9 +134,8 @@ function fullReset() {
 // Helper that mirrors flexible UART assertion from other tests.
 function uartFedWith(sim: any, expected: string, uart = 0): boolean {
   return (
-    (sim.feedUart as any).mock.calls.some(
-      (c: any[]) => c[0] === uart && c[1] === expected,
-    ) || (sim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === expected)
+    (sim.feedUart as any).mock.calls.some((c: any[]) => c[0] === uart && c[1] === expected) ||
+    (sim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === expected)
   );
 }
 
@@ -182,9 +181,7 @@ describe('Dual Arduino Uno — hardware UART (USART0)', () => {
 
   it('long burst (printf-style line) preserves byte stream', () => {
     const { idA, idB } = setupTwoUnos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'D1', toBoard: idB, toPin: 'D0' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'D1', toBoard: idB, toPin: 'D0' }]);
     const simA = getBoardSimulator(idA) as any;
     const simB = getBoardSimulator(idB) as any;
     const line = 'Sensor=42.7\n';
@@ -231,12 +228,10 @@ describe('Dual Arduino Uno — I2C (A4/A5)', () => {
     const simB = getBoardSimulator(idB) as any;
     // 8 clock pulses for one byte
     for (let i = 0; i < 8; i++) {
-      pmA.triggerPinChange(19, true);  // A5 = AVR pin 19 (SCL)
+      pmA.triggerPinChange(19, true); // A5 = AVR pin 19 (SCL)
       pmA.triggerPinChange(19, false);
     }
-    const sclCalls = (simB.setPinState as any).mock.calls.filter(
-      (c: any[]) => c[0] === 19,
-    );
+    const sclCalls = (simB.setPinState as any).mock.calls.filter((c: any[]) => c[0] === 19);
     expect(sclCalls.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -303,9 +298,7 @@ describe('Dual Arduino Uno — SPI (D10..D13)', () => {
     pmA.triggerPinChange(13, true);
     pmA.triggerPinChange(13, false);
     pmA.triggerPinChange(13, true);
-    const sckCalls = (simB.setPinState as any).mock.calls.filter(
-      (c: any[]) => c[0] === 13,
-    );
+    const sckCalls = (simB.setPinState as any).mock.calls.filter((c: any[]) => c[0] === 13);
     expect(sckCalls.length).toBeGreaterThanOrEqual(2);
   });
 
@@ -336,7 +329,7 @@ describe('Dual Arduino Uno — SPI (D10..D13)', () => {
     const bits = [true, false, true, false, false, true, false, true];
     for (const bit of bits) {
       pmA.triggerPinChange(11, bit);
-      pmA.triggerPinChange(13, true);  // SCK rising edge — sample
+      pmA.triggerPinChange(13, true); // SCK rising edge — sample
       pmA.triggerPinChange(13, false);
     }
     pmA.triggerPinChange(10, true); // CS HIGH
@@ -378,9 +371,7 @@ describe('Dual Arduino Uno — SoftwareSerial', () => {
 
   it('SoftwareSerial on alternate pair D8/D9 also works', () => {
     const { idA, idB } = setupTwoUnos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'D9', toBoard: idB, toPin: 'D8' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'D9', toBoard: idB, toPin: 'D8' }]);
     const pmA = getBoardPinManager(idA)!;
     const simB = getBoardSimulator(idB) as any;
     pmA.triggerPinChange(9, true);
@@ -442,9 +433,7 @@ describe('Dual Arduino Uno — raw digital pins', () => {
 
   it('analog-as-digital pin (A0 = D14) propagates', () => {
     const { idA, idB } = setupTwoUnos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'A0', toBoard: idB, toPin: 'A0' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'A0', toBoard: idB, toPin: 'A0' }]);
     const pmA = getBoardPinManager(idA)!;
     const simB = getBoardSimulator(idB) as any;
     pmA.triggerPinChange(14, true);
@@ -453,9 +442,7 @@ describe('Dual Arduino Uno — raw digital pins', () => {
 
   it('cross-pin wiring (A.D7 ↔ B.D11) carries the digital signal', () => {
     const { idA, idB } = setupTwoUnos();
-    setWires(useSimulatorStore, [
-      { fromBoard: idA, fromPin: 'D7', toBoard: idB, toPin: 'D11' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: idA, fromPin: 'D7', toBoard: idB, toPin: 'D11' }]);
     const pmA = getBoardPinManager(idA)!;
     const simB = getBoardSimulator(idB) as any;
     pmA.triggerPinChange(7, true);
@@ -525,9 +512,7 @@ describe('Dual Arduino Uno — concurrent multi-protocol activity', () => {
 
     // Drop I2C wires (keep UART)
     useSimulatorStore.setState((s) => ({
-      wires: s.wires.filter(
-        (w) => !(w.start.pinName === 'A4' || w.start.pinName === 'A5'),
-      ),
+      wires: s.wires.filter((w) => !(w.start.pinName === 'A4' || w.start.pinName === 'A5')),
     }));
 
     const pmA = getBoardPinManager(idA)!;

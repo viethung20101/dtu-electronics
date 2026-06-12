@@ -183,9 +183,7 @@ describe('Interconnect — auto-installs I2C bridge for (SDA, SCL) wire pairs', 
     simB.getI2CBus(0).addDevice(deviceB);
 
     // Only SDA wired — SCL is missing.
-    setWires(useSimulatorStore, [
-      { fromBoard: unoA, fromPin: 'A4', toBoard: unoB, toPin: 'A4' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: unoA, fromPin: 'A4', toBoard: unoB, toPin: 'A4' }]);
 
     const simA = getBoardSimulator(unoA) as any;
     const busA = simA.getI2CBus(0);
@@ -224,9 +222,7 @@ describe('Interconnect — auto-installs I2C bridge for (SDA, SCL) wire pairs', 
     expect(deviceB.registers[0x01]).toBe(0x77);
 
     // Drop SCL — bridge should disappear.
-    setWires(useSimulatorStore, [
-      { fromBoard: unoA, fromPin: 'A4', toBoard: unoB, toPin: 'A4' },
-    ]);
+    setWires(useSimulatorStore, [{ fromBoard: unoA, fromPin: 'A4', toBoard: unoB, toPin: 'A4' }]);
 
     busA = simA.getI2CBus(0);
     busA.start(false);

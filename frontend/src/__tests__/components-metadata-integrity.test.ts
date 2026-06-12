@@ -27,10 +27,7 @@ import { hundredDaysExamples } from '../data/examples-100-days';
 import { epaperExamples } from '../data/examples-displays-epaper';
 import { picowWifiExamples } from '../data/examples-picow-wifi';
 import { circuitExamples } from '../data/examples-circuits';
-import {
-  stripBrandPrefix,
-  isBoardComponentType,
-} from '../utils/exampleToBuildNetlistInput';
+import { stripBrandPrefix, isBoardComponentType } from '../utils/exampleToBuildNetlistInput';
 // Import parts modules for their side-effect registrations.
 import '../simulation/parts';
 import { PartSimulationRegistry } from '../simulation/parts/PartSimulationRegistry';
@@ -109,13 +106,19 @@ describe('components-metadata.json — file integrity', () => {
 
   it('every entry has a valid pinCount (≥ 0)', () => {
     const bad = entries.filter((e) => !Number.isInteger(e.pinCount) || e.pinCount < 0);
-    expect(bad.map((e) => e.id), 'entries with invalid pinCount').toEqual([]);
+    expect(
+      bad.map((e) => e.id),
+      'entries with invalid pinCount',
+    ).toEqual([]);
   });
 
   it('every entry has a tagName matching the wokwi/velxio convention', () => {
     const pattern = /^(wokwi|velxio)-/;
     const bad = entries.filter((e) => !pattern.test(e.tagName));
-    expect(bad.map((e) => `${e.id}: ${e.tagName}`), 'malformed tagName').toEqual([]);
+    expect(
+      bad.map((e) => `${e.id}: ${e.tagName}`),
+      'malformed tagName',
+    ).toEqual([]);
   });
 
   it('every distinct tagName has at least one valid id pointing to it', () => {
@@ -200,7 +203,9 @@ describe('components-metadata.json — cross-references vs live code', () => {
     // catalogue entries for cleanup conversations.
     if (orphans.length > 0) {
       // eslint-disable-next-line no-console
-      console.log(`[orphan-report] ${orphans.length} metadata entries used by no example and no part-sim:\n  ${orphans.join(', ')}`);
+      console.log(
+        `[orphan-report] ${orphans.length} metadata entries used by no example and no part-sim:\n  ${orphans.join(', ')}`,
+      );
     }
     expect(orphans.length).toBeGreaterThanOrEqual(0); // always true; documents the check ran
   });

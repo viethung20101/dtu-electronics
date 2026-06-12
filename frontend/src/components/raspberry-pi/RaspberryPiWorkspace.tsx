@@ -138,7 +138,9 @@ export const RaspberryPiWorkspace: React.FC<RaspberryPiWorkspaceProps> = ({ boar
             />
             <span style={styles.statusLabel}>
               {board?.running
-                ? (bridgeConnected ? t('editor.pi.connected') : t('editor.pi.starting'))
+                ? bridgeConnected
+                  ? t('editor.pi.connected')
+                  : t('editor.pi.starting')
                 : t('editor.pi.offline')}
             </span>
 

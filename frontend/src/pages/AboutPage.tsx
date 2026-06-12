@@ -1,448 +1,444 @@
-import { Link } from 'react-router-dom';
-import { useTranslation, Trans } from 'react-i18next';
-import { AppHeader } from '../components/layout/AppHeader';
-import { useLocalizedHref } from '../i18n/useLocalizedNavigate';
+import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  ArrowRight,
+  BookOpen,
+  Box,
+  Cpu,
+  ExternalLink,
+  Stethoscope,
+  Tablet,
+  Trophy,
+} from 'lucide-react';
 import { useSEO } from '../utils/useSEO';
 import { getSeoMeta } from '../seoRoutes';
+import { AppHeader } from '../components/layout/AppHeader';
+import heroBg from '../assets/about/image_8.png';
+import ctaBg from '../assets/about/image_8.png';
+import heroLogoStrip from '../assets/about/group_211_1394.svg';
+import vectorHero from '../assets/about/vector_196_3106.svg';
+import vectorRdLeft from '../assets/about/vector_211_913.svg';
+import vectorRdRight from '../assets/about/vector_211_915.svg';
+import vectorProductsLeft from '../assets/about/vector_220_6296.svg';
+import vectorProductsRight from '../assets/about/vector_220_6297.svg';
+import vectorCta from '../assets/about/vector_227_6760.svg';
+import whatCvsGroup from '../assets/about/group_211_1396.svg';
+import vectorWhatLeft from '../assets/about/vector_220_6296.svg';
+import vectorSectionDivider from '../assets/about/vector_2_211_6027.svg';
+import rdHubGridLeft from '../assets/about/group_211_5719.svg';
+import rdHubGrid from '../assets/about/group_211_5742.svg';
+import rdHubLeft from '../assets/about/group_211_5766.svg';
+import rdHubRight from '../assets/about/group_211_5816.svg';
+import rdHubCenter from '../assets/about/group_211_5867.svg';
+import rdHubRuler from '../assets/about/group_211_5946.svg';
+import rdHubDataGrid from '../assets/about/group_211_5971.svg';
+import productAed from '../assets/about/product-aed.png';
+import productDental from '../assets/about/product-dental.png';
+import productEcpr from '../assets/about/product-ecpr.png';
+import productAnatomy from '../assets/about/product-anatomy.png';
+import productSimcar from '../assets/about/product-simcar.png';
+import productOrtho from '../assets/about/product-ortho.png';
+import emulatorLll1 from '../assets/about/emulator-lll-1-overlay.png';
+import emulatorMockupFrame from '../assets/about/emulator-mockup-frame.png';
+import { ScrollReveal } from '../components/ui/ScrollReveal';
 import './AboutPage.css';
 
-const GITHUB_URL = 'https://github.com/viethung20101/dtu-electronics';
-const LINKEDIN_URL = 'https://www.linkedin.com/in/davidmonterocrespo24';
-const GITHUB_PROFILE = 'https://github.com/davidmonterocrespo24';
-const MEDIUM_URL = 'https://medium.com/@davidmonterocrespo24';
-const MEDIUM_ARTICLE_URL =
-  'https://medium.com/@davidmonterocrespo24/velxio-architecture-and-development-of-a-strictly-local-execution-microcontroller-emulator-62b4c1157a72';
-const HN_THREAD_V2 = 'https://news.ycombinator.com/item?id=47548013';
-const PRODUCT_HUNT_URL = 'https://www.producthunt.com/products/velxio';
-const HACKADAY_URL = 'https://hackaday.io/project/205186-velxio-browser-based-arduino-emulator';
-const REDDIT_URL =
-  'https://www.reddit.com/r/esp32/comments/1s2naya/a_browserbased_esp32_emulator_using_qemu_supports/';
+const FigmaVector = ({ src, className }: { src: string; className: string }) => (
+  <img src={src} className={`about-figma-vector ${className}`} alt="" aria-hidden />
+);
 
-/* ── Icons ──────────────────────────────────────────── */
-const IcoChip = () => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+/** Figma 211:1394 — một vòng DTU · CVS · VEPS · SCA (1501×45), lặp 4 lần cho marquee khép kín */
+const HERO_LOGO_LOOP_COPIES = 4;
+
+const AboutSectionDivider = () => (
+  <div className="about-section-divider" aria-hidden>
+    <img src={vectorSectionDivider} className="about-section-divider-line" alt="" />
+  </div>
+);
+
+/** Figma S6 — lll 1 (220:6334) + Overlay+Border+OverlayBlur (220:6336) */
+const AboutEmulatorVisual = () => (
+  <div
+    className="about-emulator-visual"
+    role="img"
+    aria-label="ESP32-S3 emulator mockup — STATUS: RUNNING"
   >
-    <rect x="5" y="5" width="14" height="14" rx="2" />
-    <rect x="9" y="9" width="6" height="6" />
-    <path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4" />
-  </svg>
+    <img
+      src={emulatorMockupFrame}
+      className="about-emulator-layer about-emulator-layer--frame"
+      alt=""
+    />
+    <img src={emulatorLll1} className="about-emulator-layer about-emulator-layer--board" alt="" />
+  </div>
 );
 
-const IcoGitHub = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z" />
-  </svg>
+/** Figma hub composite — groups 5719, 5742, 5766, 5816, 5867, 5946, 5971 */
+const AboutRdHubArt = () => (
+  <div className="about-rd-hub-art" aria-hidden>
+    <img src={rdHubGridLeft} className="about-rd-hub-layer about-rd-hub-layer--grid-left" alt="" />
+    <img src={rdHubGrid} className="about-rd-hub-layer about-rd-hub-layer--grid-right" alt="" />
+    <img src={rdHubLeft} className="about-rd-hub-layer about-rd-hub-layer--left" alt="" />
+    <img src={rdHubRight} className="about-rd-hub-layer about-rd-hub-layer--right" alt="" />
+    <img src={rdHubCenter} className="about-rd-hub-layer about-rd-hub-layer--center" alt="" />
+    <img src={rdHubRuler} className="about-rd-hub-layer about-rd-hub-layer--ruler" alt="" />
+    <img src={rdHubDataGrid} className="about-rd-hub-layer about-rd-hub-layer--data" alt="" />
+  </div>
 );
 
-const IcoLinkedIn = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-  </svg>
-);
+/** S4 product images — Figma groups 38452–38463 (image layers inside each card) */
+const PRODUCTS = [
+  {
+    title: 'AED-302 Trainer',
+    desc: 'A simulated automated external defibrillator for training CPR plus defibrillation procedures in emergency treatment.',
+    image: productAed,
+  },
+  {
+    title: 'Dental Anatomy',
+    desc: 'A virtual dental and maxillofacial training environment with detailed 3D structures for teeth, jaw, nerves and blood vessels.',
+    image: productDental,
+  },
+  {
+    title: 'eCPR',
+    desc: 'A CPR training device that combines 3D simulation, IoT sensors, quantitative feedback for first-aid and resuscitation practice.',
+    image: productEcpr,
+  },
+  {
+    title: 'Human Anatomy',
+    desc: 'A 3D anatomical simulation platform for exploring skeletal, muscular and internal organ systems, with VR and AR support for medical education.',
+    image: productAnatomy,
+  },
+  {
+    title: 'SIMCar',
+    desc: 'An intelligent automotive training simulator for sensors, control systems, autonomous-driving scenarios and learner feedback.',
+    image: productSimcar,
+  },
+  {
+    title: '3D printing for orthopedic care',
+    desc: 'A clinical-support direction using patient-specific splints and digital workflows for trauma and orthopedic treatment.',
+    image: productOrtho,
+  },
+] as const;
 
-const IcoMedium = () => (
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M13.54 12a6.8 6.8 0 01-6.77 6.82A6.8 6.8 0 010 12a6.8 6.8 0 016.77-6.82A6.8 6.8 0 0113.54 12zM20.96 12c0 3.54-1.51 6.42-3.38 6.42-1.87 0-3.39-2.88-3.39-6.42s1.52-6.42 3.39-6.42 3.38 2.88 3.38 6.42M24 12c0 3.17-.53 5.75-1.19 5.75-.66 0-1.19-2.58-1.19-5.75s.53-5.75 1.19-5.75C23.47 6.25 24 8.83 24 12z" />
-  </svg>
-);
+const RD_CARDS = [
+  {
+    key: 'tl',
+    icon: Box,
+    title: '3D simulation, VR and AR',
+    desc: 'CVS builds immersive visualization systems that make complex bodies, devices and procedures easier to inspect, practice and teach.',
+  },
+  {
+    key: 'tr',
+    icon: Stethoscope,
+    title: 'Healthcare training technology',
+    desc: 'The center works with physicians and domain specialists to turn medical training into measurable, repeatable simulation workflows.',
+  },
+  {
+    key: 'bl',
+    icon: Cpu,
+    title: 'AI and intelligent sensing',
+    desc: 'Several CVS products combine software, sensors, IoT and feedback loops so learners can correct technique while practicing.',
+  },
+  {
+    key: 'br',
+    icon: Tablet,
+    title: 'Education and industrial engineering',
+    desc: 'Beyond healthcare, CVS applies simulation to automotive training, 3D printing, engineering education and digital transformation.',
+  },
+] as const;
 
-/* ── Component ──────────────────────────────────────── */
+const IMPACT_CARDS = [
+  {
+    title: 'CVS Human Anatomy',
+    desc: 'Has been recognized in Vietnamese and regional Technology awards, including Vietnam Talent, ASEAN ICT and Sao Khue in Vietnam.',
+  },
+  {
+    title: 'The eCPR System',
+    desc: 'Was researched and created by CVS staff, patented in 2023, and put into use in first-aid and medical training institutions.',
+  },
+  {
+    title: 'DTU Sources',
+    desc: 'Describe CVS as continuing to expand international collaboration and next-generation work in visualization, simulation and modeling.',
+  },
+] as const;
+
+const SOURCE_LINKS = [
+  'DTU innovation ecosystem & the DTU School of Computer Science & Artificial Intelligence',
+  'DTU Virtual Reality Simulation as a new direction for medical learning materials',
+  'DTU Commercialization of the patented eCPR system',
+  'DTU AED-302 Trainer and Wellbeing commercialization agreement',
+] as const;
+
 export const AboutPage: React.FC = () => {
-  const { t } = useTranslation();
-  const localize = useLocalizedHref();
+  const navigate = useNavigate();
+  const whatRef = useRef<HTMLElement>(null);
+
   useSEO({
     ...getSeoMeta('/about')!,
     jsonLd: {
       '@context': 'https://schema.org',
       '@type': 'AboutPage',
-      name: 'About CVS',
-      description: 'Learn about CVS and its creator David Montero Crespo.',
+      name: 'About CVS — Center of Visualization & Simulation',
+      description:
+        'CVS is the Center of Visualization & Simulation within Duy Tan University, focused on 3D simulation, VR, AR and AI.',
       url: 'https://cvs.local/about',
     },
   });
 
+  const scrollToWhat = () => {
+    whatRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <div className="about-page">
-      <AppHeader />
-
-      {/* Hero */}
+      {/* S1 — Hero */}
       <section className="about-hero">
-        <div className="about-hero-inner">
-          <h1 className="about-hero-title">{t('about.hero.title')}</h1>
-          <p className="about-hero-sub">{t('about.hero.subtitle')}</p>
-        </div>
-      </section>
-
-      {/* The Story */}
-      <section className="about-section">
-        <div className="about-container">
-          <div className="about-story">
-            <h2 className="about-heading">{t('about.story.heading')}</h2>
-            <p>{t('about.story.p1')}</p>
-            <p>
-              <Trans i18nKey="about.story.p2" components={{ strong: <strong /> }} />
-            </p>
-            <p>{t('about.story.p3')}</p>
-            <p>
-              <Trans i18nKey="about.story.p4" components={{ strong: <strong /> }} />
-            </p>
-            <p>
-              <Trans i18nKey="about.story.p5" components={{ strong: <strong /> }} />
-            </p>
+        <div className="about-hero-bg" style={{ backgroundImage: `url(${heroBg})` }} />
+        <div className="about-hero-overlay" />
+        <FigmaVector src={vectorHero} className="about-figma-vector--hero" />
+        <div className="about-glow about-glow--cyan about-hero-glow-1" />
+        <div className="about-glow about-glow--purple about-hero-glow-2" />
+        <AppHeader />
+        <ScrollReveal className="about-hero-content" eager delay={100}>
+          <div className="about-hero-badge">
+            <span className="about-hero-badge-dot" />
+            <span>Duy Tan University · SCA Innovation Ecosystem</span>
           </div>
-        </div>
-      </section>
-
-      {/* Architecture overview */}
-      <section className="about-section about-section-alt">
-        <div className="about-container">
-          <h2 className="about-heading">{t('about.howItWorks.heading')}</h2>
-          <div className="about-arch-grid">
-            <div className="about-arch-card">
-              <div className="about-arch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="4" y="4" width="16" height="16" rx="2" />
-                  <rect x="8" y="8" width="8" height="8" />
-                  <path d="M10 2v2M14 2v2M10 20v2M14 20v2M2 10h2M2 14h2M20 10h2M20 14h2" />
-                </svg>
-              </div>
-              <h3>AVR8 &amp; RP2040</h3>
-              <p>{t('about.howItWorks.avrRp2040Body')}</p>
-            </div>
-            <div className="about-arch-card">
-              <div className="about-arch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                </svg>
-              </div>
-              <h3>ESP32 via QEMU</h3>
-              <p>{t('about.howItWorks.esp32Body')}</p>
-            </div>
-            <div className="about-arch-card">
-              <div className="about-arch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <polyline points="16 18 22 12 16 6" />
-                  <polyline points="8 6 2 12 8 18" />
-                </svg>
-              </div>
-              <h3>RISC-V via QEMU</h3>
-              <p>{t('about.howItWorks.riscvBody')}</p>
-            </div>
-            <div className="about-arch-card">
-              <div className="about-arch-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <rect x="2" y="3" width="20" height="14" rx="2" />
-                  <line x1="8" y1="21" x2="16" y2="21" />
-                  <line x1="12" y1="17" x2="12" y2="21" />
-                </svg>
-              </div>
-              <h3>Raspberry Pi 3</h3>
-              <p>{t('about.howItWorks.raspiBody')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Open Source Philosophy */}
-      <section className="about-section">
-        <div className="about-container">
-          <h2 className="about-heading">{t('about.openSource.heading')}</h2>
-          <p>
-            <Trans i18nKey="about.openSource.lead" components={{ strong: <strong /> }} />
+          <h1 className="about-hero-cvs">CVS</h1>
+          <h2 className="about-hero-subtitle">Center of Visualization & Simulation</h2>
+          <p className="about-hero-desc">
+            CVS is the Center of Visualization & Simulation within Duy Tan University, focused on 3D
+            simulation, virtual reality, augmented reality, AI and applied training systems for
+            education, healthcare and engineering.
           </p>
-          <p>{t('about.openSource.creditsIntro')}</p>
-          <ul className="about-credits-list">
-            <li>
-              <a href="https://github.com/wokwi/avr8js" target="_blank" rel="noopener noreferrer">
-                avr8js
-              </a>{' '}
-              — {t('about.openSource.credits.avr8js')}
-            </li>
-            <li>
-              <a href="https://github.com/wokwi/rp2040js" target="_blank" rel="noopener noreferrer">
-                rp2040js
-              </a>{' '}
-              — {t('about.openSource.credits.rp2040js')}
-            </li>
-            <li>
-              <a
-                href="https://github.com/wokwi/wokwi-elements"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                wokwi-elements
-              </a>{' '}
-              — {t('about.openSource.credits.wokwiElements')}
-            </li>
-            <li>
-              <a href="https://github.com/lcgamboa/qemu" target="_blank" rel="noopener noreferrer">
-                QEMU lcgamboa fork
-              </a>{' '}
-              — {t('about.openSource.credits.qemuLcgamboa')}
-            </li>
-            <li>
-              <a
-                href="https://arduino.github.io/arduino-cli/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                arduino-cli
-              </a>{' '}
-              — {t('about.openSource.credits.arduinoCli')}
-            </li>
-          </ul>
-          <p>
-            <Trans
-              i18nKey="about.openSource.inspiredBy"
-              components={{
-                a: <a href="https://wokwi.com" target="_blank" rel="noopener noreferrer" />,
-              }}
-            />
-          </p>
-        </div>
-      </section>
-
-      {/* Creator */}
-      <section className="about-section about-section-alt">
-        <div className="about-container">
-          <h2 className="about-heading">{t('about.creator.heading')}</h2>
-          <div className="about-creator">
-            <div className="about-creator-photo">
-              <img
-                className="about-creator-avatar"
-                src="https://avatars.githubusercontent.com/u/47928504?v=4"
-                alt="David Montero Crespo"
-                width={120}
-                height={120}
-                loading="lazy"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div className="about-creator-info">
-              <h3 className="about-creator-name">David Montero Crespo</h3>
-              <p className="about-creator-role">{t('about.creator.role')}</p>
-              <p className="about-creator-bio">{t('about.creator.bio1')}</p>
-              <p className="about-creator-bio">{t('about.creator.bio2')}</p>
-              <p className="about-creator-bio">
-                <Trans
-                  i18nKey="about.creator.bio3"
-                  components={{
-                    a: (
-                      <a
-                        href="https://github.com/davidmonterocrespo24"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      />
-                    ),
-                  }}
+          <button type="button" className="about-hero-cta" onClick={scrollToWhat}>
+            <BookOpen size={18} strokeWidth={2} />
+            Xem thêm
+          </button>
+        </ScrollReveal>
+        <ScrollReveal
+          className="about-hero-logos"
+          role="region"
+          aria-label="Duy Tan University, CVS, VEPS, SCA Innovation"
+          eager
+          delay={280}
+          direction="none"
+        >
+          <div className="about-hero-logos-viewport">
+            <div className="about-hero-logos-track" aria-hidden>
+              {Array.from({ length: HERO_LOGO_LOOP_COPIES }, (_, index) => (
+                <img
+                  key={index}
+                  src={heroLogoStrip}
+                  className="about-hero-logos-strip"
+                  alt=""
+                  width={1501}
+                  height={45}
+                  draggable={false}
                 />
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* S2 — What CVS Does */}
+      <section className="about-what" ref={whatRef} id="what-cvs-does">
+        <FigmaVector src={vectorWhatLeft} className="about-figma-vector--what-left" />
+        <div className="about-container">
+          <div className="about-what-grid">
+            <ScrollReveal className="about-what-text" direction="right" delay={40}>
+              <h2 className="about-section-title">What CVS Does</h2>
+              <p style={{ marginTop: 32 }}>
+                According to Duy Tan University, CVS sits inside the innovation ecosystem of the DTU
+                School of Computer Science & Artificial Intelligence. The center researches and
+                develops advanced technology applications in 3D simulation, VR, AR and AI.
               </p>
-
-              <div className="about-creator-stack">
-                <h4>{t('about.creator.techStack')}</h4>
-                <div className="about-tags">
-                  <span className="about-tag">Java</span>
-                  <span className="about-tag">Python</span>
-                  <span className="about-tag">TypeScript</span>
-                  <span className="about-tag">React</span>
-                  <span className="about-tag">Angular</span>
-                  <span className="about-tag">Node.js</span>
-                  <span className="about-tag">FastAPI</span>
-                  <span className="about-tag">Docker</span>
-                  <span className="about-tag">Kubernetes</span>
-                  <span className="about-tag">OpenShift</span>
-                  <span className="about-tag">LangChain</span>
-                  <span className="about-tag">watsonx.ai</span>
-                  <span className="about-tag">Odoo</span>
-                  <span className="about-tag">Arduino</span>
-                  <span className="about-tag">ESP32</span>
-                  <span className="about-tag">Raspberry Pi</span>
-                </div>
+              <p>
+                Its work is practical by design: the team collaborates with physicians, engineers
+                and domain experts to create digital transformation solutions for education,
+                healthcare and industrial engineering.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal className="about-what-visual-wrap" direction="left" delay={120}>
+              <div className="about-glow about-glow--cyan about-what-visual-glow" aria-hidden />
+              <div className="about-what-visual">
+                <img
+                  src={whatCvsGroup}
+                  className="about-what-visual-art"
+                  alt="CVS simulation and visualization workspace"
+                />
               </div>
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
 
-              <div className="about-creator-links">
-                <a
-                  href={LINKEDIN_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="about-social-link"
+      <AboutSectionDivider />
+
+      {/* S3 — Research & Development Focus */}
+      <section className="about-rd">
+        <FigmaVector src={vectorRdLeft} className="about-figma-vector--rd-left" />
+        <div className="about-container">
+          <ScrollReveal as="h2" className="about-section-title about-section-title--center">
+            Research and Development Focus
+          </ScrollReveal>
+          <div className="about-rd-layout">
+            {RD_CARDS.map((card, index) => {
+              const Icon = card.icon;
+              return (
+                <ScrollReveal
+                  key={card.key}
+                  className={`about-rd-card about-rd-card--${card.key}`}
+                  delay={index * 80}
                 >
-                  <IcoLinkedIn /> LinkedIn
-                </a>
-                <a
-                  href={GITHUB_PROFILE}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="about-social-link"
-                >
-                  <IcoGitHub /> GitHub
-                </a>
-                <a
-                  href={MEDIUM_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="about-social-link"
-                >
-                  <IcoMedium /> Medium
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Releases */}
-      <section className="about-section">
-        <div className="about-container">
-          <h2 className="about-heading">{t('about.releases.heading')}</h2>
-          <div className="about-releases">
-            <Link to={localize('/v2-5')} className="about-release-card about-release-card-latest">
-              <span className="about-release-tag">{t('about.releases.latest')}</span>
-              <h3>CVS 1.0</h3>
-              <p className="about-release-tagline">{t('about.releases.v25Tagline')}</p>
-              <p className="about-release-blurb">{t('about.releases.v25Blurb')}</p>
-              <span className="about-release-link">{t('about.releases.readNotes')}</span>
-            </Link>
-            <Link to={localize('/v2')} className="about-release-card">
-              <h3>CVS 1.0</h3>
-              <p className="about-release-tagline">{t('about.releases.v2Tagline')}</p>
-              <p className="about-release-blurb">{t('about.releases.v2Blurb')}</p>
-              <span className="about-release-link">{t('about.releases.readNotes')}</span>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Personal story quote */}
-      <section className="about-section">
-        <div className="about-container">
-          <blockquote className="about-quote">
-            <p>
-              <Trans i18nKey="about.quote.p1" components={{ em: <em /> }} />
-            </p>
-            <p>
-              <Trans i18nKey="about.quote.p2" components={{ strong: <strong /> }} />
-            </p>
-            <p>{t('about.quote.p3')}</p>
-            <cite>— David Montero Crespo</cite>
-          </blockquote>
-        </div>
-      </section>
-
-      {/* Community & Press */}
-      <section className="about-section about-section-alt">
-        <div className="about-container">
-          <h2 className="about-heading">{t('about.community.heading')}</h2>
-          <div className="about-stats-grid">
-            <div className="about-stat">
-              <span className="about-stat-number">2,000+</span>
-              <span className="about-stat-label">{t('about.community.stats.githubStars')}</span>
-            </div>
-            <div className="about-stat">
-              <span className="about-stat-number">97+</span>
-              <span className="about-stat-label">{t('about.community.stats.countries')}</span>
-            </div>
-            <div className="about-stat">
-              <span className="about-stat-number">17</span>
-              <span className="about-stat-label">{t('about.community.stats.supportedBoards')}</span>
-            </div>
-            <div className="about-stat">
-              <span className="about-stat-number">6</span>
-              <span className="about-stat-label">{t('about.community.stats.cpuArchitectures')}</span>
-            </div>
-          </div>
-          <div className="about-press">
-            <p>{t('about.community.featuredOn')}</p>
-            <div className="about-press-list">
-              <a
-                href={HN_THREAD_V2}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-press-badge"
-              >
-                {t('about.community.press.hackerNews')}
-              </a>
-              <a
-                href={PRODUCT_HUNT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-press-badge"
-              >
-                Product Hunt
-              </a>
-              <a
-                href={HACKADAY_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-press-badge"
-              >
-                Hackaday
-              </a>
-              <a
-                href={REDDIT_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-press-badge"
-              >
-                Reddit r/esp32
-              </a>
-              <a
-                href={MEDIUM_ARTICLE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="about-press-badge"
-              >
-                Medium
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="about-cta">
-        <div className="about-container">
-          <h2>{t('about.cta.title')}</h2>
-          <p>{t('about.cta.subtitle')}</p>
-          <div className="about-cta-btns">
-            <Link to={localize('/editor')} className="about-btn-primary">
-              {t('about.cta.openEditor')}
-            </Link>
-            <a
-              href={GITHUB_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="about-btn-secondary"
+                  <div className="about-rd-card-icon">
+                    <Icon size={24} strokeWidth={1.5} />
+                  </div>
+                  <div className="about-rd-card-body">
+                    <h3>{card.title}</h3>
+                    <p>{card.desc}</p>
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+            <ScrollReveal
+              className="about-rd-hub"
+              role="img"
+              aria-label="CVS research and development hub"
+              delay={200}
+              duration={900}
             >
-              <IcoGitHub /> {t('landing.hero.ctaGithub')}
-            </a>
+              <AboutRdHubArt />
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="landing-footer">
-        <div className="footer-brand">
-          <IcoChip />
-          <span>CVS</span>
+      {/* S4 — Flagship Products */}
+      <section className="about-products">
+        <FigmaVector src={vectorRdRight} className="about-figma-vector--products-right" />
+        <FigmaVector src={vectorProductsLeft} className="about-figma-vector--products-left" />
+        <div className="about-container">
+          <ScrollReveal
+            as="h2"
+            className="about-section-title about-section-title--center about-section-title--underline"
+          >
+            Flagship CVS Products
+          </ScrollReveal>
+          <div className="about-products-grid">
+            {PRODUCTS.map((product, index) => (
+              <ScrollReveal
+                key={product.title}
+                as="article"
+                className="about-product-card"
+                delay={(index % 3) * 90}
+              >
+                <img className="about-product-img" src={product.image} alt={product.title} />
+                <div className="about-product-body">
+                  <h3>{product.title}</h3>
+                  <p>{product.desc}</p>
+                </div>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
-        <div className="footer-links">
-          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-            {t('header.nav.github')}
-          </a>
-          <Link to={localize('/docs')}>{t('header.nav.documentation')}</Link>
-          <Link to={localize('/examples')}>{t('header.nav.examples')}</Link>
-          <Link to={localize('/editor')}>{t('header.nav.editor')}</Link>
-          <Link to={localize('/about')}>{t('header.nav.about')}</Link>
+      </section>
+
+      {/* S5 — Impact */}
+      <section className="about-impact">
+        <div className="about-glow about-glow--figma about-impact-glow-7" aria-hidden />
+        <div className="about-glow about-glow--figma about-impact-glow-8" aria-hidden />
+        <div className="about-container">
+          <ScrollReveal as="h2" className="about-section-title about-section-title--center">
+            Impact
+          </ScrollReveal>
+          <div className="about-impact-grid">
+            {IMPACT_CARDS.map((card, index) => (
+              <ScrollReveal key={card.title} className="about-impact-card" delay={index * 100}>
+                <div className="about-impact-trophy">
+                  <Trophy size={28} strokeWidth={1.5} />
+                </div>
+                <h3>{card.title}</h3>
+                <p>{card.desc}</p>
+              </ScrollReveal>
+            ))}
+          </div>
         </div>
-        <p className="footer-copy">{t('footer.about')}</p>
-      </footer>
+      </section>
+
+      {/* S6 — About This Emulator */}
+      <section className="about-emulator">
+        <FigmaVector src={vectorProductsRight} className="about-figma-vector--emulator-right" />
+        <div className="about-container">
+          <div className="about-emulator-grid">
+            <ScrollReveal className="about-emulator-text" direction="right" delay={60}>
+              <h2 className="about-section-title">About This Emulator</h2>
+              <p style={{ marginTop: 32 }}>
+                CVS Emulator extends the same simulation-first mission into browser-based
+                electronics education. It gives students, makers and engineers a fast way to run
+                microcontroller code, wire circuits, inspect behavior and learn by interacting with
+                a working system.
+              </p>
+              <p>
+                The product direction is deliberately aligned with the broader CVS identity: visual,
+                hands-on, repeatable training environments that help learners move from theory to
+                practice.
+              </p>
+              <button
+                type="button"
+                className="about-emulator-start"
+                onClick={() => navigate('/editor')}
+              >
+                Start Emulator
+                <ExternalLink size={16} />
+              </button>
+            </ScrollReveal>
+            <ScrollReveal direction="left" delay={140}>
+              <AboutEmulatorVisual />
+            </ScrollReveal>
+          </div>
+        </div>
+      </section>
+
+      {/* S7 — Sources + CTA */}
+      <section className="about-sources">
+        <div className="about-container">
+          <ScrollReveal
+            as="h2"
+            className="about-section-title about-section-title--center"
+            style={{ marginBottom: 40 }}
+          >
+            About This Emulator
+          </ScrollReveal>
+          <div className="about-sources-list">
+            {SOURCE_LINKS.map((label, i) => (
+              <ScrollReveal key={label} delay={i * 70}>
+                <button
+                  type="button"
+                  className={`about-source-item${i === 2 ? ' about-source-item--active' : ''}`}
+                >
+                  <span>{label}</span>
+                  <ArrowRight size={18} />
+                </button>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+
+        <ScrollReveal className="about-cta" distance={36} duration={800}>
+          <div className="about-cta-bg" style={{ backgroundImage: `url(${ctaBg})` }} />
+          <div className="about-cta-overlay" />
+          <FigmaVector src={vectorCta} className="about-figma-vector--cta" />
+          <div className="about-container about-cta-content">
+            <h2>{'Open the\nCVS Emulator'}</h2>
+            <p>Start from a circuit canvas or example project</p>
+            <button type="button" className="about-cta-btn" onClick={() => navigate('/editor')}>
+              Open Editor
+              <ExternalLink size={16} />
+            </button>
+          </div>
+        </ScrollReveal>
+      </section>
     </div>
   );
 };

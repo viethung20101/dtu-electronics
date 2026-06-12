@@ -121,9 +121,7 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = ({
             {/* Pro overlay mounts a "Diagnose with AI" button here when
                 errorCount > 0. Empty in the OSS image — slotMounter
                 only fires when the pro tree is present. */}
-            {errorCount > 0 && (
-              <div data-velxio-slot="compile-console-actions" />
-            )}
+            {errorCount > 0 && <div data-velxio-slot="compile-console-actions" />}
           </div>
         </div>
         <div style={styles.headerRight}>
@@ -194,7 +192,10 @@ export const CompilationConsole: React.FC<CompilationConsoleProps> = ({
               <div key={`g-${gi}`} style={styles.targetGroup}>
                 <div style={styles.targetHeader}>
                   <span
-                    style={{ ...styles.targetStatus, color: statusColor(groupStatus(group.entries)) }}
+                    style={{
+                      ...styles.targetStatus,
+                      color: statusColor(groupStatus(group.entries)),
+                    }}
                   >
                     {statusGlyph(groupStatus(group.entries))}
                   </span>

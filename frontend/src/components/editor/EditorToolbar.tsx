@@ -9,7 +9,12 @@ import { BOARD_PIN_GROUPS } from '../../simulation/spice/boardPinGroups';
 import { CircuitVerificationModal } from '../simulator/CircuitVerificationModal';
 import type { PinSourceState } from '../../simulation/spice/types';
 import type { BoardKind, LanguageMode } from '../../types/board';
-import { BOARD_KIND_FQBN, BOARD_SUPPORTS_MICROPYTHON, isPiBoardKind, boardDisplayName } from '../../types/board';
+import {
+  BOARD_KIND_FQBN,
+  BOARD_SUPPORTS_MICROPYTHON,
+  isPiBoardKind,
+  boardDisplayName,
+} from '../../types/board';
 import { compileCode } from '../../services/compilation';
 import {
   compileRom,
@@ -103,12 +108,23 @@ const BOARD_PILL_ICON: Record<BoardKind, string> = {
   'arduino-nano': '▪',
   'arduino-mega': '▬',
   'raspberry-pi-pico': '◆',
+  'pi-pico-w': '◆',
+  'raspberry-pi-zero': '⬛',
+  'raspberry-pi-1': '⬛',
+  'raspberry-pi-2': '⬛',
   'raspberry-pi-3': '⬛',
   'raspberry-pi-4': '⬛',
   'raspberry-pi-5': '⬛',
   esp32: '⬡',
+  'esp32-devkit-c-v4': '⬡',
+  'esp32-cam': '⬡',
+  'wemos-lolin32-lite': '⬡',
   'esp32-s3': '⬡',
+  'xiao-esp32-s3': '⬡',
+  'arduino-nano-esp32': '⬡',
   'esp32-c3': '⬡',
+  'xiao-esp32-c3': '⬡',
+  'aitewinrobot-esp32c3-supermini': '⬡',
   'stm32-bluepill': '◈',
   'stm32-blackpill': '◈',
   'stm32-bluepill-f103cb': '◈',
@@ -117,6 +133,7 @@ const BOARD_PILL_ICON: Record<BoardKind, string> = {
   'stm32-olimex-h405': '◈',
   'stm32-netduino-plus2': '◈',
   'stm32-netduino2': '◈',
+  attiny85: '⚫',
 };
 
 const BOARD_PILL_COLOR: Record<BoardKind, string> = {
@@ -124,12 +141,23 @@ const BOARD_PILL_COLOR: Record<BoardKind, string> = {
   'arduino-nano': '#4fc3f7',
   'arduino-mega': '#4fc3f7',
   'raspberry-pi-pico': '#ce93d8',
+  'pi-pico-w': '#ce93d8',
+  'raspberry-pi-zero': '#ef9a9a',
+  'raspberry-pi-1': '#ef9a9a',
+  'raspberry-pi-2': '#ef9a9a',
   'raspberry-pi-3': '#ef9a9a',
   'raspberry-pi-4': '#ef9a9a',
   'raspberry-pi-5': '#ef9a9a',
   esp32: '#a5d6a7',
+  'esp32-devkit-c-v4': '#a5d6a7',
+  'esp32-cam': '#a5d6a7',
+  'wemos-lolin32-lite': '#a5d6a7',
   'esp32-s3': '#a5d6a7',
+  'xiao-esp32-s3': '#a5d6a7',
+  'arduino-nano-esp32': '#a5d6a7',
   'esp32-c3': '#a5d6a7',
+  'xiao-esp32-c3': '#a5d6a7',
+  'aitewinrobot-esp32c3-supermini': '#a5d6a7',
   'stm32-bluepill': '#80cbc4',
   'stm32-blackpill': '#b0bec5',
   'stm32-bluepill-f103cb': '#80cbc4',
@@ -138,6 +166,7 @@ const BOARD_PILL_COLOR: Record<BoardKind, string> = {
   'stm32-olimex-h405': '#a5d6a7',
   'stm32-netduino-plus2': '#ce93d8',
   'stm32-netduino2': '#ce93d8',
+  attiny85: '#e0e0e0',
 };
 
 export const EditorToolbar = ({
@@ -197,7 +226,10 @@ export const EditorToolbar = ({
     for (const c of s.components) {
       if (c.metadataId !== 'custom-chip') continue;
       const p = c.properties as Record<string, unknown>;
-      if (String(p?.programFile ?? '').trim() || String(p?.chipJson ?? '').includes('"programTargets"'))
+      if (
+        String(p?.programFile ?? '').trim() ||
+        String(p?.chipJson ?? '').includes('"programTargets"')
+      )
         chips++;
     }
     return s.boards.length + chips;
@@ -335,14 +367,15 @@ export const EditorToolbar = ({
           // section in the file explorer), separate from the board sketch.
           // Fall back to the board files for older projects that still carried
           // the program alongside sketch.ino in the board group.
-          const chipGroupFiles = useEditorStore
-            .getState()
-            .getGroupFiles(chipFileGroupId(chip.id));
+          const chipGroupFiles = useEditorStore.getState().getGroupFiles(chipFileGroupId(chip.id));
           const file =
             chipGroupFiles.find((f) => f.name === programFile) ??
             boardFiles.find((f) => f.name === programFile);
           if (!file) {
-            clog('error', `Chip "${chipLabel}": program file "${programFile}" not found in the chip's files.`);
+            clog(
+              'error',
+              `Chip "${chipLabel}": program file "${programFile}" not found in the chip's files.`,
+            );
             failed++;
           } else {
             const target = targetForChip(chipJson);
@@ -911,7 +944,9 @@ export const EditorToolbar = ({
     setConsoleOpen(true);
     const targetSummary = [
       boardsList.length ? `${boardsList.length} board${boardsList.length === 1 ? '' : 's'}` : '',
-      allCustomChips.length ? `${allCustomChips.length} chip${allCustomChips.length === 1 ? '' : 's'}` : '',
+      allCustomChips.length
+        ? `${allCustomChips.length} chip${allCustomChips.length === 1 ? '' : 's'}`
+        : '',
     ]
       .filter(Boolean)
       .join(' + ');
@@ -992,7 +1027,11 @@ export const EditorToolbar = ({
               })),
             ]);
           },
-          { boardOptions: board.boardOptions, spiffsFiles: board.spiffsFiles, libraries: board.libraries?.length ? board.libraries : null },
+          {
+            boardOptions: board.boardOptions,
+            spiffsFiles: board.spiffsFiles,
+            libraries: board.libraries?.length ? board.libraries : null,
+          },
         );
 
         const resultLogs = parseCompileResult(result, label, boardTarget);
@@ -1020,9 +1059,13 @@ export const EditorToolbar = ({
     const chipOk = allCustomChips.length - chipFailed;
     const doneParts = [];
     if (boardsList.length)
-      doneParts.push(`${ok} board${ok === 1 ? '' : 's'} ok${boardFailed > 0 ? `, ${boardFailed} failed` : ''}`);
+      doneParts.push(
+        `${ok} board${ok === 1 ? '' : 's'} ok${boardFailed > 0 ? `, ${boardFailed} failed` : ''}`,
+      );
     if (allCustomChips.length)
-      doneParts.push(`${chipOk} chip${chipOk === 1 ? '' : 's'} ok${chipFailed > 0 ? `, ${chipFailed} failed` : ''}`);
+      doneParts.push(
+        `${chipOk} chip${chipOk === 1 ? '' : 's'} ok${chipFailed > 0 ? `, ${chipFailed} failed` : ''}`,
+      );
     addLog({
       timestamp: new Date(),
       type: failed > 0 ? 'error' : 'success',
@@ -1062,9 +1105,7 @@ export const EditorToolbar = ({
       chipNeedsCompile ||
       boardsList.some(
         (b) =>
-          !isPiBoardKind(b.boardKind) &&
-          b.languageMode !== 'micropython' &&
-          !b.compiledProgram,
+          !isPiBoardKind(b.boardKind) && b.languageMode !== 'micropython' && !b.compiledProgram,
       );
 
     if (needsCompile) {
@@ -1076,7 +1117,11 @@ export const EditorToolbar = ({
     const refreshed = useSimulatorStore.getState().boards;
     for (const board of refreshed) {
       if (board.running) continue;
-      if (isQemuBoardKind(board.boardKind) || board.compiledProgram || board.languageMode === 'micropython') {
+      if (
+        isQemuBoardKind(board.boardKind) ||
+        board.compiledProgram ||
+        board.languageMode === 'micropython'
+      ) {
         trackRunSimulation(board.boardKind);
         reportRun(board.boardKind);
         startBoard(board.id);
@@ -1120,7 +1165,7 @@ export const EditorToolbar = ({
       setMessage({ type: 'error', text: 'Save the project before exporting an image.' });
       return;
     }
-    setMessage({ type: 'info', text: 'Rendering screenshot — may take 5-10 seconds…' });
+    setMessage({ type: 'error', text: 'Rendering screenshot — may take 5-10 seconds…' });
     try {
       const resp = await fetch(`/api/pro/projects/${projectId}/screenshot.png`, {
         credentials: 'include',
@@ -1129,9 +1174,11 @@ export const EditorToolbar = ({
         // Fire the in-place upgrade modal instead of bouncing to /pricing —
         // keeps the user in the editor with full context. The pro overlay's
         // UpgradeGate listens for this event and opens UpgradePromptModal.
-        window.dispatchEvent(new CustomEvent('cvs-pro-upgrade-prompt', {
-          detail: { componentName: 'Schematic screenshot export' },
-        }));
+        window.dispatchEvent(
+          new CustomEvent('cvs-pro-upgrade-prompt', {
+            detail: { componentName: 'Schematic screenshot export' },
+          }),
+        );
         return;
       }
       if (resp.status === 401) {
@@ -1181,9 +1228,11 @@ export const EditorToolbar = ({
         // Fire the in-place upgrade modal instead of bouncing to /pricing —
         // keeps the user in the editor with full context. The pro overlay's
         // UpgradeGate listens for this event and opens UpgradePromptModal.
-        window.dispatchEvent(new CustomEvent('cvs-pro-upgrade-prompt', {
-          detail: { componentName: 'BOM export' },
-        }));
+        window.dispatchEvent(
+          new CustomEvent('cvs-pro-upgrade-prompt', {
+            detail: { componentName: 'BOM export' },
+          }),
+        );
         return;
       }
       if (resp.status === 401) {
@@ -1368,12 +1417,8 @@ export const EditorToolbar = ({
 
             {/* Run */}
             <button
-              onClick={handleRun}
-              disabled={
-                isBoardless
-                  ? digitalRunning
-                  : running || compiling || !activeBoard
-              }
+              onClick={() => handleRun()}
+              disabled={isBoardless ? digitalRunning : running || compiling || !activeBoard}
               className="tb-btn tb-btn-run"
               title={
                 isBoardless
@@ -1524,7 +1569,16 @@ export const EditorToolbar = ({
               className="tb-btn tb-btn-import-inline"
               title={t('editor.toolbar.import')}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
@@ -1535,7 +1589,16 @@ export const EditorToolbar = ({
               className="tb-btn tb-btn-export-inline"
               title={t('editor.toolbar.export')}
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
@@ -1575,12 +1638,23 @@ export const EditorToolbar = ({
                       importInputRef.current?.click();
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <polyline points="7 10 12 15 17 10" />
                       <line x1="12" y1="15" x2="12" y2="3" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.importLabel', 'Import project')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.importLabel', 'Import project')}
+                    </span>
                   </button>
                   <button
                     className="tb-overflow-item tb-overflow-export"
@@ -1590,12 +1664,23 @@ export const EditorToolbar = ({
                       handleExport();
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <polyline points="17 8 12 3 7 8" />
                       <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.exportLabel', 'Export project (.zip)')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.exportLabel', 'Export project (.zip)')}
+                    </span>
                   </button>
                   <button
                     className="tb-overflow-item"
@@ -1605,12 +1690,23 @@ export const EditorToolbar = ({
                       handleExportBom();
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <rect x="3" y="4" width="18" height="16" rx="2" />
                       <line x1="3" y1="10" x2="21" y2="10" />
                       <line x1="9" y1="4" x2="9" y2="20" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.exportBomLabel', 'Bill of Materials (CSV)')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.exportBomLabel', 'Bill of Materials (CSV)')}
+                    </span>
                     <span className="tb-overflow-pro">PRO</span>
                   </button>
                   <button
@@ -1621,11 +1717,22 @@ export const EditorToolbar = ({
                       handleExportScreenshot();
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                       <circle cx="12" cy="13" r="4" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.exportScreenshotLabel', 'Schematic image (PNG)')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.exportScreenshotLabel', 'Schematic image (PNG)')}
+                    </span>
                     <span className="tb-overflow-pro">PRO</span>
                   </button>
                   <button
@@ -1636,12 +1743,23 @@ export const EditorToolbar = ({
                       firmwareInputRef.current?.click();
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
                       <line x1="12" y1="15" x2="12" y2="22" />
                       <polyline points="8 18 12 22 16 18" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.uploadFirmwareLabel', 'Upload firmware')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.uploadFirmwareLabel', 'Upload firmware')}
+                    </span>
                   </button>
                   {/* Sync to GitHub — Pro feature.  Fires a window event the
                       pro overlay listens for; if no overlay is loaded (OSS
@@ -1652,15 +1770,19 @@ export const EditorToolbar = ({
                     role="menuitem"
                     onClick={() => {
                       setMoreMenuOpen(false);
-                      window.dispatchEvent(new CustomEvent('cvs-pro-github-sync-prompt', {
-                        detail: { projectId: currentProject?.id ?? null },
-                      }));
+                      window.dispatchEvent(
+                        new CustomEvent('cvs-pro-github-sync-prompt', {
+                          detail: { projectId: currentProject?.id ?? null },
+                        }),
+                      );
                     }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.72-4.04-1.61-4.04-1.61-.55-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.72.08-.72 1.2.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.62-2.66-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.11-3.18 0 0 1.01-.32 3.3 1.23A11.5 11.5 0 0 1 12 5.8c1.02.01 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.82 1.1.82 2.22 0 1.6-.02 2.89-.02 3.29 0 .32.22.7.83.58A12 12 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.githubSyncLabel', 'Sync to GitHub')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.githubSyncLabel', 'Sync to GitHub')}
+                    </span>
                     <span className="tb-overflow-pro">PRO</span>
                   </button>
                   {/* Share / Embed — free for all users with a public project.
@@ -1672,19 +1794,32 @@ export const EditorToolbar = ({
                     role="menuitem"
                     onClick={() => {
                       setMoreMenuOpen(false);
-                      window.dispatchEvent(new CustomEvent('cvs-pro-share-prompt', {
-                        detail: { projectId: currentProject?.id ?? null },
-                      }));
+                      window.dispatchEvent(
+                        new CustomEvent('cvs-pro-share-prompt', {
+                          detail: { projectId: currentProject?.id ?? null },
+                        }),
+                      );
                     }}
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <circle cx="18" cy="5" r="3" />
                       <circle cx="6" cy="12" r="3" />
                       <circle cx="18" cy="19" r="3" />
                       <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
                       <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.shareLabel', 'Share / Embed')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.shareLabel', 'Share / Embed')}
+                    </span>
                   </button>
                   {/* Record simulation — Pro feature. Dispatches a toggle the
                       pro overlay handles (plan check, board-type check,
@@ -1695,15 +1830,19 @@ export const EditorToolbar = ({
                     role="menuitem"
                     onClick={() => {
                       setMoreMenuOpen(false);
-                      window.dispatchEvent(new CustomEvent('cvs-pro-replay-record-toggle', {
-                        detail: { projectId: currentProject?.id ?? null },
-                      }));
+                      window.dispatchEvent(
+                        new CustomEvent('cvs-pro-replay-record-toggle', {
+                          detail: { projectId: currentProject?.id ?? null },
+                        }),
+                      );
                     }}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                       <circle cx="12" cy="12" r="7" />
                     </svg>
-                    <span className="tb-overflow-label">{t('editor.toolbar.recordLabel', 'Record simulation')}</span>
+                    <span className="tb-overflow-label">
+                      {t('editor.toolbar.recordLabel', 'Record simulation')}
+                    </span>
                     <span className="tb-overflow-pro">PRO</span>
                   </button>
                 </div>

@@ -73,10 +73,10 @@ describe('multi-servo via SignalRouter — solar-tracker regression', () => {
 
     // Servo.write(0) → ledc duty 2.72% (~544 µs pulse, 0°)
     // Servo.write(180) → ledc duty 12.0% (~2400 µs pulse, 180°)
-    ledcDuty({ channel: 0, duty_pct: 7.5 });   // servoPan → ~90°
-    ledcDuty({ channel: 1, duty_pct: 2.72 });  // servoTilt → 0°
-    ledcDuty({ channel: 0, duty_pct: 8.0 });   // servoPan → ~95°
-    ledcDuty({ channel: 1, duty_pct: 3.0 });   // servoTilt → ~3°
+    ledcDuty({ channel: 0, duty_pct: 7.5 }); // servoPan → ~90°
+    ledcDuty({ channel: 1, duty_pct: 2.72 }); // servoTilt → 0°
+    ledcDuty({ channel: 0, duty_pct: 8.0 }); // servoPan → ~95°
+    ledcDuty({ channel: 1, duty_pct: 3.0 }); // servoTilt → ~3°
 
     // Pan saw ONLY pan duties; tilt saw ONLY tilt duties.
     // Use toBeCloseTo because dividing a 2-decimal percentage by 100
@@ -125,9 +125,9 @@ describe('multi-servo via SignalRouter — solar-tracker regression', () => {
 
     ledcDuty({ channel: 0, duty_pct: 7.5 });
 
-    expect(a).toEqual([0.075]);  // pin 13: ch 0
-    expect(b).toEqual([0.075]);  // pin 12: ch 0
-    expect(c).toEqual([]);       // pin 14: ch 1, untouched
+    expect(a).toEqual([0.075]); // pin 13: ch 0
+    expect(b).toEqual([0.075]); // pin 12: ch 0
+    expect(c).toEqual([]); // pin 14: ch 1, untouched
   });
 
   it('re-routing a pin between channels carries the next duty correctly', () => {

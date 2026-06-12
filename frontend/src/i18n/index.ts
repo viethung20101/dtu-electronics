@@ -15,23 +15,23 @@
  * without a redirect.
  */
 
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
-import enCommon from "./locales/en/common.json";
-import enCommon2 from "./locales/en/common2.json";
-import enReleases from "./locales/en/releases.json";
-import enDocs from "./locales/en/docs.json";
-import enDocs2 from "./locales/en/docs2.json";
-import enSeo from "./locales/en/seo.json";
-import enSeo2 from "./locales/en/seo2.json";
-import enSeo3 from "./locales/en/seo3.json";
-import enSeo4 from "./locales/en/seo4.json";
-import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from "./config";
-import { getLocaleFromPath } from "./path";
-import { readLocaleCookie } from "./cookie";
+import viCommon from './locales/vi/common.json';
+import viCommon2 from './locales/vi/common2.json';
+import viReleases from './locales/vi/releases.json';
+import viDocs from './locales/vi/docs.json';
+import viDocs2 from './locales/vi/docs2.json';
+import viSeo from './locales/vi/seo.json';
+import viSeo2 from './locales/vi/seo2.json';
+import viSeo3 from './locales/vi/seo3.json';
+import viSeo4 from './locales/vi/seo4.json';
+import { DEFAULT_LOCALE, LOCALES, isLocale, type Locale } from './config';
+import { getLocaleFromPath } from './path';
+import { readLocaleCookie } from './cookie';
 
-const NAMESPACES = ["common"] as const;
+const NAMESPACES = ['common'] as const;
 type Namespace = (typeof NAMESPACES)[number];
 
 const SUPPORTED_LANGS = LOCALES as readonly string[];
@@ -40,20 +40,18 @@ const SUPPORTED_LANGS = LOCALES as readonly string[];
  * Resolve the locale to start with. URL beats cookie beats browser locale.
  */
 function pickInitialLocale(): Locale {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     const pathname = window.location.pathname;
     const fromUrl = getLocaleFromPath(pathname);
     if (fromUrl !== DEFAULT_LOCALE) return fromUrl;
     const fromCookie = readLocaleCookie();
     if (fromCookie) return fromCookie;
-    const navLangs = (
-      navigator.languages?.length ? navigator.languages : [navigator.language]
-    )
-      .map(l => l?.toLowerCase() ?? "")
+    const navLangs = (navigator.languages?.length ? navigator.languages : [navigator.language])
+      .map((l) => l?.toLowerCase() ?? '')
       .filter(Boolean);
     for (const tag of navLangs) {
       if (isLocale(tag)) return tag;
-      const base = tag.split("-")[0];
+      const base = tag.split('-')[0];
       if (isLocale(base)) return base;
     }
   }
@@ -67,45 +65,45 @@ function pickInitialLocale(): Locale {
  */
 export async function loadLocale(locale: Locale): Promise<void> {
   if (locale === DEFAULT_LOCALE) return;
-  if (i18n.hasResourceBundle(locale, "common")) return;
+  if (i18n.hasResourceBundle(locale, 'common')) return;
   try {
     const [
-    commonMod,
-    common2Mod,
-    releasesMod,
-    docsMod,
-    docs2Mod,
-    seoMod,
-    seo2Mod,
-    seo3Mod,
-    seo4Mod,
-  ] = await Promise.all([
-    import(`./locales/${locale}/common.json`),
-    import(`./locales/${locale}/common2.json`).catch(() => ({ default: {} })),
-    import(`./locales/${locale}/releases.json`),
-    import(`./locales/${locale}/docs.json`),
-    import(`./locales/${locale}/docs2.json`),
-    import(`./locales/${locale}/seo.json`).catch(() => ({ default: { seo: {} } })),
-    import(`./locales/${locale}/seo2.json`).catch(() => ({ default: { seo: {} } })),
-    import(`./locales/${locale}/seo3.json`).catch(() => ({ default: { seo: {} } })),
-    import(`./locales/${locale}/seo4.json`).catch(() => ({ default: { seo: {} } })),
-  ]);
-  const docs1Body = (docsMod.default ?? docsMod).docs ?? {};
-  const docs2Body = (docs2Mod.default ?? docs2Mod).docs ?? {};
-  const seoBody = {
-    ...((seoMod.default ?? seoMod).seo ?? {}),
-    ...((seo2Mod.default ?? seo2Mod).seo ?? {}),
-    ...((seo3Mod.default ?? seo3Mod).seo ?? {}),
-    ...((seo4Mod.default ?? seo4Mod).seo ?? {}),
-  };
-  const merged = {
-    ...(commonMod.default ?? commonMod),
-    ...(common2Mod.default ?? common2Mod),
-    ...(releasesMod.default ?? releasesMod),
-    seo: seoBody,
-    docs: { ...docs1Body, ...docs2Body },
-  };
-  i18n.addResourceBundle(locale, "common", merged, true, true);
+      commonMod,
+      common2Mod,
+      releasesMod,
+      docsMod,
+      docs2Mod,
+      seoMod,
+      seo2Mod,
+      seo3Mod,
+      seo4Mod,
+    ] = await Promise.all([
+      import(`./locales/${locale}/common.json`),
+      import(`./locales/${locale}/common2.json`).catch(() => ({ default: {} })),
+      import(`./locales/${locale}/releases.json`),
+      import(`./locales/${locale}/docs.json`),
+      import(`./locales/${locale}/docs2.json`),
+      import(`./locales/${locale}/seo.json`).catch(() => ({ default: { seo: {} } })),
+      import(`./locales/${locale}/seo2.json`).catch(() => ({ default: { seo: {} } })),
+      import(`./locales/${locale}/seo3.json`).catch(() => ({ default: { seo: {} } })),
+      import(`./locales/${locale}/seo4.json`).catch(() => ({ default: { seo: {} } })),
+    ]);
+    const docs1Body = (docsMod.default ?? docsMod).docs ?? {};
+    const docs2Body = (docs2Mod.default ?? docs2Mod).docs ?? {};
+    const seoBody = {
+      ...((seoMod.default ?? seoMod).seo ?? {}),
+      ...((seo2Mod.default ?? seo2Mod).seo ?? {}),
+      ...((seo3Mod.default ?? seo3Mod).seo ?? {}),
+      ...((seo4Mod.default ?? seo4Mod).seo ?? {}),
+    };
+    const merged = {
+      ...(commonMod.default ?? commonMod),
+      ...(common2Mod.default ?? common2Mod),
+      ...(releasesMod.default ?? releasesMod),
+      seo: seoBody,
+      docs: { ...docs1Body, ...docs2Body },
+    };
+    i18n.addResourceBundle(locale, 'common', merged, true, true);
   } catch (err) {
     console.error('[i18n] Failed to load locale:', locale, err);
   }
@@ -122,23 +120,23 @@ export async function bootstrapI18n(): Promise<void> {
   // Register the React plugin first — this unlocks hasResourceBundle().
   i18n.use(initReactI18next);
 
-  // Always init with English resources (they are inlined and synchronous).
-  // This is fast for English users and provides a working fallback while
-  // non-English bundles load asynchronously.
+  // Always init with Vietnamese resources (they are inlined and synchronous).
+  // This is fast for Vietnamese users and provides a working fallback while
+  // non-Vietnamese bundles load asynchronously.
   i18n.init({
     resources: {
-      en: {
+      vi: {
         common: {
-          ...enCommon,
-          ...enCommon2,
-          ...enReleases,
+          ...viCommon,
+          ...viCommon2,
+          ...viReleases,
           seo: {
-            ...enSeo.seo,
-            ...enSeo2.seo,
-            ...enSeo3.seo,
-            ...enSeo4.seo,
+            ...viSeo.seo,
+            ...viSeo2.seo,
+            ...viSeo3.seo,
+            ...viSeo4.seo,
           },
-          docs: { ...enDocs.docs, ...enDocs2.docs },
+          docs: { ...viDocs.docs, ...viDocs2.docs },
         },
       },
     },
@@ -146,7 +144,7 @@ export async function bootstrapI18n(): Promise<void> {
     fallbackLng: DEFAULT_LOCALE,
     supportedLngs: SUPPORTED_LANGS,
     ns: NAMESPACES,
-    defaultNS: "common",
+    defaultNS: 'common',
     interpolation: { escapeValue: false },
     react: {
       useSuspense: false,

@@ -21,12 +21,12 @@
  * (Adafruit BMP180 breakout, variant 3).
  */
 
-const W = 80;          // CSS px
+const W = 80; // CSS px
 const H = 100;
-const PIN_Y = 13.6;    // CSS px — y of all four pin tips
+const PIN_Y = 13.6; // CSS px — y of all four pin tips
 
 const PIN_INFO = [
-  { name: 'SDA', x: 9.5,  y: PIN_Y, number: 1, signals: [] as Array<unknown> },
+  { name: 'SDA', x: 9.5, y: PIN_Y, number: 1, signals: [] as Array<unknown> },
   { name: 'SCL', x: 29.8, y: PIN_Y, number: 2, signals: [] as Array<unknown> },
   { name: 'GND', x: 50.2, y: PIN_Y, number: 3, signals: [{ type: 'power', signal: 'GND' }] },
   { name: 'VCC', x: 70.5, y: PIN_Y, number: 4, signals: [{ type: 'power', signal: 'VCC' }] },

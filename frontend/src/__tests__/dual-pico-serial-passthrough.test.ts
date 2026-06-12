@@ -162,14 +162,14 @@ function setupTwoPicosWithSerial1Crossover(): { picoA: string; picoB: string } {
     {
       id: 'w-a-tx-to-b-rx',
       start: { componentId: picoA, pinName: 'GP0', x: 0, y: 0 }, // A.UART0.TX
-      end: { componentId: picoB, pinName: 'GP1', x: 0, y: 0 },   // B.UART0.RX
+      end: { componentId: picoB, pinName: 'GP1', x: 0, y: 0 }, // B.UART0.RX
       color: 'green',
       signalType: 'digital' as const,
     },
     {
       id: 'w-b-tx-to-a-rx',
       start: { componentId: picoB, pinName: 'GP0', x: 0, y: 0 }, // B.UART0.TX
-      end: { componentId: picoA, pinName: 'GP1', x: 0, y: 0 },   // A.UART0.RX
+      end: { componentId: picoA, pinName: 'GP1', x: 0, y: 0 }, // A.UART0.RX
       color: 'yellow',
       signalType: 'digital' as const,
     },
@@ -311,9 +311,8 @@ describe('Dual Pico W — Serial1 passthrough across wires', () => {
     piBridge.onSerialData('A');
 
     const fed =
-      (arduinoSim.feedUart as any).mock.calls.some(
-        (c: any[]) => c[0] === 0 && c[1] === 'A',
-      ) || (arduinoSim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'A');
+      (arduinoSim.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'A') ||
+      (arduinoSim.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'A');
     expect(fed).toBe(true);
   });
 });

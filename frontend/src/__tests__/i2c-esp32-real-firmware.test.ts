@@ -42,18 +42,13 @@
 
 import { describe, it, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
-import {
-  existsSync,
-  readFileSync,
-  writeFileSync,
-} from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
 // ─── Configuration ───────────────────────────────────────────────────────────
 
-const BACKEND_URL =
-  process.env.VELXIO_BACKEND ?? 'http://127.0.0.1:8001';
+const BACKEND_URL = process.env.VELXIO_BACKEND ?? 'http://127.0.0.1:8001';
 const FQBN = 'esp32:esp32:esp32';
 
 const SKETCH_PATH = resolve(
@@ -69,11 +64,9 @@ const BACKEND_AVAILABLE = (() => {
   // node 22's fetch can't be awaited at the top level synchronously,
   // but a 2 s curl probe is fast enough and works on every dev box.
   // Root path always returns the version banner JSON when alive.
-  const r = spawnSync(
-    'curl',
-    ['-s', '-m', '2', '-o', '-', `${BACKEND_URL}/`],
-    { encoding: 'utf-8' },
-  );
+  const r = spawnSync('curl', ['-s', '-m', '2', '-o', '-', `${BACKEND_URL}/`], {
+    encoding: 'utf-8',
+  });
   return r.status === 0 && (r.stdout ?? '').includes('Arduino Emulator API');
 })();
 
@@ -451,9 +444,7 @@ describe('ESP32 I2C — write-forwarding from QEMU back to frontend peer device'
       // wrote (0xAA).
       const regs = new Uint8Array(256);
 
-      const url =
-        BACKEND_URL.replace(/^http/, 'ws') +
-        `/api/simulation/ws/test-${Date.now()}`;
+      const url = BACKEND_URL.replace(/^http/, 'ws') + `/api/simulation/ws/test-${Date.now()}`;
       const ws = new WebSocket(url);
       const proxyCompletes: Array<{ addr: number; data: number[] }> = [];
       let booted = false;
@@ -474,9 +465,7 @@ describe('ESP32 I2C — write-forwarding from QEMU back to frontend peer device'
       await new Promise<void>((resolve) => {
         const deadline = Date.now() + 30_000;
         const tick = setInterval(() => {
-          const done = proxyCompletes.some(
-            (p) => p.addr === 0x27 && p.data.includes(0xaa),
-          );
+          const done = proxyCompletes.some((p) => p.addr === 0x27 && p.data.includes(0xaa));
           if (done || Date.now() >= deadline) {
             clearInterval(tick);
             try {
@@ -535,11 +524,8 @@ describe.skipIf(BACKEND_AVAILABLE)(
   },
 );
 
-describe.skipIf(SKETCH_AVAILABLE)(
-  'ESP32 I2C — skipped (sketch fixture missing)',
-  () => {
-    it('expected ' + SKETCH_PATH, () => {
-      expect(true).toBe(true);
-    });
-  },
-);
+describe.skipIf(SKETCH_AVAILABLE)('ESP32 I2C — skipped (sketch fixture missing)', () => {
+  it('expected ' + SKETCH_PATH, () => {
+    expect(true).toBe(true);
+  });
+});

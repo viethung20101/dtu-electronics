@@ -94,10 +94,7 @@ export const CameraToggle: React.FC<CameraToggleProps> = ({ boardId }) => {
         color,
         fontSize: 13,
         cursor: boardId ? 'pointer' : 'not-allowed',
-        animation:
-          status === 'requesting'
-            ? 'velxio-pulse 1s ease-in-out infinite'
-            : 'none',
+        animation: status === 'requesting' ? 'velxio-pulse 1s ease-in-out infinite' : 'none',
       }}
     >
       <svg
@@ -113,9 +110,7 @@ export const CameraToggle: React.FC<CameraToggleProps> = ({ boardId }) => {
         <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
         <circle cx="12" cy="13" r="4" />
       </svg>
-      <span>
-        {isOn ? `Camera ${framesSent}` : 'Camera'}
-      </span>
+      <span>{isOn ? `Camera ${framesSent}` : 'Camera'}</span>
     </button>
   );
 };

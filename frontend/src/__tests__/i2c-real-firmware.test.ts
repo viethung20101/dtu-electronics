@@ -58,11 +58,7 @@ import { join, resolve } from 'node:path';
 
 import { AVRSimulator } from '../simulation/AVRSimulator';
 import { PinManager } from '../simulation/PinManager';
-import {
-  I2CBusManager,
-  I2CMemoryDevice,
-  VirtualPCF8574,
-} from '../simulation/I2CBusManager';
+import { I2CBusManager, I2CMemoryDevice, VirtualPCF8574 } from '../simulation/I2CBusManager';
 import { HD44780Decoder } from '../simulation/HD44780Decoder';
 import { PartSimulationRegistry } from '../simulation/parts/PartSimulationRegistry';
 import '../simulation/parts/ProtocolParts';
@@ -89,11 +85,10 @@ function hasLibrary(header: string): boolean {
     join(sketchDir, 'probe.ino'),
     `#include <${header}>\nvoid setup(){}\nvoid loop(){}\n`,
   );
-  const r = spawnSync(
-    'arduino-cli',
-    ['compile', '--fqbn', 'arduino:avr:uno', sketchDir],
-    { encoding: 'utf-8', timeout: 60_000 },
-  );
+  const r = spawnSync('arduino-cli', ['compile', '--fqbn', 'arduino:avr:uno', sketchDir], {
+    encoding: 'utf-8',
+    timeout: 60_000,
+  });
   return r.status === 0;
 }
 
@@ -107,12 +102,7 @@ const LIQUID_CRYSTAL_I2C_AVAILABLE = ARDUINO_CLI_AVAILABLE
  * Resolve the path to one of the committed test sketches.
  */
 function sketchSourcePath(name: string): string {
-  return resolve(
-    __dirname,
-    '../../../test/test_custom_chips/sketches',
-    name,
-    `${name}.ino`,
-  );
+  return resolve(__dirname, '../../../test/test_custom_chips/sketches', name, `${name}.ino`);
 }
 
 /**
@@ -156,16 +146,7 @@ function compileSketch(name: string, fqbn = 'arduino:avr:uno'): string {
 
   const result = spawnSync(
     'arduino-cli',
-    [
-      'compile',
-      '--fqbn',
-      fqbn,
-      '--output-dir',
-      buildDir,
-      '--build-path',
-      buildDir,
-      sketchDir,
-    ],
+    ['compile', '--fqbn', fqbn, '--output-dir', buildDir, '--build-path', buildDir, sketchDir],
     { encoding: 'utf-8', timeout: 180_000 },
   );
 
@@ -180,11 +161,7 @@ function compileSketch(name: string, fqbn = 'arduino:avr:uno'): string {
 
   // Find the produced hex.  arduino-cli emits "<sketch>.ino.hex".
   let hex: string | null = null;
-  for (const candidate of [
-    `${name}.ino.hex`,
-    `${name}.hex`,
-    'sketch.ino.hex',
-  ]) {
+  for (const candidate of [`${name}.ino.hex`, `${name}.hex`, 'sketch.ino.hex']) {
     const p = join(buildDir, candidate);
     if (existsSync(p)) {
       hex = readFileSync(p, 'utf-8');
@@ -193,9 +170,7 @@ function compileSketch(name: string, fqbn = 'arduino:avr:uno'): string {
   }
   if (!hex) {
     const files = readdirSync(buildDir, { recursive: true });
-    throw new Error(
-      `Could not locate .hex output in ${buildDir} (saw: ${files.join(', ')})`,
-    );
+    throw new Error(`Could not locate .hex output in ${buildDir} (saw: ${files.join(', ')})`);
   }
 
   writeFileSync(hexCache, hex);

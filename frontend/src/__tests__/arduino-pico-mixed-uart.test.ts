@@ -130,7 +130,11 @@ vi.stubGlobal('cancelAnimationFrame', vi.fn());
 import { setWires, resetStore, clearAllPinManagerState } from './helpers/multiBoardSetup';
 import { resetInterconnect } from '../simulation/Interconnect';
 
-import { useSimulatorStore, getBoardSimulator, getBoardPinManager } from '../store/useSimulatorStore';
+import {
+  useSimulatorStore,
+  getBoardSimulator,
+  getBoardPinManager,
+} from '../store/useSimulatorStore';
 
 function fullReset() {
   clearAllPinManagerState(useSimulatorStore, getBoardPinManager);
@@ -179,8 +183,8 @@ describe('Arduino Uno ↔ Pi Pico — hardware UART', () => {
     // route to Uno because the wire is GP0(TX UART0) → D0.
     simPico.onSerialData('P');
     const fed_P =
-      (simUno.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'P')
-      || (simUno.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'P');
+      (simUno.feedUart as any).mock.calls.some((c: any[]) => c[0] === 0 && c[1] === 'P') ||
+      (simUno.serialWrite as any).mock.calls.some((c: any[]) => c[0] === 'P');
     expect(fed_P).toBe(true);
   });
 });

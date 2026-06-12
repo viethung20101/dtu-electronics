@@ -912,7 +912,13 @@ void loop() {
 void setup() {}
 void loop()  {}`,
     components: [
-      { type: 'wokwi-signal-generator', id: 'src', x: 40, y: 200, properties: { waveform: 'dc', offset: 5, amplitude: 0, frequency: 1 } },
+      {
+        type: 'wokwi-signal-generator',
+        id: 'src',
+        x: 40,
+        y: 200,
+        properties: { waveform: 'dc', offset: 5, amplitude: 0, frequency: 1 },
+      },
       { type: 'wokwi-slide-switch', id: 'sw1', x: 220, y: 90, properties: { value: 0 } },
       { type: 'wokwi-slide-switch', id: 'sw2', x: 220, y: 250, properties: { value: 0 } },
       { type: 'wokwi-resistor', id: 'rpd1', x: 340, y: 140, properties: { value: '10000' } },
@@ -1510,9 +1516,7 @@ void loop() {
       ...Array.from({ length: 8 }, (_, i) =>
         w(`wp${i}`, ['arduino-mega', `${22 + i}`], [`r${i}`, '1']),
       ),
-      ...Array.from({ length: 8 }, (_, i) =>
-        w(`wl${i}`, [`r${i}`, '2'], [`led${i}`, 'A']),
-      ),
+      ...Array.from({ length: 8 }, (_, i) => w(`wl${i}`, [`r${i}`, '2'], [`led${i}`, 'A'])),
       ...Array.from({ length: 8 }, (_, i) =>
         w(`wg${i}`, [`led${i}`, 'C'], ['arduino-mega', 'GND'], '#000000'),
       ),

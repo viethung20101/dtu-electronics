@@ -19,6 +19,13 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* VEPS design tokens */
+  --veps-cyan: #00d2ff;
+  --veps-blue: #0071e3;
+  --veps-primary-gradient: linear-gradient(135deg, #00d2ff 0%, #0071e3 100%);
+  --veps-glow-cyan: 0 0 15px rgba(0, 210, 255, 0.3);
+  --veps-glow-cyan-strong: 0 0 25px rgba(0, 210, 255, 0.55);
 }
 
 *,

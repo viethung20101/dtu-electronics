@@ -66,9 +66,7 @@ describe('chipbus Phase 0 — net-identity shared key', () => {
 
   it('distinct data lines get distinct keys (no cross-talk between D0 and D1)', () => {
     const state = busState();
-    expect(resolveChipNetKey(state, 'cpu', 'D0')).not.toBe(
-      resolveChipNetKey(state, 'cpu', 'D1'),
-    );
+    expect(resolveChipNetKey(state, 'cpu', 'D0')).not.toBe(resolveChipNetKey(state, 'cpu', 'D1'));
   });
 
   it('documents the bug: per-endpoint synthetic keys differ for one net', () => {
@@ -127,10 +125,7 @@ describe('chipbus Phase 0 — net-identity shared key', () => {
 
   it('a board on the net defers to board priority (returns null)', () => {
     const state: ChipNetState = {
-      wires: [
-        wire('cpu', 'D0', 'rom', 'D0'),
-        wire('cpu', 'D0', 'uno', '7'),
-      ],
+      wires: [wire('cpu', 'D0', 'rom', 'D0'), wire('cpu', 'D0', 'uno', '7')],
       components: [chip('cpu'), chip('rom')],
       boards: [{ id: 'uno', boardKind: 'arduino-uno' }],
     };

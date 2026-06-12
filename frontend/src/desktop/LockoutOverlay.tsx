@@ -56,14 +56,12 @@ const COPY: Record<LockoutReason, { title: string; subtitle: string; primary: st
   },
   tampered: {
     title: 'Authentication problem',
-    subtitle:
-      'Your stored credentials could not be verified. Please sign in again to continue.',
+    subtitle: 'Your stored credentials could not be verified. Please sign in again to continue.',
     primary: 'Sign in again',
   },
   expired: {
     title: 'Subscription expired',
-    subtitle:
-      'Reactivate your Velxio Pro subscription to keep using Velxio Desktop.',
+    subtitle: 'Reactivate your Velxio Pro subscription to keep using Velxio Desktop.',
     primary: 'Reactivate subscription',
   },
 };

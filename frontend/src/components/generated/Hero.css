@@ -1,0 +1,534 @@
+.hero {
+  width: 1440px;
+  height: 2901px;
+  position: relative;
+  background-color: #171717;
+}
+
+.ellipse_7 {
+  width: 493px;
+  height: 493px;
+  position: absolute;
+  left: -106px;
+  top: 3360px;
+  background-color: rgba(47, 202, 219, 0.6);
+  filter: blur(148px);
+}
+
+.image_7 {
+  width: 1440px;
+  height: 810px;
+  position: absolute;
+  left: 0px;
+  top: 768px;
+}
+
+.gradient {
+  width: 1439px;
+  height: 810px;
+  position: absolute;
+  left: 1px;
+  top: 768px;
+  background: linear-gradient(180deg, rgba(25, 51, 53, 0.5) 47%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(8.699999809265137px);
+}
+
+.ellipse_6 {
+  width: 893px;
+  height: 893px;
+  position: absolute;
+  left: 621px;
+  top: 778px;
+  background-color: rgba(47, 202, 219, 0.6);
+  filter: blur(148px);
+}
+
+.vector {
+  width: 1739.14px;
+  height: 969.32px;
+  position: absolute;
+  left: -610px;
+  top: -440px;
+  background: linear-gradient(-9deg, rgba(10, 118, 123, 1) 0%, rgba(0, 167, 214, 1) 100%);
+}
+
+.ellipse_5 {
+  width: 893px;
+  height: 893px;
+  position: absolute;
+  left: 773px;
+  top: -41px;
+  background-color: rgba(47, 202, 219, 0.6);
+  filter: blur(148px);
+}
+
+.navbar {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.frame {
+  width: 602px;
+  height: 56px;
+  position: relative;
+  display: flex;
+  gap: 45px;
+  align-items: center;
+  background-color: rgba(206, 249, 254, 0.13);
+}
+
+.button {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(-9deg, rgba(10, 118, 123, 1) 0%, rgba(0, 167, 214, 1) 100%);
+}
+
+.trang_ch {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.ti_liu {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.v_d {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.thc_hnh {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.gii_thiu {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.link {
+  position: relative;
+}
+
+.ng_k {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.workspace {
+  color: #000000;
+  font-size: 13.600000381469727px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 20px;
+}
+
+.svg {
+  width: 16px;
+  height: 16px;
+}
+
+.ffff_1 {
+  width: 664px;
+  height: 415px;
+  position: absolute;
+  left: 756px;
+  top: 197px;
+}
+
+.mockup_khung_son_tho_code {
+  width: 462px;
+  height: 326px;
+  position: absolute;
+  left: 95px;
+  top: 1671px;
+  background-color: #05080f;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.overlayhorizontalborder {
+  position: relative;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mainino {
+  color: #9ca3af;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.overlay {
+  position: relative;
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.auto_save {
+  color: #34d399;
+  font-size: 9.699999809265137px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.cleaning_2021_09_02_08_09_16_utc_1 {
+  width: 425px;
+  height: 294px;
+  position: absolute;
+  left: 212px;
+  top: 1877px;
+  background-color: -0.8256351351737976;
+}
+
+.text {
+  position: absolute;
+  left: 738px;
+  top: 800px;
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.tx {
+  position: relative;
+  display: flex;
+  gap: 6px;
+}
+
+.kin_trc_phn_cng_h_tr {
+  color: #00f0ff;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+.mi_kin_trc_mt_cng_c_duy_nht {
+  color: #ffffff;
+  font-size: 55px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+.trnh_son_tho_code_tch_hp_b_th_vin_chun_ca_arduinoesp_idf_tch_hp_thanh_theo_di_serial_monitor_v_phn_tch_dng_sng_trc_quan_gip_bn_g_li_phn_mm_d_dng {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+  line-height: 23px;
+}
+
+.heading_1 {
+  position: relative;
+  display: flex;
+  gap: 25px;
+}
+
+.arduino_esp32 {
+  color: #e5e7eb;
+  font-size: 80px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 60px;
+}
+
+.nn_tng_gi_lp_phn_cng_bin_chuyn_su_kt_ni_linh_kin_in_t_vit_m_nhng_v_phn_tch_lung_d_liu_thi_gian_thc_m_khng_cn_chm_vo_phn_cng_vt_l {
+  color: #9ca3af;
+  font-size: 17px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 28px;
+}
+
+.ellipse_3 {
+  width: 493px;
+  height: 493px;
+  position: absolute;
+  left: 0px;
+  top: 1829px;
+  background-color: rgba(47, 202, 219, 0.6);
+  filter: blur(148px);
+}
+
+.overlayborder {
+  position: absolute;
+  left: 156px;
+  top: 25px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.espressif {
+  color: #00f0ff;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.esp32_series {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.gi_lp_chun_mng_wi_fi_v_bluetooth_low_energy_ble_d_dng_test_clientserver {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.mynauimicrochip {
+  width: 54px;
+  height: 54px;
+  position: absolute;
+  left: 29px;
+  top: 17px;
+}
+
+.customize {
+  width: 46px;
+  height: 46px;
+  position: absolute;
+  left: 29px;
+  top: 19px;
+}
+
+.stmicro {
+  color: #00f0ff;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.stm32_blue_pill {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.m_phng_kin_trc_arm_cortex_chuyn_su_phc_v_hc_tp_h_thng_nhng_cng_nghip {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.arduino {
+  color: #00f0ff;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.arduino_uno_r3r4 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.h_thng_th_vin_m_ngun_phong_ph_thch_hp_cho_vic_pht_trin_t_duy_thut_ton {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.heroiconscpu_chip {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 26px;
+  top: 19px;
+}
+
+.raspberry_pi {
+  color: #00f0ff;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.h_tr_y_trnh_thng_dch_micropython_vit_code_iu_khin_tinh_gin_gn_gng {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.icon_park_outlineconnect {
+  width: 49px;
+  height: 49px;
+  position: absolute;
+  left: 29px;
+  top: 15px;
+}
+
+.tch_hp_gi_lp_th_nghim_vi_iu_khin {
+  color: #00f0ff;
+  font-size: 20px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+.h_tr_vit_m_ngun_v_kim_th_bo_mch_trc_tip_theo_thi_gian_thc {
+  color: #ffffff;
+  font-size: 55px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+}
+
+.ellipse_4 {
+  width: 533px;
+  height: 533px;
+  position: absolute;
+  left: 1203px;
+  top: 2750px;
+  background-color: rgba(47, 202, 219, 0.6);
+  filter: blur(148px);
+}
+
+.frame_10 {
+  width: 80px;
+  height: 80px;
+  background-color: #4a4a4a;
+  border: 1px solid #3ed5dd;
+}
+
+.oscilloscope_logic_analyzer {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.o_c_chnh_xc_xung_nhp_ca_cc_chn_pwm_v_phn_tch_chnh_xc_m_sng_nh_phn_ca_tn_hiu_truyn_thng {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.kho_linh_kin_s_h_tr_ko_th_trc_quan {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.h_tr_y_mn_hnh_lcdoled_cm_bin_nhit_dht11_cm_bin_khong_cch_ng_c_servo_v_nhiu_linh_kin_th_ng_khc {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.chia_s_lm_vic_nhm {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  line-height: 32px;
+}
+
+.xut_bn_v_s_nguyn_l_mch_hoc_chia_s_d_n_cho_bn_b_trong_nhm_cng_lm_n_qua_mt_lin_kt_duy_nht {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.nng_lc_ti_tn_ca_lab_in_t_o {
+  color: #ffffff;
+  font-size: 60px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 70px;
+}
+
+.mi_cng_c_h_tr_cho_vic_nghin_cu_v_lm_n_k_thut_phn_cng_nhng {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 23px;
+}
+
+.include_wifih {
+  color: #ec4899;
+  font-size: 12px;
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+  line-height: 16px;
+}
+
+.shadow {
+  position: relative;
+  box-shadow:
+    0px 10px 8px 0px rgba(0, 0, 0, 0.04),
+    0px 4px 3px 0px rgba(0, 0, 0, 0.1);
+}
+
+.khi_chy_trnh_m_phng {
+  color: #000000;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}

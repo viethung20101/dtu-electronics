@@ -18,12 +18,12 @@ function resetStores() {
 }
 
 const CASES: { id: string; kind: string; minComponents: number }[] = [
-  { id: 'pi3-blink-led',         kind: 'raspberry-pi-3', minComponents: 1 },
-  { id: 'pi3-running-lights',    kind: 'raspberry-pi-3', minComponents: 5 },
-  { id: 'pi4-button-led',        kind: 'raspberry-pi-4', minComponents: 2 },
-  { id: 'pi4-rgb-color-cycle',   kind: 'raspberry-pi-4', minComponents: 1 },
-  { id: 'pi5-pir-motion-alarm',  kind: 'raspberry-pi-5', minComponents: 2 },
-  { id: 'pi5-traffic-light',     kind: 'raspberry-pi-5', minComponents: 3 },
+  { id: 'pi3-blink-led', kind: 'raspberry-pi-3', minComponents: 1 },
+  { id: 'pi3-running-lights', kind: 'raspberry-pi-3', minComponents: 5 },
+  { id: 'pi4-button-led', kind: 'raspberry-pi-4', minComponents: 2 },
+  { id: 'pi4-rgb-color-cycle', kind: 'raspberry-pi-4', minComponents: 1 },
+  { id: 'pi5-pir-motion-alarm', kind: 'raspberry-pi-5', minComponents: 2 },
+  { id: 'pi5-traffic-light', kind: 'raspberry-pi-5', minComponents: 3 },
 ];
 
 describe('Raspberry Pi 3/4/5 single-board examples', () => {

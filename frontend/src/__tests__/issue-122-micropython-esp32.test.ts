@@ -98,7 +98,7 @@ describe('issue #122 — ESP32-C3 flash size mismatch', () => {
     }
   });
 
-  it('emits exactly one of QEMU\'s valid flash sizes (2/4/8/16 MB)', () => {
+  it("emits exactly one of QEMU's valid flash sizes (2/4/8/16 MB)", () => {
     const VALID = [2, 4, 8, 16].map((mb) => mb * 1024 * 1024);
     for (const kind of ALL_VARIANTS) {
       const padded = padToFlashSize(SAMPLE_FW, kind);
@@ -119,10 +119,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 describe('issue #122 — default ESP32 MicroPython demo uses portable APIs', () => {
-  const SRC = readFileSync(
-    resolve(__dirname, '../store/useEditorStore.ts'),
-    'utf-8',
-  );
+  const SRC = readFileSync(resolve(__dirname, '../store/useEditorStore.ts'), 'utf-8');
 
   function extractBlock(name: string): string {
     // Match `const NAME = \`...\`;` (template literal across multiple lines).
