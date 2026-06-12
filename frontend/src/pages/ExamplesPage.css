@@ -553,6 +553,24 @@
   }
 }
 
+@media (max-width: 768px) {
+  :root {
+    --header-height: 52px;
+  }
+
+  .examples-list-container .example-project-card {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .examples-list-container .card-thumbnail-container {
+    width: 100%;
+    height: 180px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+}
+
 @media (max-width: 576px) {
   .examples-body {
     padding: calc(var(--header-height) + 16px) 20px 40px;

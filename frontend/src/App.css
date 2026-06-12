@@ -28,7 +28,8 @@ body {
   left: 50%;
   transform: translateX(-50%);
   top: 15px;
-  width: 1440px;
+  width: 100%;
+  max-width: 1440px;
   height: 56px;
   padding: 0 95px;
   flex-shrink: 0;
@@ -162,6 +163,10 @@ body {
   color: #8fa8f5;
 }
 
+.header-nav-mobile-only {
+  display: none !important;
+}
+
 .header-right {
   display: flex;
   align-items: center;
@@ -250,18 +255,46 @@ body {
   border: none;
   cursor: pointer;
   padding: 4px;
+  z-index: 210; /* Keep hamburger clickable above dropdown overlay */
 }
 
 .header-hamburger span {
   display: block;
   height: 2px;
+  width: 100%;
   background: #9d9d9d;
   border-radius: 2px;
-  transition: background 0.15s;
+  transition: transform 0.25s ease, opacity 0.25s ease, background 0.15s ease;
 }
 
 .header-hamburger:hover span {
   background: #e0e0e0;
+}
+
+/* Morphing hamburger to X when open */
+.header-hamburger.header-hamburger-open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.header-hamburger.header-hamburger-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.header-hamburger.header-hamburger-open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Mobile dropdown navigation overlay */
+.header-nav-overlay {
+  position: fixed;
+  top: 52px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 150;
 }
 
 /* ── Unified top toolbar (desktop) ───────────────
@@ -486,6 +519,21 @@ body {
   .app-header {
     padding: 0 20px;
     height: 52px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    transform: none;
+  }
+
+  .app-header.app-header-editor {
+    position: relative;
+    left: auto;
+    transform: none;
+    top: 0;
+    width: 100%;
+    height: 52px;
+    padding: 0 20px;
   }
 
   .examples-link span,
@@ -505,6 +553,7 @@ body {
     top: 52px;
     left: 0;
     right: 0;
+    transform: none; /* Reset desktop transform */
     background: rgba(9, 9, 11, 0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -537,8 +586,16 @@ body {
     box-shadow: none;
   }
 
+  .header-nav-mobile-only {
+    display: flex !important;
+  }
+
   .header-hamburger {
     display: flex;
+  }
+
+  .header-btn-register {
+    display: none; /* Hide Sign Up button on mobile header to prevent crowding */
   }
 
   .header-btn-workspace {

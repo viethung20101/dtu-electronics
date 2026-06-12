@@ -134,6 +134,16 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave, variant }) => {
           <Link to={localize('/about')} className={'header-nav-link' + isActive('/about')}>
             {t('header.nav.about')}
           </Link>
+          {!import.meta.env.VITE_DESKTOP && (
+            <>
+              {/* <Link to={localize('/register')} className="header-nav-link header-nav-mobile-only">
+                {t('header.auth.signUp')}
+              </Link> */}
+              <Link to={localize('/editor')} className="header-nav-link header-nav-mobile-only">
+                Workspace
+              </Link>
+            </>
+          )}
         </nav>
 
         {/* Right: language + share + auth + mobile hamburger */}
@@ -190,9 +200,9 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave, variant }) => {
 
           {!import.meta.env.VITE_DESKTOP && (
             <>
-              <Link to={localize('/register')} className="header-btn-register">
+              {/* <Link to={localize('/register')} className="header-btn-register">
                 {t('header.auth.signUp')}
-              </Link>
+              </Link> */}
               <Link to={localize('/editor')} className="header-btn-workspace">
                 <span>Workspace</span>
                 <svg
@@ -218,7 +228,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave, variant }) => {
               would expand is itself hidden. */}
           {!import.meta.env.VITE_DESKTOP && (
             <button
-              className="header-hamburger"
+              className={`header-hamburger ${menuOpen ? 'header-hamburger-open' : ''}`}
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Toggle menu"
             >
@@ -229,6 +239,8 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave, variant }) => {
           )}
         </div>
       </div>
+
+      {menuOpen && <div className="header-nav-overlay" onClick={() => setMenuOpen(false)} />}
 
       {showShareModal && <ShareModal onClose={() => setShowShareModal(false)} />}
     </header>

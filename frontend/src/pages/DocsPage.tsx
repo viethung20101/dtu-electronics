@@ -3124,11 +3124,35 @@ export const DocsPage: React.FC = () => {
 
       <div className="docs-container-centered">
         <AppHeader />
-        <div className="docs-mobile-bar">
+        {/* <div className="docs-mobile-bar">
+          <button
+            className="docs-sidebar-toggle"
+            onClick={() => setSidebarOpen((v) => !v)}
+            aria-label="Toggle sidebar"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{ width: 18, height: 18, display: 'block' }}
+            >
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
           <span className="docs-mobile-bar-title">{t('docs.pageTitle')}</span>
-        </div>
+        </div> */}
 
         <div className="docs-body">
+          {/* Sidebar Backdrop Overlay */}
+          {sidebarOpen && (
+            <div className="docs-sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+          )}
+
           {/* Sidebar */}
           <aside className={`docs-sidebar${sidebarOpen ? ' docs-sidebar--open' : ''}`}>
             <div className="docs-sidebar-brand">CVS Emulator</div>

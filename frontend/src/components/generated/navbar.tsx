@@ -19,9 +19,9 @@ export const navbar = () => {
         <img src={Icon_Vector_1_167_537} className="vector_1" alt="Vector 1" />
       </div>
       <div className="container">
-        <div className="link">
+        {/* <div className="link">
           <p className="ng_k">Đăng ký</p>
-        </div>
+        </div> */}
         <button className="button">
           <p className="workspace">Workspace</p>
           <img src={Icon_SVG_185_159} className="svg" alt="SVG" />

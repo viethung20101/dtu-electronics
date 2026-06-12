@@ -691,3 +691,195 @@ html {
   line-height: 1.65;
   margin: 0;
 }
+
+/* ── Mobile Responsive Overrides ─────────────────────────── */
+@media (max-width: 1440px) {
+  .section-content-centered {
+    width: 100%;
+    min-width: 0;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .section-hero,
+  .section-hardware,
+  .section-simulator,
+  .section-features {
+    height: auto !important;
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .section-hero {
+    padding-top: 120px; /* Space for absolute header */
+  }
+
+  .section-content-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: auto;
+  }
+
+  /* Hero Section */
+  .hero-left {
+    position: static;
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 48px;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .ffff_1 {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin: 48px auto 0;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    aspect-ratio: 664 / 415;
+    background-size: contain;
+  }
+
+  /* Hardware Architectures */
+  .hardware-right {
+    position: static;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .hardware-cards-grid {
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .card-hardware {
+    max-width: none;
+  }
+
+  .image_7 {
+    display: none; /* Hide heavy photorealistic bg for better contrast & load time on small screens */
+  }
+
+  /* Simulator Integration */
+  .mockup_khung_son_tho_code {
+    position: static;
+    width: 100%;
+    max-width: 560px;
+    height: auto;
+    margin: 0 auto 32px;
+  }
+
+  .cleaning_2021_09_02_08_09_16_utc_1 {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 100%;
+    max-width: 400px;
+    height: 276px;
+    margin: 0 auto 32px;
+  }
+
+  .text-simulator {
+    position: static;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  /* Virtual Lab Features */
+  .features-section-container {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .features-cards-container {
+    padding: 0;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .card-features {
+    width: calc(50% - 12px);
+    height: auto;
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .hero-description {
+    font-size: 14px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .cta-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .hardware-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .card-hardware {
+    height: auto;
+    min-height: 150px;
+    padding: 48px 16px 16px;
+  }
+
+  .card-badge {
+    right: 16px;
+    top: 16px;
+  }
+
+  .card-icon {
+    left: 16px;
+    top: 10px;
+  }
+
+  .section-title {
+    font-size: 28px;
+  }
+
+  .text-lab-features .section-title {
+    font-size: 32px;
+  }
+
+  .card-features {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 24px 20px;
+  }
+}

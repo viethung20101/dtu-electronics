@@ -1011,6 +1011,38 @@
   }
 }
 
+@media (max-width: 768px) {
+  .about-figma-vector {
+    display: none !important; /* Hide large decoration SVGs on mobile to avoid overflows and speed up rendering */
+  }
+
+  .about-cta {
+    height: auto !important;
+    padding: 60px 0;
+  }
+
+  .about-cta-content {
+    text-align: center;
+    max-width: none;
+    padding: 0 var(--about-gutter);
+  }
+
+  .about-cta-content h2 {
+    font-size: clamp(32px, 6vw, 42px);
+    white-space: normal !important; /* Allow normal wrapping */
+  }
+
+  .about-cta-content p {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  .about-cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 600px) {
   .about-page {
     --about-gutter: 24px;

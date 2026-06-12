@@ -507,19 +507,31 @@
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
+.docs-sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 199;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
   .docs-body {
-    padding: var(--nav-h) 20px 80px;
+    padding: 52px 20px 80px;
     gap: 0;
   }
 
   .docs-sidebar {
     position: fixed;
-    top: var(--nav-h);
+    top: 52px;
     left: 0;
     width: 260px;
-    height: calc(100vh - var(--nav-h));
+    height: calc(100vh - 52px);
     border-radius: 0;
     border: none;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
