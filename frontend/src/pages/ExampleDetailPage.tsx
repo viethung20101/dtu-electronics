@@ -95,6 +95,7 @@ export const ExampleDetailPage: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: 16,
+            marginTop: 48,
           }}
         >
           <div style={{ fontSize: 48, color: '#555' }}>404</div>
@@ -138,6 +139,7 @@ export const ExampleDetailPage: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           padding: '48px 24px 80px',
+          marginTop: 48,
         }}
       >
         {/* Breadcrumb */}

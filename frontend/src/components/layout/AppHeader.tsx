@@ -15,7 +15,7 @@ const DISCORD_URL = 'https://discord.gg/3mARjJrh4E';
 interface AppHeaderProps {
   /** Optional auto-save state — when set, renders a save status indicator. */
   autoSave?: AutoSaveState;
-  variant?: 'editor' | 'default';
+  variant?: 'editor' | 'default' | 'example';
 }
 
 const SAVE_STATUS_COPY: Record<AutoSaveState['status'], { label: string; color: string }> = {
@@ -99,9 +99,14 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ autoSave, variant }) => {
   };
 
   const isEditor = variant === 'editor' || (!variant && location.pathname.includes('/editor'));
+  const isExampleDetail =
+    variant === 'example' || (!variant && location.pathname.includes('/example/'));
 
   return (
-    <header className={`app-header ${isEditor ? 'app-header-editor' : ''}`}>
+    <header
+      className={`app-header ${isEditor ? 'app-header-editor' : ''}
+    ${isExampleDetail ? 'app-header-editor' : ''}`}
+    >
       <div className="header-content">
         <div className="header-left">
           {/* Brand */}

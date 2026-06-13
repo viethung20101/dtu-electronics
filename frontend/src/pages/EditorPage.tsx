@@ -438,9 +438,7 @@ export const EditorPage: React.FC = () => {
                       onClick={() =>
                         setActiveLeftTab((v) => (v === 'workspace' ? 'code' : 'workspace'))
                       }
-                      title={
-                        activeLeftTab === 'workspace' ? 'Show code editor' : 'Show file explorer'
-                      }
+                      title="Show file explorer"
                     >
                       <svg
                         width="16"

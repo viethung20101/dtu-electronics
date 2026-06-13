@@ -41,19 +41,12 @@ export const ExampleEditorPage: React.FC = () => {
   // example reloading on every store-triggered re-render.
   const loadedIdRef = useRef<string | null>(null);
 
-  const example = exampleId
-    ? exampleProjects.find((e) => e.id === exampleId)
-    : null;
+  const example = exampleId ? exampleProjects.find((e) => e.id === exampleId) : null;
 
   useSEO({
-    title: example
-      ? `${example.title} — CVS Arduino Simulator`
-      : 'Example — CVS',
-    description:
-      example?.description ?? 'Arduino example running on CVS.',
-    url: example
-      ? `${DOMAIN}/example/${example.id}`
-      : `${DOMAIN}/examples`,
+    title: example ? `${example.title} — CVS Arduino Simulator` : 'Example — CVS',
+    description: example?.description ?? 'Arduino example running on CVS.',
+    url: example ? `${DOMAIN}/example/${example.id}` : `${DOMAIN}/examples`,
   });
 
   useEffect(() => {

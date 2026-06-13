@@ -66,7 +66,9 @@ export const ExampleLoaderPage: React.FC = () => {
           }}
         >
           <div style={{ fontSize: 48, color: '#555' }}>404</div>
-          <div style={{ fontSize: 16, color: '#999' }}>{t('examples.notFound', { id: exampleId })}</div>
+          <div style={{ fontSize: 16, color: '#999' }}>
+            {t('examples.notFound', { id: exampleId })}
+          </div>
           <Link
             to={localize('/examples')}
             style={{
@@ -97,7 +99,9 @@ export const ExampleLoaderPage: React.FC = () => {
       }}
     >
       <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 16, color: '#ccc', marginBottom: 12 }}>{t('examples.loadingExample')}</div>
+        <div style={{ fontSize: 16, color: '#ccc', marginBottom: 12 }}>
+          {t('examples.loadingExample')}
+        </div>
         {installing && (
           <div style={{ maxWidth: 300, margin: '0 auto' }}>
             <div style={{ fontSize: 13, color: '#999', marginBottom: 8 }}>
