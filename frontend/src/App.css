@@ -43,6 +43,7 @@ body {
   position: relative;
   left: auto;
   transform: none;
+  max-width: 100%;
   top: 0;
   width: 100%;
   height: 56px;

@@ -296,8 +296,6 @@ export const EditorPage: React.FC = () => {
     [bottomPanelHeight],
   );
 
-
-
   const handleRightResizeMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
@@ -377,12 +375,7 @@ export const EditorPage: React.FC = () => {
           the bar doesn't reflow when the editor/canvas splitter is dragged.
           The canvas controls (board selector, Serial, Scope, zoom, Add) are
           portaled into `canvasHeaderSlot` from inside SimulatorCanvas. */}
-      {!isMobile && (
-        <UnifiedToolbar
-          onSaveClick={handleSaveClick}
-          onNewClick={handleNewClick}
-        />
-      )}
+      {!isMobile && <UnifiedToolbar onSaveClick={handleSaveClick} onNewClick={handleNewClick} />}
 
       <div className="app-container" ref={containerRef}>
         {/* ── Editor side ── */}
@@ -392,10 +385,10 @@ export const EditorPage: React.FC = () => {
             width: isMobile
               ? '100%'
               : viewMode === 'code'
-              ? '100%'
-              : viewMode === 'circuit'
-              ? '0%'
-              : `${editorWidthPct}%`,
+                ? '100%'
+                : viewMode === 'circuit'
+                  ? '0%'
+                  : `${editorWidthPct}%`,
             display:
               (isMobile && mobileView !== 'code') || (!isMobile && viewMode === 'circuit')
                 ? 'none'
@@ -442,8 +435,12 @@ export const EditorPage: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'stretch', flexShrink: 0 }}>
                     <button
                       className="explorer-toggle-btn"
-                      onClick={() => setActiveLeftTab((v) => (v === 'workspace' ? 'code' : 'workspace'))}
-                      title={activeLeftTab === 'workspace' ? 'Show code editor' : 'Show file explorer'}
+                      onClick={() =>
+                        setActiveLeftTab((v) => (v === 'workspace' ? 'code' : 'workspace'))
+                      }
+                      title={
+                        activeLeftTab === 'workspace' ? 'Show code editor' : 'Show file explorer'
+                      }
                     >
                       <svg
                         width="16"
@@ -471,7 +468,10 @@ export const EditorPage: React.FC = () => {
                 )}
 
                 {/* Editor area: Pi workspace or Monaco editor */}
-                <div className="editor-wrapper" style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}>
+                <div
+                  className="editor-wrapper"
+                  style={{ flex: 1, overflow: 'hidden', minHeight: 0 }}
+                >
                   {isRaspberryPi3 && activeBoardId ? (
                     <Suspense
                       fallback={
@@ -524,10 +524,10 @@ export const EditorPage: React.FC = () => {
             width: isMobile
               ? '100%'
               : viewMode === 'circuit'
-              ? `calc(100% - ${rightSidebarWidth}px)`
-              : viewMode === 'code'
-              ? '0%'
-              : `calc(${100 - editorWidthPct}% - ${rightSidebarWidth}px)`,
+                ? `calc(100% - ${rightSidebarWidth}px)`
+                : viewMode === 'code'
+                  ? '0%'
+                  : `calc(${100 - editorWidthPct}% - ${rightSidebarWidth}px)`,
             display:
               (isMobile && mobileView !== 'circuit') || (!isMobile && viewMode === 'code')
                 ? 'none'
